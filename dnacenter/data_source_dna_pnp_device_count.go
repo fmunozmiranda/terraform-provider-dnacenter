@@ -2,105 +2,26 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourcePnPDeviceCount() *schema.Resource {
+func dataSourcePnpDeviceCount() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourcePnPDeviceCountRead,
-		Schema: map[string]*schema.Schema{
+		Description: `It performs read operation on Device Onboarding (PnP).
 
-			"serial_number": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"state": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"onb_state": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
+- Returns the device count based on filter criteria. This is useful for pagination
+`,
+
+		ReadContext: dataSourcePnpDeviceCountRead,
+		Schema: map[string]*schema.Schema{
 			"cm_state": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"name": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"pid": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"source": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"project_id": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"workflow_id": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"project_name": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"workflow_name": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"smart_account_id": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"virtual_account_id": &schema.Schema{
+				Description: `cmState query parameter. Device Connection Manager State
+`,
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
@@ -108,81 +29,236 @@ func dataSourcePnPDeviceCount() *schema.Resource {
 				},
 			},
 			"last_contact": &schema.Schema{
+				Description: `lastContact query parameter. Device Has Contacted lastContact > 0
+`,
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"response": &schema.Schema{
-				Type:     schema.TypeFloat,
+			"name": &schema.Schema{
+				Description: `name query parameter. Device Name
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"onb_state": &schema.Schema{
+				Description: `onbState query parameter. Device Onboarding State
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pid": &schema.Schema{
+				Description: `pid query parameter. Device ProductId
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"project_id": &schema.Schema{
+				Description: `projectId query parameter. Device Project Id
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"project_name": &schema.Schema{
+				Description: `projectName query parameter. Device Project Name
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"serial_number": &schema.Schema{
+				Description: `serialNumber query parameter. Device Serial Number
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"smart_account_id": &schema.Schema{
+				Description: `smartAccountId query parameter. Device Smart Account
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"source": &schema.Schema{
+				Description: `source query parameter. Device Source
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"state": &schema.Schema{
+				Description: `state query parameter. Device State
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"virtual_account_id": &schema.Schema{
+				Description: `virtualAccountId query parameter. Device Virtual Account
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"workflow_id": &schema.Schema{
+				Description: `workflowId query parameter. Device Workflow Id
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"workflow_name": &schema.Schema{
+				Description: `workflowName query parameter. Device Workflow Name
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"response": &schema.Schema{
+							Description: `Response`,
+							Type:        schema.TypeFloat,
+							Computed:    true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
-func dataSourcePnPDeviceCountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+func dataSourcePnpDeviceCountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	vSerialNumber, okSerialNumber := d.GetOk("serial_number")
+	vState, okState := d.GetOk("state")
+	vOnbState, okOnbState := d.GetOk("onb_state")
+	vCmState, okCmState := d.GetOk("cm_state")
+	vName, okName := d.GetOk("name")
+	vPid, okPid := d.GetOk("pid")
+	vSource, okSource := d.GetOk("source")
+	vProjectID, okProjectID := d.GetOk("project_id")
+	vWorkflowID, okWorkflowID := d.GetOk("workflow_id")
+	vProjectName, okProjectName := d.GetOk("project_name")
+	vWorkflowName, okWorkflowName := d.GetOk("workflow_name")
+	vSmartAccountID, okSmartAccountID := d.GetOk("smart_account_id")
+	vVirtualAccountID, okVirtualAccountID := d.GetOk("virtual_account_id")
+	vLastContact, okLastContact := d.GetOk("last_contact")
 
-	queryParam := dnac.GetPnpDeviceCountQueryParams{}
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetDeviceCount")
+		queryParams1 := dnacentersdkgo.GetDeviceCountQueryParams{}
 
-	if v, ok := d.GetOk("serial_number"); ok {
-		queryParam.SerialNumber = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("state"); ok {
-		queryParam.State = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("onb_state"); ok {
-		queryParam.OnbState = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("cm_state"); ok {
-		queryParam.CmState = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("name"); ok {
-		queryParam.Name = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("pid"); ok {
-		queryParam.Pid = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("source"); ok {
-		queryParam.Source = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("project_id"); ok {
-		queryParam.ProjectID = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("workflow_id"); ok {
-		queryParam.WorkflowID = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("project_name"); ok {
-		queryParam.ProjectName = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("workflow_name"); ok {
-		queryParam.WorkflowName = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("smart_account_id"); ok {
-		queryParam.SmartAccountID = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("virtual_account_id"); ok {
-		queryParam.VirtualAccountID = convertSliceInterfaceToSliceString(v.([]interface{}))
-	}
-	if v, ok := d.GetOk("last_contact"); ok {
-		queryParam.LastContact = v.(bool)
-	}
+		if okSerialNumber {
+			queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
+		}
+		if okState {
+			queryParams1.State = interfaceToSliceString(vState)
+		}
+		if okOnbState {
+			queryParams1.OnbState = interfaceToSliceString(vOnbState)
+		}
+		if okCmState {
+			queryParams1.CmState = interfaceToSliceString(vCmState)
+		}
+		if okName {
+			queryParams1.Name = interfaceToSliceString(vName)
+		}
+		if okPid {
+			queryParams1.Pid = interfaceToSliceString(vPid)
+		}
+		if okSource {
+			queryParams1.Source = interfaceToSliceString(vSource)
+		}
+		if okProjectID {
+			queryParams1.ProjectID = interfaceToSliceString(vProjectID)
+		}
+		if okWorkflowID {
+			queryParams1.WorkflowID = interfaceToSliceString(vWorkflowID)
+		}
+		if okProjectName {
+			queryParams1.ProjectName = interfaceToSliceString(vProjectName)
+		}
+		if okWorkflowName {
+			queryParams1.WorkflowName = interfaceToSliceString(vWorkflowName)
+		}
+		if okSmartAccountID {
+			queryParams1.SmartAccountID = interfaceToSliceString(vSmartAccountID)
+		}
+		if okVirtualAccountID {
+			queryParams1.VirtualAccountID = interfaceToSliceString(vVirtualAccountID)
+		}
+		if okLastContact {
+			queryParams1.LastContact = vLastContact.(bool)
+		}
 
-	// Prepare Request
-	response, _, err := client.DeviceOnboardingPnP.GetPnpDeviceCount(&queryParam)
-	if err != nil {
-		return diag.FromErr(err)
+		response1, _, err := client.DeviceOnboardingPnp.GetDeviceCount(&queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDeviceCount", err,
+				"Failure at GetDeviceCount, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItem1 := flattenDeviceOnboardingPnpGetDeviceCountItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDeviceCount response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	// set response to Terraform data source
-	if err := d.Set("response", response.Response); err != nil {
-		return diag.FromErr(err)
-	}
-
-	// always run, Set resource id
-	// Unix time  forces this resource to refresh during every Terraform apply
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenDeviceOnboardingPnpGetDeviceCountItem(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceCount) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["response"] = item.Response
+	return []map[string]interface{}{
+		respItem,
+	}
 }

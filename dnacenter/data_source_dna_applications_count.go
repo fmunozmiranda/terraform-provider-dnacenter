@@ -2,10 +2,9 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,35 +12,79 @@ import (
 
 func dataSourceApplicationsCount() *schema.Resource {
 	return &schema.Resource{
+		Description: `It performs read operation on Application Policy.
+
+- Get the number of all existing applications
+`,
+
 		ReadContext: dataSourceApplicationsCountRead,
 		Schema: map[string]*schema.Schema{
-			"response": &schema.Schema{
-				Type:     schema.TypeInt,
+
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"response": &schema.Schema{
+							Description: `Response`,
+							Type:        schema.TypeInt,
+							Computed:    true,
+						},
+
+						"version": &schema.Schema{
+							Description: `Version`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
 func dataSourceApplicationsCountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	// Prepare Request
-	response, _, err := client.ApplicationPolicy.GetApplicationsCount()
-	if err != nil {
-		return diag.FromErr(err)
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetApplicationsCount")
+
+		response1, _, err := client.ApplicationPolicy.GetApplicationsCount()
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetApplicationsCount", err,
+				"Failure at GetApplicationsCount, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItem1 := flattenApplicationPolicyGetApplicationsCountItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetApplicationsCount response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	// set response to Terraform data source
-	if err := d.Set("response", response.Response); err != nil {
-		return diag.FromErr(err)
-	}
-
-	// always run, Set resource id
-	// Unix time  forces this resource to refresh during every Terraform apply
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenApplicationPolicyGetApplicationsCountItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsCount) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["response"] = item.Response
+	respItem["version"] = item.Version
+	return []map[string]interface{}{
+		respItem,
+	}
 }

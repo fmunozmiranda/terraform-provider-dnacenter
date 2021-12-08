@@ -2,10 +2,9 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,137 +12,216 @@ import (
 
 func dataSourceApplications() *schema.Resource {
 	return &schema.Resource{
+		Description: `It performs read operation on Application Policy.
+
+- Get applications by offset/limit or by name
+`,
+
 		ReadContext: dataSourceApplicationsRead,
 		Schema: map[string]*schema.Schema{
+			"limit": &schema.Schema{
+				Description: `limit query parameter. The maximum number of applications to be returned
+`,
+				Type:     schema.TypeFloat,
+				Optional: true,
+			},
 			"name": &schema.Schema{
+				Description: `name query parameter. Application's name
+`,
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"offset": &schema.Schema{
+				Description: `offset query parameter. The offset of the first application to be returned
+`,
 				Type:     schema.TypeFloat,
 				Optional: true,
 			},
-			"limit": &schema.Schema{
-				Type:     schema.TypeFloat,
-				Optional: true,
-			},
+
 			"items": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"application_set_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"application_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"application_network_applications": &schema.Schema{
+
+						"application_set": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"app_protocol": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"application_subtype": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"application_type": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"category_id": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"display_name": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"dscp": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"engine_id": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"help_string": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"id": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"ignore_conflict": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"long_description": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"name": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"popularity": &schema.Schema{
-										Type:     schema.TypeInt,
-										Computed: true,
-									},
-									"rank": &schema.Schema{
-										Type:     schema.TypeInt,
-										Computed: true,
-									},
-									"server_name": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"traffic_class": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
-									},
-									"url": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
+
+									"id_ref": &schema.Schema{
+										Description: `Id Ref`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
 								},
 							},
 						},
-						"application_network_identity": &schema.Schema{
+
+						"id": &schema.Schema{
+							Description: `Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"network_applications": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+
+									"app_protocol": &schema.Schema{
+										Description: `App Protocol`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"application_sub_type": &schema.Schema{
+										Description: `Application Sub Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"application_type": &schema.Schema{
+										Description: `Application Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"category_id": &schema.Schema{
+										Description: `Category Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
 									"display_name": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
+										Description: `Display Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
+
+									"dscp": &schema.Schema{
+										Description: `Dscp`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"engine_id": &schema.Schema{
+										Description: `Engine Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"help_string": &schema.Schema{
+										Description: `Help String`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
 									"id": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
+
+									"ignore_conflict": &schema.Schema{
+										Description: `Ignore Conflict`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"long_description": &schema.Schema{
+										Description: `Long Description`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"popularity": &schema.Schema{
+										Description: `Popularity`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"rank": &schema.Schema{
+										Description: `Rank`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"server_name": &schema.Schema{
+										Description: `Server Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"traffic_class": &schema.Schema{
+										Description: `Traffic Class`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"url": &schema.Schema{
+										Description: `Url`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
+						"network_identity": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `Display Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
 									"lower_port": &schema.Schema{
-										Type:     schema.TypeInt,
-										Computed: true,
+										Description: `Lower Port`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
+
 									"ports": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
+										Description: `Ports`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
+
 									"protocol": &schema.Schema{
-										Type:     schema.TypeString,
-										Computed: true,
+										Description: `Protocol`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
+
 									"upper_port": &schema.Schema{
-										Type:     schema.TypeInt,
-										Computed: true,
+										Description: `Upper Port`,
+										Type:        schema.TypeString,
+										Computed:    true,
 									},
 								},
 							},
@@ -156,32 +234,125 @@ func dataSourceApplications() *schema.Resource {
 }
 
 func dataSourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	vOffset, okOffset := d.GetOk("offset")
+	vLimit, okLimit := d.GetOk("limit")
+	vName, okName := d.GetOk("name")
 
-	applicationsQueryParams := dnac.GetApplicationsQueryParams{}
-	if v, ok := d.GetOk("name"); ok {
-		applicationsQueryParams.Name = v.(string)
-	}
-	if v, ok := d.GetOk("offset"); ok {
-		applicationsQueryParams.Offset = v.(float64)
-	}
-	if v, ok := d.GetOk("limit"); ok {
-		applicationsQueryParams.Limit = v.(float64)
-	}
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetApplications")
+		queryParams1 := dnacentersdkgo.GetApplicationsQueryParams{}
 
-	response, _, err := client.ApplicationPolicy.GetApplications(&applicationsQueryParams)
-	if err != nil {
-		return diag.FromErr(err)
+		if okOffset {
+			queryParams1.Offset = vOffset.(float64)
+		}
+		if okLimit {
+			queryParams1.Limit = vLimit.(float64)
+		}
+		if okName {
+			queryParams1.Name = vName.(string)
+		}
+
+		response1, _, err := client.ApplicationPolicy.GetApplications(&queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetApplications", err,
+				"Failure at GetApplications, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItems1 := flattenApplicationPolicyGetApplicationsItems(response1)
+		if err := d.Set("items", vItems1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetApplications response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	applicationItems := flattenApplicationsReadItems(&response.Response)
-	if err := d.Set("items", applicationItems); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenApplicationPolicyGetApplicationsItems(items *dnacentersdkgo.ResponseApplicationPolicyGetApplications) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["id"] = item.ID
+		respItem["name"] = item.Name
+		respItem["network_applications"] = flattenApplicationPolicyGetApplicationsItemsNetworkApplications(item.NetworkApplications)
+		respItem["network_identity"] = flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(item.NetworkIDentity)
+		respItem["application_set"] = flattenApplicationPolicyGetApplicationsItemsApplicationSet(item.ApplicationSet)
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenApplicationPolicyGetApplicationsItemsNetworkApplications(items *[]dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsNetworkApplications) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["id"] = item.ID
+		respItem["app_protocol"] = item.AppProtocol
+		respItem["application_sub_type"] = item.ApplicationSubType
+		respItem["application_type"] = item.ApplicationType
+		respItem["category_id"] = item.CategoryID
+		respItem["display_name"] = item.DisplayName
+		respItem["engine_id"] = item.EngineID
+		respItem["help_string"] = item.HelpString
+		respItem["long_description"] = item.LongDescription
+		respItem["name"] = item.Name
+		respItem["popularity"] = item.Popularity
+		respItem["rank"] = item.Rank
+		respItem["traffic_class"] = item.TrafficClass
+		respItem["server_name"] = item.ServerName
+		respItem["url"] = item.URL
+		respItem["dscp"] = item.Dscp
+		respItem["ignore_conflict"] = item.IgnoreConflict
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(items *[]dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsNetworkIDentity) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["id"] = item.ID
+		respItem["display_name"] = item.DisplayName
+		respItem["lower_port"] = item.LowerPort
+		respItem["ports"] = item.Ports
+		respItem["protocol"] = item.Protocol
+		respItem["upper_port"] = item.UpperPort
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenApplicationPolicyGetApplicationsItemsApplicationSet(item *dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsApplicationSet) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["id_ref"] = item.IDRef
+
+	return []map[string]interface{}{
+		respItem,
+	}
+
 }

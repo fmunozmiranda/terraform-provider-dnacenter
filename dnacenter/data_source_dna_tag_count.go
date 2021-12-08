@@ -2,10 +2,9 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,79 +12,134 @@ import (
 
 func dataSourceTagCount() *schema.Resource {
 	return &schema.Resource{
+		Description: `It performs read operation on Tag.
+
+- Returns tag count
+`,
+
 		ReadContext: dataSourceTagCountRead,
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"name_space": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"attribute_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: `attributeName query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"level": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: `level query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
+			},
+			"name": &schema.Schema{
+				Description: `name query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
+			},
+			"name_space": &schema.Schema{
+				Description: `nameSpace query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"size": &schema.Schema{
+				Description: `size query parameter. size in kilobytes(KB)
+`,
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"system_tag": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: `systemTag query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
-			"response": &schema.Schema{
-				Type:     schema.TypeInt,
+
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"response": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"version": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
 func dataSourceTagCountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	vName, okName := d.GetOk("name")
+	vNameSpace, okNameSpace := d.GetOk("name_space")
+	vAttributeName, okAttributeName := d.GetOk("attribute_name")
+	vLevel, okLevel := d.GetOk("level")
+	vSize, okSize := d.GetOk("size")
+	vSystemTag, okSystemTag := d.GetOk("system_tag")
 
-	tagCountQueryParams := dnac.GetTagCountQueryParams{}
-	if v, ok := d.GetOk("name"); ok {
-		tagCountQueryParams.Name = v.(string)
-	}
-	if v, ok := d.GetOk("name_space"); ok {
-		tagCountQueryParams.NameSpace = v.(string)
-	}
-	if v, ok := d.GetOk("attribute_name"); ok {
-		tagCountQueryParams.AttributeName = v.(string)
-	}
-	if v, ok := d.GetOk("level"); ok {
-		tagCountQueryParams.Level = v.(string)
-	}
-	if v, ok := d.GetOk("size"); ok {
-		tagCountQueryParams.Size = v.(string)
-	}
-	if v, ok := d.GetOk("system_tag"); ok {
-		tagCountQueryParams.SystemTag = v.(string)
-	}
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetTagCount")
+		queryParams1 := dnacentersdkgo.GetTagCountQueryParams{}
 
-	// Prepare Request
-	response, _, err := client.Tag.GetTagCount(&tagCountQueryParams)
-	if err != nil {
-		return diag.FromErr(err)
+		if okName {
+			queryParams1.Name = vName.(string)
+		}
+		if okNameSpace {
+			queryParams1.NameSpace = vNameSpace.(string)
+		}
+		if okAttributeName {
+			queryParams1.AttributeName = vAttributeName.(string)
+		}
+		if okLevel {
+			queryParams1.Level = vLevel.(string)
+		}
+		if okSize {
+			queryParams1.Size = vSize.(string)
+		}
+		if okSystemTag {
+			queryParams1.SystemTag = vSystemTag.(string)
+		}
+
+		response1, _, err := client.Tag.GetTagCount(&queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTagCount", err,
+				"Failure at GetTagCount, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItem1 := flattenTagGetTagCountItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetTagCount response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	// set response to Terraform data source
-	if err := d.Set("response", response.Response); err != nil {
-		return diag.FromErr(err)
-	}
-
-	// always run, Set resource id
-	// Unix time  forces this resource to refresh during every Terraform apply
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenTagGetTagCountItem(item *dnacentersdkgo.ResponseTagGetTagCount) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["version"] = item.Version
+	respItem["response"] = item.Response
+	return []map[string]interface{}{
+		respItem,
+	}
 }

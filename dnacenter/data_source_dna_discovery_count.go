@@ -2,10 +2,9 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,50 +12,77 @@ import (
 
 func dataSourceDiscoveryCount() *schema.Resource {
 	return &schema.Resource{
+		Description: `It performs read operation on Discovery.
+
+- Returns the count of all available discovery jobs
+`,
+
 		ReadContext: dataSourceDiscoveryCountRead,
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Discovery ID",
-				Required:    true,
-			},
-			"task_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"response": &schema.Schema{
-				Type:     schema.TypeInt,
+
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"response": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"version": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
 func dataSourceDiscoveryCountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	queryParams := dnac.GetDevicesDiscoveredByIDQueryParams{}
-	id := d.Get("id").(string)
-	if v, ok := d.GetOk("task_id"); ok {
-		queryParams.TaskID = v.(string)
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetCountOfAllDiscoveryJobs")
+
+		response1, _, err := client.Discovery.GetCountOfAllDiscoveryJobs()
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetCountOfAllDiscoveryJobs", err,
+				"Failure at GetCountOfAllDiscoveryJobs, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItem1 := flattenDiscoveryGetCountOfAllDiscoveryJobsItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetCountOfAllDiscoveryJobs response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	// Prepare Request
-	response, _, err := client.Discovery.GetDevicesDiscoveredByID(id, &queryParams)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	// set response to Terraform data source
-	if err := d.Set("response", response.Response); err != nil {
-		return diag.FromErr(err)
-	}
-
-	// always run, Set resource id
-	// Unix time  forces this resource to refresh during every Terraform apply
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenDiscoveryGetCountOfAllDiscoveryJobsItem(item *dnacentersdkgo.ResponseDiscoveryGetCountOfAllDiscoveryJobs) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["response"] = item.Response
+	respItem["version"] = item.Version
+	return []map[string]interface{}{
+		respItem,
+	}
 }

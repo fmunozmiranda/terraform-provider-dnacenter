@@ -2,10 +2,9 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,23 +12,32 @@ import (
 
 func dataSourceDiscoveryJobs() *schema.Resource {
 	return &schema.Resource{
+		Description: `It performs read operation on Discovery.
+
+- Returns the list of discovery jobs for the given IP
+`,
+
 		ReadContext: dataSourceDiscoveryJobsRead,
 		Schema: map[string]*schema.Schema{
-			"offset": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
+			"ip_address": &schema.Schema{
+				Description: `ipAddress query parameter.`,
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"limit": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"ip_address": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: `limit query parameter.`,
+				Type:        schema.TypeInt,
+				Optional:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: `name query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
+			},
+			"offset": &schema.Schema{
+				Description: `offset query parameter.`,
+				Type:        schema.TypeInt,
+				Optional:    true,
 			},
 
 			"items": &schema.Schema{
@@ -37,66 +45,85 @@ func dataSourceDiscoveryJobs() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeString,
+							Type:     schema.TypeList,
 							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
+
 						"cli_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"discovery_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"end_time": &schema.Schema{
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"http_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"id": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"inventory_collection_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"inventory_reachability_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"ip_address": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"job_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"netconf_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"ping_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"snmp_status": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"start_time": &schema.Schema{
-							Type:     schema.TypeInt,
+							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"task_id": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
@@ -109,33 +136,89 @@ func dataSourceDiscoveryJobs() *schema.Resource {
 }
 
 func dataSourceDiscoveryJobsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	vOffset, okOffset := d.GetOk("offset")
+	vLimit, okLimit := d.GetOk("limit")
+	vIPAddress := d.Get("ip_address")
+	vName, okName := d.GetOk("name")
 
-	queryParams := dnac.GetDiscoveryJobsByIPQueryParams{}
-	queryParams.IPAddress = d.Get("ip_address").(string)
-	if v, ok := d.GetOk("name"); ok {
-		queryParams.Name = v.(string)
-	}
-	if v, ok := d.GetOk("offset"); ok {
-		queryParams.Offset = v.(int)
-	}
-	if v, ok := d.GetOk("limit"); ok {
-		queryParams.Limit = v.(int)
-	}
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetDiscoveryJobsByIP")
+		queryParams1 := dnacentersdkgo.GetDiscoveryJobsByIPQueryParams{}
 
-	response, _, err := client.Discovery.GetDiscoveryJobsByIP(&queryParams)
-	if err != nil {
-		return diag.FromErr(err)
+		if okOffset {
+			queryParams1.Offset = vOffset.(int)
+		}
+		if okLimit {
+			queryParams1.Limit = vLimit.(int)
+		}
+		queryParams1.IPAddress = vIPAddress.(string)
+
+		if okName {
+			queryParams1.Name = vName.(string)
+		}
+
+		response1, _, err := client.Discovery.GetDiscoveryJobsByIP(&queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDiscoveryJobsByIP", err,
+				"Failure at GetDiscoveryJobsByIP, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItems1 := flattenDiscoveryGetDiscoveryJobsByIPItems(response1.Response)
+		if err := d.Set("items", vItems1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDiscoveryJobsByIP response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	items := flattenDiscoveryJobsReadItems(response)
-	if err := d.Set("items", items); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenDiscoveryGetDiscoveryJobsByIPItems(items *[]dnacentersdkgo.ResponseDiscoveryGetDiscoveryJobsByIPResponse) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["attribute_info"] = flattenDiscoveryGetDiscoveryJobsByIPItemsAttributeInfo(item.AttributeInfo)
+		respItem["cli_status"] = item.CliStatus
+		respItem["discovery_status"] = item.DiscoveryStatus
+		respItem["end_time"] = item.EndTime
+		respItem["http_status"] = item.HTTPStatus
+		respItem["id"] = item.ID
+		respItem["inventory_collection_status"] = item.InventoryCollectionStatus
+		respItem["inventory_reachability_status"] = item.InventoryReachabilityStatus
+		respItem["ip_address"] = item.IPAddress
+		respItem["job_status"] = item.JobStatus
+		respItem["name"] = item.Name
+		respItem["netconf_status"] = item.NetconfStatus
+		respItem["ping_status"] = item.PingStatus
+		respItem["snmp_status"] = item.SNMPStatus
+		respItem["start_time"] = item.StartTime
+		respItem["task_id"] = item.TaskID
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenDiscoveryGetDiscoveryJobsByIPItemsAttributeInfo(item *dnacentersdkgo.ResponseDiscoveryGetDiscoveryJobsByIPResponseAttributeInfo) interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := item
+
+	return respItem
+
 }

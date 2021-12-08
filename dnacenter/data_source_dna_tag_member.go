@@ -2,87 +2,141 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceTagMemberQuery() *schema.Resource {
+func dataSourceTagMember() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceTagMemberQueryRead,
+		Description: `It performs read operation on Tag.
+
+- Returns tag members specified by id
+`,
+
+		ReadContext: dataSourceTagMemberRead,
 		Schema: map[string]*schema.Schema{
-			"tag_id": &schema.Schema{
+			"id": &schema.Schema{
+				Description: `id path parameter. Tag ID
+`,
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			"member_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"member_association_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
 			},
 			"level": &schema.Schema{
+				Description: `level query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
+			},
+			"limit": &schema.Schema{
+				Description: `limit query parameter. Used to Number of maximum members to return in the result
+`,
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"offset": &schema.Schema{
-				Type:     schema.TypeFloat,
+			"member_association_type": &schema.Schema{
+				Description: `memberAssociationType query parameter. Indicates how the member is associated with the tag. Possible values and description. 1) DYNAMIC : The member is associated to the tag through rules. 2) STATIC – The member is associated to the tag manually. 3) MIXED – The member is associated manually and also satisfies the rule defined for the tag
+`,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"limit": &schema.Schema{
-				Type:     schema.TypeFloat,
+			"member_type": &schema.Schema{
+				Description: `memberType query parameter. Entity type of the member. Possible values can be retrieved by using /tag/member/type API
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"offset": &schema.Schema{
+				Description: `offset query parameter. Used for pagination. It indicates the starting row number out of available member records
+`,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 
 			"items": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"instance_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
-func dataSourceTagMemberQueryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+func dataSourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	vID := d.Get("id")
+	vMemberType := d.Get("member_type")
+	vOffset, okOffset := d.GetOk("offset")
+	vLimit, okLimit := d.GetOk("limit")
+	vMemberAssociationType, okMemberAssociationType := d.GetOk("member_association_type")
+	vLevel, okLevel := d.GetOk("level")
 
-	tagID := d.Get("tag_id").(string)
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetTagMembersByID")
+		vvID := vID.(string)
+		queryParams1 := dnacentersdkgo.GetTagMembersByIDQueryParams{}
 
-	queryParams := dnac.GetTagMembersByIDQueryParams{}
-	if v, ok := d.GetOk("member_type"); ok {
-		queryParams.MemberType = v.(string)
-	}
-	if v, ok := d.GetOk("member_association_type"); ok {
-		queryParams.MemberAssociationType = v.(string)
-	}
-	if v, ok := d.GetOk("level"); ok {
-		queryParams.Level = v.(string)
-	}
-	if v, ok := d.GetOk("offset"); ok {
-		queryParams.Offset = fmt.Sprintf("%.0f", v.(float64))
-	}
-	if v, ok := d.GetOk("limit"); ok {
-		queryParams.Limit = fmt.Sprintf("%.0f", v.(float64))
-	}
+		queryParams1.MemberType = vMemberType.(string)
 
-	_, restyResponse, err := client.Tag.GetTagMembersByID(tagID, &queryParams)
-	if err != nil {
-		return diag.FromErr(err)
+		if okOffset {
+			queryParams1.Offset = vOffset.(string)
+		}
+		if okLimit {
+			queryParams1.Limit = vLimit.(string)
+		}
+		if okMemberAssociationType {
+			queryParams1.MemberAssociationType = vMemberAssociationType.(string)
+		}
+		if okLevel {
+			queryParams1.Level = vLevel.(string)
+		}
+
+		response1, _, err := client.Tag.GetTagMembersByID(vvID, &queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTagMembersByID", err,
+				"Failure at GetTagMembersByID, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItems1 := flattenTagGetTagMembersByIDItems(response1.Response)
+		if err := d.Set("items", vItems1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetTagMembersByID response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-
-	if err := d.Set("items", restyResponse.String()); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenTagGetTagMembersByIDItems(items *[]dnacentersdkgo.ResponseTagGetTagMembersByIDResponse) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["instance_uuid"] = item.InstanceUUID
+		respItems = append(respItems, respItem)
+	}
+	return respItems
 }

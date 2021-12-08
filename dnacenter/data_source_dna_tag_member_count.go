@@ -2,10 +2,9 @@ package dnacenter
 
 import (
 	"context"
-	"strconv"
-	"time"
 
-	dnac "github.com/cisco-en-programmability/dnacenter-go-sdk/sdk"
+	dnacentersdkgo "dnacenter-go-sdk/sdk"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,64 +12,113 @@ import (
 
 func dataSourceTagMemberCount() *schema.Resource {
 	return &schema.Resource{
+		Description: `It performs read operation on Tag.
+
+- Returns the number of members in a given tag
+`,
+
 		ReadContext: dataSourceTagMemberCountRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
+				Description: `id path parameter. Tag ID
+`,
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"member_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"level": &schema.Schema{
+				Description: `level query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"member_association_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: `memberAssociationType query parameter.`,
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
-			"level": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"member_type": &schema.Schema{
+				Description: `memberType query parameter.`,
+				Type:        schema.TypeString,
+				Required:    true,
 			},
-			"response": &schema.Schema{
-				Type:     schema.TypeInt,
+
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"response": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"version": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
 func dataSourceTagMemberCountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnac.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	vID := d.Get("id")
+	vMemberType := d.Get("member_type")
+	vMemberAssociationType, okMemberAssociationType := d.GetOk("member_association_type")
+	vLevel, okLevel := d.GetOk("level")
 
-	tagID := d.Get("id").(string)
-	tagMemberCountQueryParams := dnac.GetTagMemberCountQueryParams{}
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetTagMemberCount")
+		vvID := vID.(string)
+		queryParams1 := dnacentersdkgo.GetTagMemberCountQueryParams{}
 
-	if v, ok := d.GetOk("member_type"); ok {
-		tagMemberCountQueryParams.MemberType = v.(string)
+		queryParams1.MemberType = vMemberType.(string)
+
+		if okMemberAssociationType {
+			queryParams1.MemberAssociationType = vMemberAssociationType.(string)
+		}
+		if okLevel {
+			queryParams1.Level = vLevel.(string)
+		}
+
+		response1, _, err := client.Tag.GetTagMemberCount(vvID, &queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTagMemberCount", err,
+				"Failure at GetTagMemberCount, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+
+		vItem1 := flattenTagGetTagMemberCountItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetTagMemberCount response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+
 	}
-	if v, ok := d.GetOk("member_association_type"); ok {
-		tagMemberCountQueryParams.MemberAssociationType = v.(string)
-	}
-	if v, ok := d.GetOk("level"); ok {
-		tagMemberCountQueryParams.Level = v.(string)
-	}
-
-	// Prepare Request
-	response, _, err := client.Tag.GetTagMemberCount(tagID, &tagMemberCountQueryParams)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	// set response to Terraform data source
-	if err := d.Set("response", response.Response); err != nil {
-		return diag.FromErr(err)
-	}
-
-	// always run, Set resource id
-	// Unix time  forces this resource to refresh during every Terraform apply
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-
 	return diags
+}
+
+func flattenTagGetTagMemberCountItem(item *dnacentersdkgo.ResponseTagGetTagMemberCount) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["version"] = item.Version
+	respItem["response"] = item.Response
+	return []map[string]interface{}{
+		respItem,
+	}
 }
