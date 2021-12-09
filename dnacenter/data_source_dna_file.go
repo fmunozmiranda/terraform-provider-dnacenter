@@ -30,14 +30,6 @@ func dataSourceFile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
-			"item": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 		},
 	}
 }
@@ -56,30 +48,22 @@ func dataSourceFileRead(ctx context.Context, d *schema.ResourceData, m interface
 		response1, _, err := client.File.DownloadAFileByFileID(vvFileID)
 
 		if err != nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing DownloadAFileByFileID", err,
-				"Failure at DownloadAFileByFileID, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", response1)
-
-		vItem1 := flattenFileDownloadAFileByFileIDItem(response1)
-		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
-				"Failure when setting DownloadAFileByFileID response",
-				err))
+				"Failure when executing DownloadAFileByFileID", err))
 			return diags
 		}
-		d.SetId(getUnixTimeString())
+
+		log.Printf("[DEBUG] Retrieved response")
+
+		vvDirpath := d.Get("dirpath").(string)
+		err = response1.SaveDownload(vvDirpath)
+		if err != nil {
+			diags = append(diags, diagError(
+				"Failure when downloading file", err))
+			return diags
+		}
+		log.Printf("[DEBUG] Downloaded file %s", vvDirpath)
 
 	}
 	return diags
-}
-
-func flattenFileDownloadAFileByFileIDItem(item dnacentersdkgo.FileDownload) []map[string]interface{} {
-	respItem := make(map[string]interface{})
-	return []map[string]interface{}{
-		respItem,
-	}
 }

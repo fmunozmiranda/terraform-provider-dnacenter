@@ -943,24 +943,18 @@ func dataSourceClientEnrichmentDetailsRead(ctx context.Context, d *schema.Resour
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-
-	vEntityType, okEntityType := d.GetOk("entity_type")
-	vEntityValue, okEntityValue := d.GetOk("entity_value")
-	vIssueCategory, okIssueCategory := d.GetOk("issueCategory")
+	vEntityType := d.Get("entity_type")
+	vEntityValue := d.Get("entity_value")
+	vIssueCategory, okIssueCategory := d.GetOk("issue_category")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetClientEnrichmentDetails")
-
 		headerParams1 := dnacentersdkgo.GetClientEnrichmentDetailsHeaderParams{}
 
-		if okEntityType {
-			headerParams1.EntityType = vEntityType.(string)
-		}
+		headerParams1.EntityType = vEntityType.(string)
 
-		if okEntityValue {
-			headerParams1.EntityValue = vEntityValue.(string)
-		}
+		headerParams1.EntityValue = vEntityValue.(string)
 
 		if okIssueCategory {
 			headerParams1.IssueCategory = vIssueCategory.(string)

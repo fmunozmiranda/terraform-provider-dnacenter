@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 
 	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
@@ -16,29 +15,15 @@ func dataSourceReportsExecutions() *schema.Resource {
 		Description: `It performs read operation on Reports.
 
 - Get details of all executions for a given report
-
-- Returns report content. Save the response to a file by converting the response data as a blob and setting the file
-format available from content-disposition response header.
 `,
 
 		ReadContext: dataSourceReportsExecutionsRead,
 		Schema: map[string]*schema.Schema{
-			"dirpath": &schema.Schema{
-				Description: `Directory absolute path in which to save the file.`,
-				Type:        schema.TypeString,
-				Required:    true,
-			},
-			"execution_id": &schema.Schema{
-				Description: `executionId path parameter. executionId of report execution
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"report_id": &schema.Schema{
 				Description: `reportId path parameter. reportId of report
 `,
 				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 			},
 
 			"item": &schema.Schema{
@@ -256,65 +241,149 @@ func dataSourceReportsExecutionsRead(ctx context.Context, d *schema.ResourceData
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vReportID, okReportID := d.GetOk("report_id")
-	vExecutionID, okExecutionID := d.GetOk("execution_id")
+	vReportID := d.Get("report_id")
 
-	method1 := []bool{okReportID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okReportID, okExecutionID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetAllExecutionDetailsForAGivenReport")
 		vvReportID := vReportID.(string)
 
 		response1, _, err := client.Reports.GetAllExecutionDetailsForAGivenReport(vvReportID)
 
-		if err != nil {
-			diags = append(diags, diagError(
-				"Failure when executing GetAllExecutionDetailsForAGivenReport", err))
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetAllExecutionDetailsForAGivenReport", err,
+				"Failure at GetAllExecutionDetailsForAGivenReport, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response")
-		fmt.Println(response1)
-		/*
-			vvDirpath := d.Get("dirpath").(string)
-			err = response1.SaveDownload(vvDirpath)
-			if err != nil {
-				diags = append(diags, diagError(
-					"Failure when downloading file", err))
-				return diags
-			}
-			log.Printf("[DEBUG] Downloaded file %s", vvDirpath)
-		*/
+		log.Printf("[DEBUG] Retrieved response %+v", *response1)
 
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: DownloadReportContent")
-		vvReportID := vReportID.(string)
-		vvExecutionID := vExecutionID.(string)
-
-		response2, _, err := client.Reports.DownloadReportContent(vvReportID, vvExecutionID)
-
-		if err != nil {
+		vItem1 := flattenReportsGetAllExecutionDetailsForAGivenReportItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
-				"Failure when executing DownloadReportContent", err))
+				"Failure when setting GetAllExecutionDetailsForAGivenReport response",
+				err))
 			return diags
 		}
-
-		log.Printf("[DEBUG] Retrieved response")
-
-		vvDirpath := d.Get("dirpath").(string)
-		err = response2.SaveDownload(vvDirpath)
-		if err != nil {
-			diags = append(diags, diagError(
-				"Failure when downloading file", err))
-			return diags
-		}
-		log.Printf("[DEBUG] Downloaded file %s", vvDirpath)
+		d.SetId(getUnixTimeString())
 
 	}
 	return diags
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItem(item *dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReport) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["tags"] = item.Tags
+	respItem["data_category"] = item.DataCategory
+	respItem["deliveries"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemDeliveries(item.Deliveries)
+	respItem["execution_count"] = item.ExecutionCount
+	respItem["executions"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemExecutions(item.Executions)
+	respItem["name"] = item.Name
+	respItem["report_id"] = item.ReportID
+	respItem["report_was_executed"] = boolPtrToString(item.ReportWasExecuted)
+	respItem["schedule"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemSchedule(item.Schedule)
+	respItem["view"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemView(item.View)
+	respItem["view_group_id"] = item.ViewGroupID
+	respItem["view_group_version"] = item.ViewGroupVersion
+	return []map[string]interface{}{
+		respItem,
+	}
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemDeliveries(items *[]dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportDeliveries) []interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []interface{}
+	for _, item := range *items {
+		respItem := item
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemExecutions(items *[]dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportExecutions) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["end_time"] = item.EndTime
+		respItem["errors"] = item.Errors
+		respItem["execution_id"] = item.ExecutionID
+		respItem["process_status"] = item.ProcessStatus
+		respItem["request_status"] = item.RequestStatus
+		respItem["start_time"] = item.StartTime
+		respItem["warnings"] = item.Warnings
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemSchedule(item *dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportSchedule) interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := item
+
+	return respItem
+
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemView(item *dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportView) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["field_groups"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemViewFieldGroups(item.FieldGroups)
+	respItem["filters"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemViewFilters(item.Filters)
+	respItem["format"] = flattenReportsGetAllExecutionDetailsForAGivenReportItemViewFormat(item.Format)
+	respItem["name"] = item.Name
+	respItem["view_id"] = item.ViewID
+	respItem["description"] = item.Description
+	respItem["view_info"] = item.ViewInfo
+
+	return []map[string]interface{}{
+		respItem,
+	}
+
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemViewFieldGroups(items *[]dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportViewFieldGroups) []interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []interface{}
+	for _, item := range *items {
+		respItem := item
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemViewFilters(items *[]dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportViewFilters) []interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []interface{}
+	for _, item := range *items {
+		respItem := item
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenReportsGetAllExecutionDetailsForAGivenReportItemViewFormat(item *dnacentersdkgo.ResponseReportsGetAllExecutionDetailsForAGivenReportViewFormat) interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := item
+
+	return respItem
+
 }

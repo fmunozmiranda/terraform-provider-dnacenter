@@ -214,6 +214,7 @@ func Provider() *schema.Provider {
 			"dnacenter_device_details":                                 dataSourceDeviceDetails(),
 			"dnacenter_reports_view_group_view":                        dataSourceReportsViewGroupView(),
 			"dnacenter_reports_view_group":                             dataSourceReportsViewGroup(),
+			"dnacenter_reports_executions_download":                    dataSourceReportsExecutionsDownload(),
 			"dnacenter_reports_executions":                             dataSourceReportsExecutions(),
 			"dnacenter_compliance_device_status_count":                 dataSourceComplianceDeviceStatusCount(),
 			"dnacenter_compliance_device_details_count":                dataSourceComplianceDeviceDetailsCount(),

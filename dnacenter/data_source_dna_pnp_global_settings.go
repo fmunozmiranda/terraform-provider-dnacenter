@@ -376,7 +376,7 @@ func flattenDeviceOnboardingPnpGetPnpGlobalSettingsItem(item *dnacentersdkgo.Res
 	respItem["default_profile"] = flattenDeviceOnboardingPnpGetPnpGlobalSettingsItemDefaultProfile(item.DefaultProfile)
 	respItem["accept_eula"] = boolPtrToString(item.AcceptEula)
 	respItem["id"] = item.ID
-	respItem["id"] = item.ID
+	respItem["type_id"] = item.TypeID
 	respItem["version"] = item.Version
 	return []map[string]interface{}{
 		respItem,

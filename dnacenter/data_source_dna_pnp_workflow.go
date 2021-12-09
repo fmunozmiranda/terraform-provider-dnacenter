@@ -613,7 +613,7 @@ func flattenDeviceOnboardingPnpGetWorkflowsItems(items *dnacentersdkgo.ResponseD
 	var respItems []map[string]interface{}
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
-		respItem["id"] = item.TypeID
+		respItem["type_id"] = item.TypeID
 		respItem["state"] = item.State
 		respItem["type"] = item.Type
 		respItem["description"] = item.Description
@@ -681,7 +681,7 @@ func flattenDeviceOnboardingPnpGetWorkflowByIDItem(item *dnacentersdkgo.Response
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description

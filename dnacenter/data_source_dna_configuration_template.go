@@ -692,6 +692,14 @@ func dataSourceConfigurationTemplate() *schema.Resource {
 							},
 						},
 
+						"document_database": &schema.Schema{
+							Description: `Document Database
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
 						"failure_policy": &schema.Schema{
 							Description: `Define failure policy if template provisioning fails
 `,
@@ -737,6 +745,14 @@ func dataSourceConfigurationTemplate() *schema.Resource {
 						"parent_template_id": &schema.Schema{
 							Description: `Parent templateID
 `,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"project_associated": &schema.Schema{
+							Description: `Project Associated
+`,
+							// Type:        schema.TypeBool,
 							Type:     schema.TypeString,
 							Computed: true,
 						},
@@ -1524,6 +1540,7 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItem(item *dnacente
 	respItem["custom_params_order"] = boolPtrToString(item.CustomParamsOrder)
 	respItem["description"] = item.Description
 	respItem["device_types"] = flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemDeviceTypes(item.DeviceTypes)
+	respItem["document_database"] = boolPtrToString(item.DocumentDatabase)
 	respItem["failure_policy"] = item.FailurePolicy
 	respItem["id"] = item.ID
 	respItem["language"] = item.Language
@@ -1531,6 +1548,7 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItem(item *dnacente
 	respItem["latest_version_time"] = item.LatestVersionTime
 	respItem["name"] = item.Name
 	respItem["parent_template_id"] = item.ParentTemplateID
+	respItem["project_associated"] = boolPtrToString(item.ProjectAssociated)
 	respItem["project_id"] = item.ProjectID
 	respItem["project_name"] = item.ProjectName
 	respItem["rollback_template_content"] = item.RollbackTemplateContent
@@ -1929,22 +1947,26 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationError
 
 }
 
-func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationErrorsRollbackTemplateErrors(item *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplateValidationErrorsRollbackTemplateErrors) interface{} {
-	if item == nil {
+func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationErrorsRollbackTemplateErrors(items *[]dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplateValidationErrorsRollbackTemplateErrors) []interface{} {
+	if items == nil {
 		return nil
 	}
-	respItem := item
-
-	return respItem
-
+	var respItems []interface{}
+	for _, item := range *items {
+		respItem := item
+		respItems = append(respItems, respItem)
+	}
+	return respItems
 }
 
-func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationErrorsTemplateErrors(item *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplateValidationErrorsTemplateErrors) interface{} {
-	if item == nil {
+func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationErrorsTemplateErrors(items *[]dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplateValidationErrorsTemplateErrors) []interface{} {
+	if items == nil {
 		return nil
 	}
-	respItem := item
-
-	return respItem
-
+	var respItems []interface{}
+	for _, item := range *items {
+		respItem := item
+		respItems = append(respItems, respItem)
+	}
+	return respItems
 }

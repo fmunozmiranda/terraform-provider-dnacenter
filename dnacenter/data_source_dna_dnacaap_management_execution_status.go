@@ -32,6 +32,13 @@ func dataSourceDnacaapManagementExecutionStatus() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
+						"bapi_error": &schema.Schema{
+							Description: `Bapi Error
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
 						"bapi_execution_id": &schema.Schema{
 							Description: `Execution Id of the Business API (UUID)
 `,
@@ -157,6 +164,7 @@ func flattenTaskGetBusinessAPIExecutionDetailsItem(item *dnacentersdkgo.Response
 	respItem["end_time_epoch"] = item.EndTimeEpoch
 	respItem["time_duration"] = item.TimeDuration
 	respItem["status"] = item.Status
+	respItem["bapi_error"] = item.BapiError
 	respItem["runtime_instance_id"] = item.RuntimeInstanceID
 	return []map[string]interface{}{
 		respItem,

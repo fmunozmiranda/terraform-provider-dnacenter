@@ -3741,7 +3741,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemName(item *dnacentersdkgo.Respon
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfo(item.DeviceInfo)
 	respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflow(item.SystemResetWorkflow)
 	respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflow(item.SystemWorkflow)
@@ -4107,7 +4107,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflow(item *dn
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description
@@ -4177,7 +4177,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflow(item *dnacent
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description
@@ -4247,7 +4247,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflow(item *dnacentersdkg
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description
@@ -4449,7 +4449,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemID(item *dnacentersdkgo.Response
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfo(item.DeviceInfo)
 	respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflow(item.SystemResetWorkflow)
 	respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflow(item.SystemWorkflow)
@@ -4815,7 +4815,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflow(item *dnac
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description
@@ -4885,7 +4885,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflow(item *dnacenter
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description
@@ -4955,7 +4955,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflow(item *dnacentersdkgo.
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["id"] = item.TypeID
+	respItem["type_id"] = item.TypeID
 	respItem["state"] = item.State
 	respItem["type"] = item.Type
 	respItem["description"] = item.Description

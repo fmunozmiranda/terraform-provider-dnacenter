@@ -120,7 +120,7 @@ func dataSourceSystemPerformanceHistorical() *schema.Resource {
 														Schema: map[string]*schema.Schema{
 
 															"units": &schema.Schema{
-																Description: `Units for network_rx_rate
+																Description: `Units for network rx_rate
 `,
 																Type:     schema.TypeString,
 																Computed: true,
@@ -136,7 +136,7 @@ func dataSourceSystemPerformanceHistorical() *schema.Resource {
 														Schema: map[string]*schema.Schema{
 
 															"units": &schema.Schema{
-																Description: `Units for network_tx_rate
+																Description: `Units for network tx_rate
 `,
 																Type:     schema.TypeString,
 																Computed: true,

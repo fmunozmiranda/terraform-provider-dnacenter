@@ -72,7 +72,7 @@ func dataSourcePnpVirtualAccountsRead(ctx context.Context, d *schema.ResourceDat
 	return diags
 }
 
-func flattenDeviceOnboardingPnpGetVirtualAccountListItems(items *dnacentersdkgo.ResponseDeviceOnboardingPnpGetVirtualAccountList) interface{} {
+func flattenDeviceOnboardingPnpGetVirtualAccountListItems(items *dnacentersdkgo.ResponseDeviceOnboardingPnpGetVirtualAccountList) []interface{} {
 	if items == nil {
 		return nil
 	}
