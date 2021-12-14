@@ -349,6 +349,7 @@ func dataSourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -374,6 +375,7 @@ func dataSourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

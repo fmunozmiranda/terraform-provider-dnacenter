@@ -105,6 +105,7 @@ func dataSourceLicenseVirtualAccountDetailsRead(ctx context.Context, d *schema.R
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

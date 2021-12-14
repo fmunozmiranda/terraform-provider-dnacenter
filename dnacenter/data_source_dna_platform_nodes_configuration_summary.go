@@ -305,6 +305,7 @@ func dataSourcePlatformNodesConfigurationSummaryRead(ctx context.Context, d *sch
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"net/url"
 	"reflect"
 	"regexp"
@@ -10,7 +9,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 )
+
+func fixKeyAccess(key string) string {
+	return strings.Trim(key, ".")
+}
 
 func compareSGT(first_sgt, second_sgt string) bool {
 	rexp := `\s*\(.*\)$`

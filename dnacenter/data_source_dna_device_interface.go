@@ -403,6 +403,7 @@ func dataSourceDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData, 
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -428,6 +429,7 @@ func dataSourceDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData, 
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

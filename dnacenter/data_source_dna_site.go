@@ -157,6 +157,7 @@ func dataSourceSiteRead(ctx context.Context, d *schema.ResourceData, m interface
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

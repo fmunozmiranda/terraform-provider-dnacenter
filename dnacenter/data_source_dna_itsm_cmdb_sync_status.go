@@ -143,6 +143,7 @@ func dataSourceItsmCmdbSyncStatusRead(ctx context.Context, d *schema.ResourceDat
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

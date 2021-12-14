@@ -131,6 +131,7 @@ func dataSourceSdaPortAssignmentForUserDeviceRead(ctx context.Context, d *schema
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

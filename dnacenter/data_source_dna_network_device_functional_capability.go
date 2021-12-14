@@ -244,6 +244,7 @@ func dataSourceNetworkDeviceFunctionalCapabilityRead(ctx context.Context, d *sch
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -269,6 +270,7 @@ func dataSourceNetworkDeviceFunctionalCapabilityRead(ctx context.Context, d *sch
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

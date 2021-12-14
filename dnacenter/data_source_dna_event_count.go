@@ -86,6 +86,7 @@ func dataSourceEventCountRead(ctx context.Context, d *schema.ResourceData, m int
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

@@ -92,6 +92,7 @@ func dataSourceNetworkDeviceSupervisorCardDetailsRead(ctx context.Context, d *sc
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

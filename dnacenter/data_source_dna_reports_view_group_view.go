@@ -396,6 +396,7 @@ func dataSourceReportsViewGroupViewRead(ctx context.Context, d *schema.ResourceD
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

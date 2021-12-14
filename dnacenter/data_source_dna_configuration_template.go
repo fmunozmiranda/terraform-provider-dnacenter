@@ -1456,6 +1456,7 @@ func dataSourceConfigurationTemplateRead(ctx context.Context, d *schema.Resource
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -1486,6 +1487,7 @@ func dataSourceConfigurationTemplateRead(ctx context.Context, d *schema.Resource
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

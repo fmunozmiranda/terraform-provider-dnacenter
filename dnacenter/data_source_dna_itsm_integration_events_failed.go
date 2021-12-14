@@ -174,6 +174,7 @@ func dataSourceItsmIntegrationEventsFailedRead(ctx context.Context, d *schema.Re
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

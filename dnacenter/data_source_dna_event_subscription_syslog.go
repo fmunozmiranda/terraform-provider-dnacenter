@@ -324,6 +324,7 @@ func dataSourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.Resour
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

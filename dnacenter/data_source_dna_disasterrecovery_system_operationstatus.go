@@ -227,6 +227,7 @@ func dataSourceDisasterrecoverySystemOperationstatusRead(ctx context.Context, d 
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

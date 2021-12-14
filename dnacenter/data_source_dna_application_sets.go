@@ -122,6 +122,7 @@ func dataSourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, 
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

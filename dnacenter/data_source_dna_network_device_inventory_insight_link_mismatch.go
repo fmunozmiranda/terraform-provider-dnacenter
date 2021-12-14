@@ -335,6 +335,7 @@ func dataSourceNetworkDeviceInventoryInsightLinkMismatchRead(ctx context.Context
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

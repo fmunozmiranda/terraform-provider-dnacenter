@@ -576,6 +576,7 @@ func dataSourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m in
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -601,6 +602,7 @@ func dataSourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m in
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

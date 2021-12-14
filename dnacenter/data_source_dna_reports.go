@@ -689,6 +689,7 @@ func dataSourceReportsRead(ctx context.Context, d *schema.ResourceData, m interf
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -714,6 +715,7 @@ func dataSourceReportsRead(ctx context.Context, d *schema.ResourceData, m interf
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

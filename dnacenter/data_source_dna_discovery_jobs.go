@@ -180,6 +180,7 @@ func dataSourceDiscoveryJobsRead(ctx context.Context, d *schema.ResourceData, m 
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

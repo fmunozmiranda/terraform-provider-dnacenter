@@ -216,6 +216,7 @@ func dataSourceIssuesRead(ctx context.Context, d *schema.ResourceData, m interfa
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

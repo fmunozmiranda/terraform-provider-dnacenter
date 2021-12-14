@@ -269,6 +269,7 @@ func dataSourceNetworkDeviceLexicographicallySortedRead(ctx context.Context, d *
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

@@ -3966,6 +3966,7 @@ func dataSourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -3991,6 +3992,7 @@ func dataSourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

@@ -379,6 +379,7 @@ func dataSourceNetworkDeviceStackDetailsRead(ctx context.Context, d *schema.Reso
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

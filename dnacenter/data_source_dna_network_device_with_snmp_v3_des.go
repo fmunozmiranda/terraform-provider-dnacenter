@@ -157,6 +157,7 @@ func dataSourceNetworkDeviceWithSNMPV3DesRead(ctx context.Context, d *schema.Res
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

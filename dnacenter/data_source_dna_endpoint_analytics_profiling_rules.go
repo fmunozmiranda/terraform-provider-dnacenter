@@ -553,6 +553,7 @@ func dataSourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schem
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -578,6 +579,7 @@ func dataSourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schem
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

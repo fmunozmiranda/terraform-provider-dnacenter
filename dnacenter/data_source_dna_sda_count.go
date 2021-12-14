@@ -78,6 +78,7 @@ func dataSourceSdaCountRead(ctx context.Context, d *schema.ResourceData, m inter
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

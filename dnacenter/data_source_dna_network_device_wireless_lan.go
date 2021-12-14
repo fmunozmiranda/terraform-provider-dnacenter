@@ -134,6 +134,7 @@ func dataSourceNetworkDeviceWirelessLanRead(ctx context.Context, d *schema.Resou
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

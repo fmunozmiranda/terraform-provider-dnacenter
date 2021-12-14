@@ -210,6 +210,7 @@ func dataSourceDeviceInterfaceIsisRead(ctx context.Context, d *schema.ResourceDa
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

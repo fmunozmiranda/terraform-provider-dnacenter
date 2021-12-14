@@ -6,6 +6,14 @@ import (
 	"strconv"
 )
 
+func interfaceToFloat64Ptr(item interface{}) *float64 {
+	nItem := interfaceToString(item)
+	nnItem, err := strconv.ParseFloat(nItem, 64)
+	if err != nil {
+		return nil
+	}
+	return &nnItem
+}
 func mapInterfaceToMapString(m map[string]interface{}) map[string]string {
 	new_m := map[string]string{}
 	for k, v := range m {

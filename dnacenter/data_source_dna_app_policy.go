@@ -776,6 +776,7 @@ func dataSourceAppPolicyRead(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

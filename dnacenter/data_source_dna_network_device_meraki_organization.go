@@ -80,6 +80,7 @@ func dataSourceNetworkDeviceMerakiOrganizationRead(ctx context.Context, d *schem
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

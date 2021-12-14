@@ -108,6 +108,7 @@ func dataSourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *s
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

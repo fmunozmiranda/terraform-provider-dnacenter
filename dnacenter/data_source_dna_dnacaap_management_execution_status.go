@@ -145,6 +145,7 @@ func dataSourceDnacaapManagementExecutionStatusRead(ctx context.Context, d *sche
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

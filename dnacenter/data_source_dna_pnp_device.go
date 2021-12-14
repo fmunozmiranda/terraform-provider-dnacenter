@@ -3723,6 +3723,7 @@ func dataSourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 		vItemID2 := flattenDeviceOnboardingPnpGetDeviceByIDItemID(response2)
 		if err := d.Set("item_id", vItemID2); err != nil {
 			diags = append(diags, diagError(
@@ -3731,6 +3732,7 @@ func dataSourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

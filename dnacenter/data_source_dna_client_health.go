@@ -261,6 +261,7 @@ func dataSourceClientHealthRead(ctx context.Context, d *schema.ResourceData, m i
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags

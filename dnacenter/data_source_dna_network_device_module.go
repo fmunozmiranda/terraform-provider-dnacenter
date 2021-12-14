@@ -325,6 +325,7 @@ func dataSourceNetworkDeviceModuleRead(ctx context.Context, d *schema.ResourceDa
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	if selectedMethod == 2 {
@@ -350,6 +351,7 @@ func dataSourceNetworkDeviceModuleRead(ctx context.Context, d *schema.ResourceDa
 			return diags
 		}
 		d.SetId(getUnixTimeString())
+		return diags
 
 	}
 	return diags
