@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -52,9 +53,6 @@ func dataSourceTemplatePreview() *schema.Resource {
 `,
 							Type:     schema.TypeList,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 					},
 				},
@@ -73,16 +71,23 @@ func dataSourceTemplatePreviewRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Selected method 1: PreviewTemplate")
 		request1 := expandRequestTemplatePreviewPreviewTemplate(ctx, "", d)
 
-		response1, _, err := client.ConfigurationTemplates.PreviewTemplate(request1)
+		response1, restyResp1, err := client.ConfigurationTemplates.PreviewTemplate(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing PreviewTemplate", err,
 				"Failure at PreviewTemplate, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenConfigurationTemplatesPreviewTemplateItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
@@ -117,7 +122,7 @@ func expandRequestTemplatePreviewPreviewTemplate(ctx context.Context, key string
 
 func expandRequestTemplatePreviewPreviewTemplateParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateParams
-	request = d.Get(fixKeyAccess(key + ".template_id"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
@@ -143,7 +148,7 @@ func expandRequestTemplatePreviewPreviewTemplateResourceParamsArray(ctx context.
 
 func expandRequestTemplatePreviewPreviewTemplateResourceParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateResourceParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateResourceParams
-	request = d.Get(fixKeyAccess(key + ".resource_params"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 

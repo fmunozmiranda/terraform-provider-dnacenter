@@ -5,8 +5,9 @@ import (
 
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -67,51 +68,32 @@ func dataSourceBusinessSdaWirelessControllerCreateRead(ctx context.Context, d *s
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vDeviceIPAddress, okDeviceIPAddress := d.GetOk("device_ipaddress")
 
-	method1 := []bool{okDeviceIPAddress}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: RemoveWLCFromFabricDomain")
-		queryParams1 := dnacentersdkgo.RemoveWLCFromFabricDomainQueryParams{}
+		log.Printf("[DEBUG] Selected method 1: AddWLCToFabricDomain")
+		request1 := expandRequestBusinessSdaWirelessControllerCreateAddWLCToFabricDomain(ctx, "", d)
 
-		if okDeviceIPAddress {
-			queryParams1.DeviceIPAddress = vDeviceIPAddress.(string)
+		response1, restyResp1, err := client.FabricWireless.AddWLCToFabricDomain(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
-
-		response1, _, err := client.FabricWireless.RemoveWLCFromFabricDomain(&queryParams1)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing RemoveWLCFromFabricDomain", err,
-				"Failure at RemoveWLCFromFabricDomain, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: AddWLCToFabricDomain")
-		request2 := expandRequestBusinessSdaWirelessControllerCreateAddWLCToFabricDomain(ctx, "", d)
-
-		response2, _, err := client.FabricWireless.AddWLCToFabricDomain(request2)
-
-		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing AddWLCToFabricDomain", err,
 				"Failure at AddWLCToFabricDomain, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItems2 := flattenFabricWirelessAddWLCToFabricDomainItems(response2)
-		if err := d.Set("items", vItems2); err != nil {
+		vItems1 := flattenFabricWirelessAddWLCToFabricDomainItems(response1)
+		if err := d.Set("items", vItems1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting AddWLCToFabricDomain response",
 				err))

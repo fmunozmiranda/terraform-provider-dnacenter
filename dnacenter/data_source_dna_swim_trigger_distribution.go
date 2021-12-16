@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -63,16 +64,23 @@ func dataSourceSwimTriggerDistributionRead(ctx context.Context, d *schema.Resour
 		log.Printf("[DEBUG] Selected method 1: TriggerSoftwareImageDistribution")
 		request1 := expandRequestSwimTriggerDistributionTriggerSoftwareImageDistribution(ctx, "", d)
 
-		response1, _, err := client.SoftwareImageManagementSwim.TriggerSoftwareImageDistribution(request1)
+		response1, restyResp1, err := client.SoftwareImageManagementSwim.TriggerSoftwareImageDistribution(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing TriggerSoftwareImageDistribution", err,
 				"Failure at TriggerSoftwareImageDistribution, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSoftwareImageManagementSwimTriggerSoftwareImageDistributionItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -90,13 +98,13 @@ func dataSourceSwimTriggerDistributionRead(ctx context.Context, d *schema.Resour
 
 func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistribution(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageDistribution {
 	request := dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageDistribution{}
-	if v := expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageDistribution {
+func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageDistribution {
 	request := []dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageDistribution{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -108,7 +116,7 @@ func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionArray(c
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemSwimTriggerDistributionTriggerSoftwareImageDistribution(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -116,12 +124,12 @@ func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionArray(c
 	return &request
 }
 
-func expandRequestItemSwimTriggerDistributionTriggerSoftwareImageDistribution(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageDistribution {
+func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageDistribution {
 	request := dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageDistribution{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_uuid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_uuid")))) && (ok || !reflect.DeepEqual(v, d.Get("device_uuid"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_uuid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_uuid")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_uuid")))) {
 		request.DeviceUUID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_uuid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_uuid")))) && (ok || !reflect.DeepEqual(v, d.Get("image_uuid"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_uuid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_uuid")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_uuid")))) {
 		request.ImageUUID = interfaceToString(v)
 	}
 	return &request

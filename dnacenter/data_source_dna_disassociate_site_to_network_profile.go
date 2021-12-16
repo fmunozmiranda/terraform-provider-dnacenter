@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -59,50 +60,31 @@ func dataSourceDisassociateSiteToNetworkProfileRead(ctx context.Context, d *sche
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vNetworkProfileID, okNetworkProfileID := d.GetOk("network_profile_id")
-	vSiteID, okSiteID := d.GetOk("site_id")
+	vNetworkProfileID := d.Get("network_profile_id")
+	vSiteID := d.Get("site_id")
 
-	method1 := []bool{okNetworkProfileID, okSiteID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okNetworkProfileID, okSiteID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: Associate")
+		log.Printf("[DEBUG] Selected method 1: Disassociate")
 		vvNetworkProfileID := vNetworkProfileID.(string)
 		vvSiteID := vSiteID.(string)
 
-		response1, _, err := client.SiteDesign.Associate(vvNetworkProfileID, vvSiteID)
+		response1, restyResp1, err := client.SiteDesign.Disassociate(vvNetworkProfileID, vvSiteID)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing Associate", err,
-				"Failure at Associate, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: Disassociate")
-		vvNetworkProfileID := vNetworkProfileID.(string)
-		vvSiteID := vSiteID.(string)
-
-		response2, _, err := client.SiteDesign.Disassociate(vvNetworkProfileID, vvSiteID)
-
-		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing Disassociate", err,
 				"Failure at Disassociate, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItem2 := flattenSiteDesignDisassociateItem(response2.Response)
-		if err := d.Set("item", vItem2); err != nil {
+		vItem1 := flattenSiteDesignDisassociateItem(response1.Response)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting Disassociate response",
 				err))

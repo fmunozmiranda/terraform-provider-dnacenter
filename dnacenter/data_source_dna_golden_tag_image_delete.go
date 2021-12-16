@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -73,17 +74,12 @@ func dataSourceGoldenTagImageDeleteRead(ctx context.Context, d *schema.ResourceD
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vSiteID, okSiteID := d.GetOk("site_id")
-	vDeviceFamilyIDentifier, okDeviceFamilyIDentifier := d.GetOk("device_family_identifier")
-	vDeviceRole, okDeviceRole := d.GetOk("device_role")
-	vImageID, okImageID := d.GetOk("image_id")
+	vSiteID := d.Get("site_id")
+	vDeviceFamilyIDentifier := d.Get("device_family_identifier")
+	vDeviceRole := d.Get("device_role")
+	vImageID := d.Get("image_id")
 
-	method1 := []bool{okSiteID, okDeviceFamilyIDentifier, okDeviceRole, okImageID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okSiteID, okDeviceFamilyIDentifier, okDeviceRole, okImageID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: RemoveGoldenTagForImage")
 		vvSiteID := vSiteID.(string)
@@ -91,16 +87,19 @@ func dataSourceGoldenTagImageDeleteRead(ctx context.Context, d *schema.ResourceD
 		vvDeviceRole := vDeviceRole.(string)
 		vvImageID := vImageID.(string)
 
-		response1, _, err := client.SoftwareImageManagementSwim.RemoveGoldenTagForImage(vvSiteID, vvDeviceFamilyIDentifier, vvDeviceRole, vvImageID)
+		response1, restyResp1, err := client.SoftwareImageManagementSwim.RemoveGoldenTagForImage(vvSiteID, vvDeviceFamilyIDentifier, vvDeviceRole, vvImageID)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing RemoveGoldenTagForImage", err,
 				"Failure at RemoveGoldenTagForImage, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSoftwareImageManagementSwimRemoveGoldenTagForImageItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -111,25 +110,6 @@ func dataSourceGoldenTagImageDeleteRead(ctx context.Context, d *schema.ResourceD
 		}
 		d.SetId(getUnixTimeString())
 		return diags
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: GetGoldenTagStatusOfAnImage")
-		vvSiteID := vSiteID.(string)
-		vvDeviceFamilyIDentifier := vDeviceFamilyIDentifier.(string)
-		vvDeviceRole := vDeviceRole.(string)
-		vvImageID := vImageID.(string)
-
-		response2, _, err := client.SoftwareImageManagementSwim.GetGoldenTagStatusOfAnImage(vvSiteID, vvDeviceFamilyIDentifier, vvDeviceRole, vvImageID)
-
-		if err != nil || response2 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetGoldenTagStatusOfAnImage", err,
-				"Failure at GetGoldenTagStatusOfAnImage, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
 
 	}
 	return diags

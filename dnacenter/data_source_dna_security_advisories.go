@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -98,16 +99,19 @@ func dataSourceSecurityAdvisoriesRead(ctx context.Context, d *schema.ResourceDat
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetAdvisoriesList")
 
-		response1, _, err := client.SecurityAdvisories.GetAdvisoriesList()
+		response1, restyResp1, err := client.SecurityAdvisories.GetAdvisoriesList()
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetAdvisoriesList", err,
 				"Failure at GetAdvisoriesList, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenSecurityAdvisoriesGetAdvisoriesListItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {

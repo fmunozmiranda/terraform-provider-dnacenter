@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -63,16 +64,23 @@ func dataSourceTagMembershipRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Selected method 1: UpdatesTagMembership")
 		request1 := expandRequestTagMembershipUpdatesTagMembership(ctx, "", d)
 
-		response1, _, err := client.Tag.UpdatesTagMembership(request1)
+		response1, restyResp1, err := client.Tag.UpdatesTagMembership(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdatesTagMembership", err,
 				"Failure at UpdatesTagMembership, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenTagUpdatesTagMembershipItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -121,7 +129,7 @@ func expandRequestTagMembershipUpdatesTagMembershipMemberToTagsArray(ctx context
 
 func expandRequestTagMembershipUpdatesTagMembershipMemberToTags(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestTagUpdatesTagMembershipMemberToTags {
 	request := dnacentersdkgo.RequestTagUpdatesTagMembershipMemberToTags{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get("key"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".key")))) {
 		request.Key = interfaceToSliceString(v)
 	}
 	return &request

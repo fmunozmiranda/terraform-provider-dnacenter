@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -338,16 +339,19 @@ func dataSourceLicenseDeviceLicenseDetailsRead(ctx context.Context, d *schema.Re
 		log.Printf("[DEBUG] Selected method 1: DeviceLicenseDetails")
 		vvDeviceUUID := vDeviceUUID.(string)
 
-		response1, _, err := client.Licenses.DeviceLicenseDetails(vvDeviceUUID)
+		response1, restyResp1, err := client.Licenses.DeviceLicenseDetails(vvDeviceUUID)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing DeviceLicenseDetails", err,
 				"Failure at DeviceLicenseDetails, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenLicensesDeviceLicenseDetailsItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {

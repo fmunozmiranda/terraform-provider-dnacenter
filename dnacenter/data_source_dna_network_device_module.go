@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -306,16 +307,19 @@ func dataSourceNetworkDeviceModuleRead(ctx context.Context, d *schema.ResourceDa
 			queryParams1.OperationalStateCodeList = interfaceToSliceString(vOperationalStateCodeList)
 		}
 
-		response1, _, err := client.Devices.GetModules(&queryParams1)
+		response1, restyResp1, err := client.Devices.GetModules(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetModules", err,
 				"Failure at GetModules, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenDevicesGetModulesItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {
@@ -332,16 +336,19 @@ func dataSourceNetworkDeviceModuleRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Selected method 2: GetModuleInfoByID")
 		vvID := vID.(string)
 
-		response2, _, err := client.Devices.GetModuleInfoByID(vvID)
+		response2, restyResp2, err := client.Devices.GetModuleInfoByID(vvID)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetModuleInfoByID", err,
 				"Failure at GetModuleInfoByID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItem2 := flattenDevicesGetModuleInfoByIDItem(response2.Response)
 		if err := d.Set("item", vItem2); err != nil {

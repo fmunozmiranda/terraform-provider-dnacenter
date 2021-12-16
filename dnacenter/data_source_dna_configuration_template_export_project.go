@@ -5,8 +5,9 @@ import (
 
 	"fmt"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -53,16 +54,23 @@ func dataSourceConfigurationTemplateExportProjectRead(ctx context.Context, d *sc
 		log.Printf("[DEBUG] Selected method 1: ExportsTheProjectsForAGivenCriteria")
 		request1 := expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteria(ctx, "", d)
 
-		response1, _, err := client.ConfigurationTemplates.ExportsTheProjectsForAGivenCriteria(request1)
+		response1, restyResp1, err := client.ConfigurationTemplates.ExportsTheProjectsForAGivenCriteria(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ExportsTheProjectsForAGivenCriteria", err,
 				"Failure at ExportsTheProjectsForAGivenCriteria, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenConfigurationTemplatesExportsTheProjectsForAGivenCriteriaItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -80,13 +88,13 @@ func dataSourceConfigurationTemplateExportProjectRead(ctx context.Context, d *sc
 
 func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteria(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesExportsTheProjectsForAGivenCriteria {
 	request := dnacentersdkgo.RequestConfigurationTemplatesExportsTheProjectsForAGivenCriteria{}
-	if v := expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaArray(ctx, key+".", d); v != nil {
+	if v := expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheProjectsForAGivenCriteria {
+func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheProjectsForAGivenCriteria {
 	request := []dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheProjectsForAGivenCriteria{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -98,7 +106,7 @@ func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenC
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteria(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -106,9 +114,9 @@ func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenC
 	return &request
 }
 
-func expandRequestItemConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteria(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheProjectsForAGivenCriteria {
+func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheProjectsForAGivenCriteria {
 	var request dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheProjectsForAGivenCriteria
-	request = d.Get(key)
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 

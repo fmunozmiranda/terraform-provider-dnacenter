@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -534,16 +535,19 @@ func dataSourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schem
 			queryParams1.Order = vOrder.(string)
 		}
 
-		response1, _, err := client.Policy.GetListOfProfilingRules(&queryParams1)
+		response1, restyResp1, err := client.Policy.GetListOfProfilingRules(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetListOfProfilingRules", err,
 				"Failure at GetListOfProfilingRules, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenPolicyGetListOfProfilingRulesItems(response1.ProfilingRules)
 		if err := d.Set("items", vItems1); err != nil {
@@ -560,16 +564,19 @@ func dataSourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schem
 		log.Printf("[DEBUG] Selected method 2: GetDetailsOfASingleProfilingRule")
 		vvRuleID := vRuleID.(string)
 
-		response2, _, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
+		response2, restyResp2, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDetailsOfASingleProfilingRule", err,
 				"Failure at GetDetailsOfASingleProfilingRule, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItem2 := flattenPolicyGetDetailsOfASingleProfilingRuleItem(response2)
 		if err := d.Set("item", vItem2); err != nil {

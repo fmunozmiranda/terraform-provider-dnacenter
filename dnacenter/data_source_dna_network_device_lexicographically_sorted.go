@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -133,16 +134,23 @@ device management IP addresses that match fully or partially the provided attrib
 				Optional:    true,
 			},
 
-			"item": &schema.Schema{
+			"items": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
-						"object": &schema.Schema{
-							Description: `object`,
-							Type:        schema.TypeString,
-							Computed:    true,
+						"response": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"version": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 					},
 				},
@@ -250,19 +258,22 @@ func dataSourceNetworkDeviceLexicographicallySortedRead(ctx context.Context, d *
 			queryParams1.Limit = vLimit.(float64)
 		}
 
-		response1, _, err := client.Devices.GetDeviceValuesThatMatchFullyOrPartiallyAnAttribute(&queryParams1)
+		response1, restyResp1, err := client.Devices.GetDeviceValuesThatMatchFullyOrPartiallyAnAttribute(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceValuesThatMatchFullyOrPartiallyAnAttribute", err,
 				"Failure at GetDeviceValuesThatMatchFullyOrPartiallyAnAttribute, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItem1 := flattenDevicesGetDeviceValuesThatMatchFullyOrPartiallyAnAttributeItem(response1)
-		if err := d.Set("item", vItem1); err != nil {
+		vItems1 := flattenDevicesGetDeviceValuesThatMatchFullyOrPartiallyAnAttributeItems(response1)
+		if err := d.Set("items", vItems1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetDeviceValuesThatMatchFullyOrPartiallyAnAttribute response",
 				err))
@@ -275,12 +286,13 @@ func dataSourceNetworkDeviceLexicographicallySortedRead(ctx context.Context, d *
 	return diags
 }
 
-func flattenDevicesGetDeviceValuesThatMatchFullyOrPartiallyAnAttributeItem(item *dnacentersdkgo.ResponseDevicesGetDeviceValuesThatMatchFullyOrPartiallyAnAttribute) []map[string]interface{} {
-	if item == nil {
+func flattenDevicesGetDeviceValuesThatMatchFullyOrPartiallyAnAttributeItems(items *dnacentersdkgo.ResponseDevicesGetDeviceValuesThatMatchFullyOrPartiallyAnAttribute) []map[string]interface{} {
+	if items == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["object"] = item.Object
+	respItem["response"] = items.Response
+	respItem["version"] = items.Version
 	return []map[string]interface{}{
 		respItem,
 	}

@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -86,16 +87,19 @@ func dataSourceLicenseVirtualAccountDetailsRead(ctx context.Context, d *schema.R
 		log.Printf("[DEBUG] Selected method 1: VirtualAccountDetails")
 		vvSmartAccountID := vSmartAccountID.(string)
 
-		response1, _, err := client.Licenses.VirtualAccountDetails(vvSmartAccountID)
+		response1, restyResp1, err := client.Licenses.VirtualAccountDetails(vvSmartAccountID)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing VirtualAccountDetails", err,
 				"Failure at VirtualAccountDetails, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenLicensesVirtualAccountDetailsItem(response1)
 		if err := d.Set("item", vItem1); err != nil {

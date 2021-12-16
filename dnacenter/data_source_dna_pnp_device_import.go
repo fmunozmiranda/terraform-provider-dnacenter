@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -186,16 +187,10 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 									"ipv4_address": &schema.Schema{
 										Type:     schema.TypeList,
 										Optional: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"ipv6_address_list": &schema.Schema{
 										Type:     schema.TypeList,
 										Optional: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"mac_address": &schema.Schema{
 										Type:     schema.TypeString,
@@ -351,16 +346,10 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 												"ipv4_address": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"ipv6_address": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"port": &schema.Schema{
 													Type:     schema.TypeInt,
@@ -394,16 +383,10 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 												"ipv4_address": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"ipv6_address": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"port": &schema.Schema{
 													Type:     schema.TypeInt,
@@ -580,9 +563,6 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 						"tags": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"user_sudi_serial_nos": &schema.Schema{
 							Type:     schema.TypeList,
@@ -670,9 +650,6 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 										Description: `Day Zero Config Preview`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"device_info": &schema.Schema{
 										Type:     schema.TypeList,
@@ -862,17 +839,11 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																Description: `Ipv4 Address`,
 																Type:        schema.TypeList,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 															"ipv6_address_list": &schema.Schema{
 																Description: `Ipv6 Address List`,
 																Type:        schema.TypeList,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 															"mac_address": &schema.Schema{
 																Description: `Mac Address`,
@@ -1057,17 +1028,11 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																			Description: `Ipv4 Address`,
 																			Type:        schema.TypeList,
 																			Computed:    true,
-																			Elem: &schema.Schema{
-																				Type: schema.TypeString,
-																			},
 																		},
 																		"ipv6_address": &schema.Schema{
 																			Description: `Ipv6 Address`,
 																			Type:        schema.TypeList,
 																			Computed:    true,
-																			Elem: &schema.Schema{
-																				Type: schema.TypeString,
-																			},
 																		},
 																		"port": &schema.Schema{
 																			Description: `Port`,
@@ -1107,17 +1072,11 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																			Description: `Ipv4 Address`,
 																			Type:        schema.TypeList,
 																			Computed:    true,
-																			Elem: &schema.Schema{
-																				Type: schema.TypeString,
-																			},
 																		},
 																		"ipv6_address": &schema.Schema{
 																			Description: `Ipv6 Address`,
 																			Type:        schema.TypeList,
 																			Computed:    true,
-																			Elem: &schema.Schema{
-																				Type: schema.TypeString,
-																			},
 																		},
 																		"port": &schema.Schema{
 																			Description: `Port`,
@@ -1330,9 +1289,6 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 													Description: `Tags`,
 													Type:        schema.TypeList,
 													Computed:    true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"user_mic_numbers": &schema.Schema{
 													Description: `User Mic Numbers`,
@@ -2750,16 +2706,23 @@ func dataSourcePnpDeviceImportRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Selected method 1: ImportDevicesInBulk")
 		request1 := expandRequestPnpDeviceImportImportDevicesInBulk(ctx, "", d)
 
-		response1, _, err := client.DeviceOnboardingPnp.ImportDevicesInBulk(request1)
+		response1, restyResp1, err := client.DeviceOnboardingPnp.ImportDevicesInBulk(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ImportDevicesInBulk", err,
 				"Failure at ImportDevicesInBulk, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenDeviceOnboardingPnpImportDevicesInBulkItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
@@ -2777,13 +2740,13 @@ func dataSourcePnpDeviceImportRead(ctx context.Context, d *schema.ResourceData, 
 
 func expandRequestPnpDeviceImportImportDevicesInBulk(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDeviceOnboardingPnpImportDevicesInBulk {
 	request := dnacentersdkgo.RequestDeviceOnboardingPnpImportDevicesInBulk{}
-	if v := expandRequestPnpDeviceImportImportDevicesInBulkArray(ctx, key+".", d); v != nil {
+	if v := expandRequestPnpDeviceImportImportDevicesInBulkItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulk {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulk {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulk{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -2795,7 +2758,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkArray(ctx context.Context, k
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemPnpDeviceImportImportDevicesInBulk(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -2803,196 +2766,196 @@ func expandRequestPnpDeviceImportImportDevicesInBulkArray(ctx context.Context, k
 	return &request
 }
 
-func expandRequestItemPnpDeviceImportImportDevicesInBulk(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulk {
+func expandRequestPnpDeviceImportImportDevicesInBulkItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulk {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulk{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get("id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.TypeID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_info")))) && (ok || !reflect.DeepEqual(v, d.Get("device_info"))) {
-		request.DeviceInfo = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfo(ctx, key+".device_info.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_info")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_info")))) {
+		request.DeviceInfo = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfo(ctx, key+".device_info.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".run_summary_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".run_summary_list")))) && (ok || !reflect.DeepEqual(v, d.Get("run_summary_list"))) {
-		request.RunSummaryList = expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListArray(ctx, key+".run_summary_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".run_summary_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".run_summary_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".run_summary_list")))) {
+		request.RunSummaryList = expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListArray(ctx, key+".run_summary_list", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".system_reset_workflow")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".system_reset_workflow")))) && (ok || !reflect.DeepEqual(v, d.Get("system_reset_workflow"))) {
-		request.SystemResetWorkflow = expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflow(ctx, key+".system_reset_workflow.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".system_reset_workflow")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".system_reset_workflow")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".system_reset_workflow")))) {
+		request.SystemResetWorkflow = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflow(ctx, key+".system_reset_workflow.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".system_workflow")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".system_workflow")))) && (ok || !reflect.DeepEqual(v, d.Get("system_workflow"))) {
-		request.SystemWorkflow = expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflow(ctx, key+".system_workflow.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".system_workflow")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".system_workflow")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".system_workflow")))) {
+		request.SystemWorkflow = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflow(ctx, key+".system_workflow.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get("tenant_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tenant_id")))) {
 		request.TenantID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get("version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow")))) && (ok || !reflect.DeepEqual(v, d.Get("workflow"))) {
-		request.Workflow = expandRequestPnpDeviceImportImportDevicesInBulkWorkflow(ctx, key+".workflow.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow")))) {
+		request.Workflow = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflow(ctx, key+".workflow.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get("workflow_parameters"))) {
-		request.WorkflowParameters = expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParameters(ctx, key+".workflow_parameters.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow_parameters")))) {
+		request.WorkflowParameters = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParameters(ctx, key+".workflow_parameters.0", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfo {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfo {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfo{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".aaa_credentials")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".aaa_credentials")))) && (ok || !reflect.DeepEqual(v, d.Get("aaa_credentials"))) {
-		request.AAACredentials = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoAAACredentials(ctx, key+".aaa_credentials.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".aaa_credentials")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".aaa_credentials")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".aaa_credentials")))) {
+		request.AAACredentials = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoAAACredentials(ctx, key+".aaa_credentials.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get("added_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".added_on")))) {
 		request.AddedOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".addn_mac_addrs")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".addn_mac_addrs")))) && (ok || !reflect.DeepEqual(v, d.Get("addn_mac_addrs"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".addn_mac_addrs")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".addn_mac_addrs")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".addn_mac_addrs")))) {
 		request.AddnMacAddrs = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".agent_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".agent_type")))) && (ok || !reflect.DeepEqual(v, d.Get("agent_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".agent_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".agent_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".agent_type")))) {
 		request.AgentType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".auth_status")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".auth_status")))) && (ok || !reflect.DeepEqual(v, d.Get("auth_status"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".auth_status")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".auth_status")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".auth_status")))) {
 		request.AuthStatus = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".authenticated_sudi_serial_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".authenticated_sudi_serial_no")))) && (ok || !reflect.DeepEqual(v, d.Get("authenticated_sudi_serial_no"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".authenticated_sudi_serial_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".authenticated_sudi_serial_no")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".authenticated_sudi_serial_no")))) {
 		request.AuthenticatedSudiSerialNo = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".capabilities_supported")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".capabilities_supported")))) && (ok || !reflect.DeepEqual(v, d.Get("capabilities_supported"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".capabilities_supported")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".capabilities_supported")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".capabilities_supported")))) {
 		request.CapabilitiesSupported = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cm_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cm_state")))) && (ok || !reflect.DeepEqual(v, d.Get("cm_state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cm_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cm_state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".cm_state")))) {
 		request.CmState = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get("description"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
 		request.Description = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_sudi_serial_nos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_sudi_serial_nos")))) && (ok || !reflect.DeepEqual(v, d.Get("device_sudi_serial_nos"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_sudi_serial_nos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_sudi_serial_nos")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_sudi_serial_nos")))) {
 		request.DeviceSudiSerialNos = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_type")))) && (ok || !reflect.DeepEqual(v, d.Get("device_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_type")))) {
 		request.DeviceType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".features_supported")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".features_supported")))) && (ok || !reflect.DeepEqual(v, d.Get("features_supported"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".features_supported")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".features_supported")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".features_supported")))) {
 		request.FeaturesSupported = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".file_system_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".file_system_list")))) && (ok || !reflect.DeepEqual(v, d.Get("file_system_list"))) {
-		request.FileSystemList = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoFileSystemListArray(ctx, key+".file_system_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".file_system_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".file_system_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".file_system_list")))) {
+		request.FileSystemList = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoFileSystemListArray(ctx, key+".file_system_list", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".first_contact")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".first_contact")))) && (ok || !reflect.DeepEqual(v, d.Get("first_contact"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".first_contact")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".first_contact")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".first_contact")))) {
 		request.FirstContact = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hostname")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hostname")))) && (ok || !reflect.DeepEqual(v, d.Get("hostname"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hostname")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hostname")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".hostname")))) {
 		request.Hostname = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".http_headers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".http_headers")))) && (ok || !reflect.DeepEqual(v, d.Get("http_headers"))) {
-		request.HTTPHeaders = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoHTTPHeadersArray(ctx, key+".http_headers", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".http_headers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".http_headers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".http_headers")))) {
+		request.HTTPHeaders = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoHTTPHeadersArray(ctx, key+".http_headers", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_file")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_file")))) && (ok || !reflect.DeepEqual(v, d.Get("image_file"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_file")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_file")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_file")))) {
 		request.ImageFile = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_version")))) && (ok || !reflect.DeepEqual(v, d.Get("image_version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_version")))) {
 		request.ImageVersion = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ip_interfaces")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ip_interfaces")))) && (ok || !reflect.DeepEqual(v, d.Get("ip_interfaces"))) {
-		request.IPInterfaces = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesArray(ctx, key+".ip_interfaces", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ip_interfaces")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ip_interfaces")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ip_interfaces")))) {
+		request.IPInterfaces = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesArray(ctx, key+".ip_interfaces", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_contact")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_contact")))) && (ok || !reflect.DeepEqual(v, d.Get("last_contact"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_contact")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_contact")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".last_contact")))) {
 		request.LastContact = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_sync_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_sync_time")))) && (ok || !reflect.DeepEqual(v, d.Get("last_sync_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_sync_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_sync_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".last_sync_time")))) {
 		request.LastSyncTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_update_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_update_on")))) && (ok || !reflect.DeepEqual(v, d.Get("last_update_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_update_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_update_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".last_update_on")))) {
 		request.LastUpdateOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".location")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".location")))) && (ok || !reflect.DeepEqual(v, d.Get("location"))) {
-		request.Location = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoLocation(ctx, key+".location.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".location")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".location")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".location")))) {
+		request.Location = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoLocation(ctx, key+".location.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get("mac_address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mac_address")))) {
 		request.MacAddress = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mode")))) && (ok || !reflect.DeepEqual(v, d.Get("mode"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mode")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mode")))) {
 		request.Mode = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".neighbor_links")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".neighbor_links")))) && (ok || !reflect.DeepEqual(v, d.Get("neighbor_links"))) {
-		request.NeighborLinks = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoNeighborLinksArray(ctx, key+".neighbor_links", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".neighbor_links")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".neighbor_links")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".neighbor_links")))) {
+		request.NeighborLinks = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoNeighborLinksArray(ctx, key+".neighbor_links", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".onb_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".onb_state")))) && (ok || !reflect.DeepEqual(v, d.Get("onb_state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".onb_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".onb_state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".onb_state")))) {
 		request.OnbState = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pid")))) && (ok || !reflect.DeepEqual(v, d.Get("pid"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pid")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".pid")))) {
 		request.Pid = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pnp_profile_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pnp_profile_list")))) && (ok || !reflect.DeepEqual(v, d.Get("pnp_profile_list"))) {
-		request.PnpProfileList = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListArray(ctx, key+".pnp_profile_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pnp_profile_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pnp_profile_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".pnp_profile_list")))) {
+		request.PnpProfileList = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListArray(ctx, key+".pnp_profile_list", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".populate_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".populate_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get("populate_inventory"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".populate_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".populate_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".populate_inventory")))) {
 		request.PopulateInventory = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pre_workflow_cli_ouputs")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pre_workflow_cli_ouputs")))) && (ok || !reflect.DeepEqual(v, d.Get("pre_workflow_cli_ouputs"))) {
-		request.PreWorkflowCliOuputs = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPreWorkflowCliOuputsArray(ctx, key+".pre_workflow_cli_ouputs", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pre_workflow_cli_ouputs")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pre_workflow_cli_ouputs")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".pre_workflow_cli_ouputs")))) {
+		request.PreWorkflowCliOuputs = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPreWorkflowCliOuputsArray(ctx, key+".pre_workflow_cli_ouputs", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".project_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".project_id")))) && (ok || !reflect.DeepEqual(v, d.Get("project_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".project_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".project_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".project_id")))) {
 		request.ProjectID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".project_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".project_name")))) && (ok || !reflect.DeepEqual(v, d.Get("project_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".project_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".project_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".project_name")))) {
 		request.ProjectName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".reload_requested")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".reload_requested")))) && (ok || !reflect.DeepEqual(v, d.Get("reload_requested"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".reload_requested")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".reload_requested")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".reload_requested")))) {
 		request.ReloadRequested = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get("serial_number"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".serial_number")))) {
 		request.SerialNumber = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".smart_account_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".smart_account_id")))) && (ok || !reflect.DeepEqual(v, d.Get("smart_account_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".smart_account_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".smart_account_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".smart_account_id")))) {
 		request.SmartAccountID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".source")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".source")))) && (ok || !reflect.DeepEqual(v, d.Get("source"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".source")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".source")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".source")))) {
 		request.Source = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack")))) && (ok || !reflect.DeepEqual(v, d.Get("stack"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".stack")))) {
 		request.Stack = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_info")))) && (ok || !reflect.DeepEqual(v, d.Get("stack_info"))) {
-		request.StackInfo = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfo(ctx, key+".stack_info.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_info")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".stack_info")))) {
+		request.StackInfo = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfo(ctx, key+".stack_info.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sudi_required")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sudi_required")))) && (ok || !reflect.DeepEqual(v, d.Get("sudi_required"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sudi_required")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sudi_required")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".sudi_required")))) {
 		request.SudiRequired = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tags")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tags")))) && (ok || !reflect.DeepEqual(v, d.Get("tags"))) {
-		request.Tags = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoTags(ctx, key+".tags.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tags")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tags")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tags")))) {
+		request.Tags = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoTags(ctx, key+".tags.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".user_sudi_serial_nos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".user_sudi_serial_nos")))) && (ok || !reflect.DeepEqual(v, d.Get("user_sudi_serial_nos"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".user_sudi_serial_nos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".user_sudi_serial_nos")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".user_sudi_serial_nos")))) {
 		request.UserSudiSerialNos = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".virtual_account_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".virtual_account_id")))) && (ok || !reflect.DeepEqual(v, d.Get("virtual_account_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".virtual_account_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".virtual_account_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".virtual_account_id")))) {
 		request.VirtualAccountID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_id")))) && (ok || !reflect.DeepEqual(v, d.Get("workflow_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow_id")))) {
 		request.WorkflowID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_name")))) && (ok || !reflect.DeepEqual(v, d.Get("workflow_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow_name")))) {
 		request.WorkflowName = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoAAACredentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoAAACredentials {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoAAACredentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoAAACredentials {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoAAACredentials{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".password")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".password")))) && (ok || !reflect.DeepEqual(v, d.Get("password"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".password")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".password")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".password")))) {
 		request.Password = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".username")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".username")))) && (ok || !reflect.DeepEqual(v, d.Get("username"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".username")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".username")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".username")))) {
 		request.Username = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoFileSystemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoFileSystemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoFileSystemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoFileSystemList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoFileSystemList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3004,7 +2967,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoFileSystemListArra
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoFileSystemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoFileSystemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3012,30 +2975,30 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoFileSystemListArra
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoFileSystemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoFileSystemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoFileSystemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoFileSystemList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoFileSystemList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".freespace")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".freespace")))) && (ok || !reflect.DeepEqual(v, d.Get("freespace"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".freespace")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".freespace")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".freespace")))) {
 		request.Freespace = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".readable")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".readable")))) && (ok || !reflect.DeepEqual(v, d.Get("readable"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".readable")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".readable")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".readable")))) {
 		request.Readable = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".size")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".size")))) && (ok || !reflect.DeepEqual(v, d.Get("size"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".size")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".size")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".size")))) {
 		request.Size = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".writeable")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".writeable")))) && (ok || !reflect.DeepEqual(v, d.Get("writeable"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".writeable")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".writeable")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".writeable")))) {
 		request.Writeable = interfaceToBoolPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoHTTPHeadersArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoHTTPHeaders {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoHTTPHeadersArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoHTTPHeaders {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoHTTPHeaders{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3047,7 +3010,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoHTTPHeadersArray(c
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoHTTPHeaders(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoHTTPHeaders(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3055,18 +3018,18 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoHTTPHeadersArray(c
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoHTTPHeaders(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoHTTPHeaders {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoHTTPHeaders(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoHTTPHeaders {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoHTTPHeaders{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get("key"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".key")))) {
 		request.Key = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get("value"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfaces {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfaces {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfaces{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3078,7 +3041,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesArray(
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfaces(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfaces(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3086,33 +3049,33 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesArray(
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfaces(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfaces {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfaces(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfaces {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfaces{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_address")))) && (ok || !reflect.DeepEqual(v, d.Get("ipv4_address"))) {
-		request.IPv4Address = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address(ctx, key+".ipv4_address.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_address")))) {
+		request.IPv4Address = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv4Address(ctx, key+".ipv4_address.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address_list")))) && (ok || !reflect.DeepEqual(v, d.Get("ipv6_address_list"))) {
-		request.IPv6AddressList = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressListArray(ctx, key+".ipv6_address_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_address_list")))) {
+		request.IPv6AddressList = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv6AddressListArray(ctx, key+".ipv6_address_list", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get("mac_address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mac_address")))) {
 		request.MacAddress = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".status")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".status")))) && (ok || !reflect.DeepEqual(v, d.Get("status"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".status")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".status")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".status")))) {
 		request.Status = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address
-	request = d.Get(fixKeyAccess(key + ".ipv4_address"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv6AddressListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3124,7 +3087,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv6Ad
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv6AddressList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3132,33 +3095,33 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv6Ad
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv6AddressList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList
-	request = d.Get(fixKeyAccess(key + ".ipv6_address_list"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoLocation(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoLocation {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoLocation(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoLocation {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoLocation{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".address")))) && (ok || !reflect.DeepEqual(v, d.Get("address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".address")))) {
 		request.Address = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".altitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".altitude")))) && (ok || !reflect.DeepEqual(v, d.Get("altitude"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".altitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".altitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".altitude")))) {
 		request.Altitude = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".latitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".latitude")))) && (ok || !reflect.DeepEqual(v, d.Get("latitude"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".latitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".latitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".latitude")))) {
 		request.Latitude = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".longitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".longitude")))) && (ok || !reflect.DeepEqual(v, d.Get("longitude"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".longitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".longitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".longitude")))) {
 		request.Longitude = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site_id")))) && (ok || !reflect.DeepEqual(v, d.Get("site_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site_id")))) {
 		request.SiteID = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoNeighborLinksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoNeighborLinks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoNeighborLinksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoNeighborLinks {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoNeighborLinks{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3170,7 +3133,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoNeighborLinksArray
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoNeighborLinks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoNeighborLinks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3178,39 +3141,39 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoNeighborLinksArray
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoNeighborLinks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoNeighborLinks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoNeighborLinks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoNeighborLinks {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoNeighborLinks{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get("local_interface_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".local_interface_name")))) {
 		request.LocalInterfaceName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get("local_mac_address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".local_mac_address")))) {
 		request.LocalMacAddress = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_short_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_short_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get("local_short_interface_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_short_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_short_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".local_short_interface_name")))) {
 		request.LocalShortInterfaceName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_device_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_device_name")))) && (ok || !reflect.DeepEqual(v, d.Get("remote_device_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_device_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_device_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_device_name")))) {
 		request.RemoteDeviceName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get("remote_interface_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_interface_name")))) {
 		request.RemoteInterfaceName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get("remote_mac_address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_mac_address")))) {
 		request.RemoteMacAddress = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_platform")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_platform")))) && (ok || !reflect.DeepEqual(v, d.Get("remote_platform"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_platform")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_platform")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_platform")))) {
 		request.RemotePlatform = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_short_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_short_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get("remote_short_interface_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_short_interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_short_interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_short_interface_name")))) {
 		request.RemoteShortInterfaceName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_version")))) && (ok || !reflect.DeepEqual(v, d.Get("remote_version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_version")))) {
 		request.RemoteVersion = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3222,7 +3185,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListArra
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3230,97 +3193,97 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListArra
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".created_by")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".created_by")))) && (ok || !reflect.DeepEqual(v, d.Get("created_by"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".created_by")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".created_by")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".created_by")))) {
 		request.CreatedBy = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".discovery_created")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".discovery_created")))) && (ok || !reflect.DeepEqual(v, d.Get("discovery_created"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".discovery_created")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".discovery_created")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".discovery_created")))) {
 		request.DiscoveryCreated = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".primary_endpoint")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".primary_endpoint")))) && (ok || !reflect.DeepEqual(v, d.Get("primary_endpoint"))) {
-		request.PrimaryEndpoint = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpoint(ctx, key+".primary_endpoint.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".primary_endpoint")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".primary_endpoint")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".primary_endpoint")))) {
+		request.PrimaryEndpoint = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpoint(ctx, key+".primary_endpoint.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get("profile_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".profile_name")))) {
 		request.ProfileName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".secondary_endpoint")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".secondary_endpoint")))) && (ok || !reflect.DeepEqual(v, d.Get("secondary_endpoint"))) {
-		request.SecondaryEndpoint = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpoint(ctx, key+".secondary_endpoint.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".secondary_endpoint")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".secondary_endpoint")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".secondary_endpoint")))) {
+		request.SecondaryEndpoint = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpoint(ctx, key+".secondary_endpoint.0", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpoint(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpoint {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpoint(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpoint {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpoint{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".certificate")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".certificate")))) && (ok || !reflect.DeepEqual(v, d.Get("certificate"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".certificate")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".certificate")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".certificate")))) {
 		request.Certificate = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".fqdn")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".fqdn")))) && (ok || !reflect.DeepEqual(v, d.Get("fqdn"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".fqdn")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".fqdn")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".fqdn")))) {
 		request.Fqdn = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_address")))) && (ok || !reflect.DeepEqual(v, d.Get("ipv4_address"))) {
-		request.IPv4Address = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(ctx, key+".ipv4_address.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_address")))) {
+		request.IPv4Address = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(ctx, key+".ipv4_address.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address")))) && (ok || !reflect.DeepEqual(v, d.Get("ipv6_address"))) {
-		request.IPv6Address = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(ctx, key+".ipv6_address.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_address")))) {
+		request.IPv6Address = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(ctx, key+".ipv6_address.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get("port"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".port")))) {
 		request.Port = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get("protocol"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".protocol")))) {
 		request.Protocol = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address
-	request = d.Get(fixKeyAccess(key + ".ipv4_address"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address
-	request = d.Get(fixKeyAccess(key + ".ipv6_address_list"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpoint(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpoint {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpoint(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpoint {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpoint{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".certificate")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".certificate")))) && (ok || !reflect.DeepEqual(v, d.Get("certificate"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".certificate")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".certificate")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".certificate")))) {
 		request.Certificate = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".fqdn")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".fqdn")))) && (ok || !reflect.DeepEqual(v, d.Get("fqdn"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".fqdn")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".fqdn")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".fqdn")))) {
 		request.Fqdn = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_address")))) && (ok || !reflect.DeepEqual(v, d.Get("ipv4_address"))) {
-		request.IPv4Address = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(ctx, key+".ipv4_address.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_address")))) {
+		request.IPv4Address = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(ctx, key+".ipv4_address.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address")))) && (ok || !reflect.DeepEqual(v, d.Get("ipv6_address"))) {
-		request.IPv6Address = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(ctx, key+".ipv6_address.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_address")))) {
+		request.IPv6Address = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(ctx, key+".ipv6_address.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get("port"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".port")))) {
 		request.Port = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get("protocol"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".protocol")))) {
 		request.Protocol = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address
-	request = d.Get(fixKeyAccess(key + ".ipv4_address"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address
-	request = d.Get(fixKeyAccess(key + ".ipv6_address_list"))
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPreWorkflowCliOuputsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPreWorkflowCliOuputsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3332,7 +3295,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPreWorkflowCliOupu
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPreWorkflowCliOuputs(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3340,41 +3303,41 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPreWorkflowCliOupu
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPreWorkflowCliOuputs(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPreWorkflowCliOuputs{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cli")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cli")))) && (ok || !reflect.DeepEqual(v, d.Get("cli"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cli")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cli")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".cli")))) {
 		request.Cli = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cli_output")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cli_output")))) && (ok || !reflect.DeepEqual(v, d.Get("cli_output"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cli_output")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cli_output")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".cli_output")))) {
 		request.CliOutput = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfo {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfo {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfo{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_full_ring")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_full_ring")))) && (ok || !reflect.DeepEqual(v, d.Get("is_full_ring"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_full_ring")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_full_ring")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_full_ring")))) {
 		request.IsFullRing = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_member_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_member_list")))) && (ok || !reflect.DeepEqual(v, d.Get("stack_member_list"))) {
-		request.StackMemberList = expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfoStackMemberListArray(ctx, key+".stack_member_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_member_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_member_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".stack_member_list")))) {
+		request.StackMemberList = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfoStackMemberListArray(ctx, key+".stack_member_list", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_ring_protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_ring_protocol")))) && (ok || !reflect.DeepEqual(v, d.Get("stack_ring_protocol"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_ring_protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_ring_protocol")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".stack_ring_protocol")))) {
 		request.StackRingProtocol = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".supports_stack_workflows")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".supports_stack_workflows")))) && (ok || !reflect.DeepEqual(v, d.Get("supports_stack_workflows"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".supports_stack_workflows")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".supports_stack_workflows")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".supports_stack_workflows")))) {
 		request.SupportsStackWorkflows = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".total_member_count")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".total_member_count")))) && (ok || !reflect.DeepEqual(v, d.Get("total_member_count"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".total_member_count")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".total_member_count")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".total_member_count")))) {
 		request.TotalMemberCount = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".valid_license_levels")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".valid_license_levels")))) && (ok || !reflect.DeepEqual(v, d.Get("valid_license_levels"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".valid_license_levels")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".valid_license_levels")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".valid_license_levels")))) {
 		request.ValidLicenseLevels = interfaceToSliceString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfoStackMemberListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfoStackMemberList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfoStackMemberListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfoStackMemberList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfoStackMemberList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3386,7 +3349,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfoStackMemb
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfoStackMemberList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfoStackMemberList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3394,54 +3357,54 @@ func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfoStackMemb
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoStackInfoStackMemberList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfoStackMemberList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfoStackMemberList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfoStackMemberList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoStackInfoStackMemberList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hardware_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hardware_version")))) && (ok || !reflect.DeepEqual(v, d.Get("hardware_version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hardware_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hardware_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".hardware_version")))) {
 		request.HardwareVersion = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_level")))) && (ok || !reflect.DeepEqual(v, d.Get("license_level"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".license_level")))) {
 		request.LicenseLevel = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_type")))) && (ok || !reflect.DeepEqual(v, d.Get("license_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".license_type")))) {
 		request.LicenseType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get("mac_address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mac_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mac_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mac_address")))) {
 		request.MacAddress = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pid")))) && (ok || !reflect.DeepEqual(v, d.Get("pid"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pid")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".pid")))) {
 		request.Pid = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".priority")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".priority")))) && (ok || !reflect.DeepEqual(v, d.Get("priority"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".priority")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".priority")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".priority")))) {
 		request.Priority = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".role")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".role")))) && (ok || !reflect.DeepEqual(v, d.Get("role"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".role")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".role")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".role")))) {
 		request.Role = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get("serial_number"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".serial_number")))) {
 		request.SerialNumber = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".software_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".software_version")))) && (ok || !reflect.DeepEqual(v, d.Get("software_version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".software_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".software_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".software_version")))) {
 		request.SoftwareVersion = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_number")))) && (ok || !reflect.DeepEqual(v, d.Get("stack_number"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".stack_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".stack_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".stack_number")))) {
 		request.StackNumber = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sudi_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sudi_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get("sudi_serial_number"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sudi_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sudi_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".sudi_serial_number")))) {
 		request.SudiSerialNumber = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkDeviceInfoTags(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoTags {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoTags(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoTags {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoTags
-	request = d.Get(key + ".tags.0")
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3453,7 +3416,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListArray(ctx cont
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3461,44 +3424,44 @@ func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListArray(ctx cont
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".details")))) && (ok || !reflect.DeepEqual(v, d.Get("details"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".details")))) {
 		request.Details = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".error_flag")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".error_flag")))) && (ok || !reflect.DeepEqual(v, d.Get("error_flag"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".error_flag")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".error_flag")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".error_flag")))) {
 		request.ErrorFlag = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".history_task_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".history_task_info")))) && (ok || !reflect.DeepEqual(v, d.Get("history_task_info"))) {
-		request.HistoryTaskInfo = expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfo(ctx, key+".history_task_info.0", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".history_task_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".history_task_info")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".history_task_info")))) {
+		request.HistoryTaskInfo = expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfo(ctx, key+".history_task_info.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".timestamp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".timestamp")))) && (ok || !reflect.DeepEqual(v, d.Get("timestamp"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".timestamp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".timestamp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".timestamp")))) {
 		request.Timestamp = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfo {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfo {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfo{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".addn_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".addn_details")))) && (ok || !reflect.DeepEqual(v, d.Get("addn_details"))) {
-		request.AddnDetails = expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetailsArray(ctx, key+".addn_details", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".addn_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".addn_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".addn_details")))) {
+		request.AddnDetails = expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoAddnDetailsArray(ctx, key+".addn_details", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get("work_item_list"))) {
-		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemListArray(ctx, key+".work_item_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
+		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoWorkItemListArray(ctx, key+".work_item_list", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetailsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoAddnDetailsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3510,7 +3473,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInf
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoAddnDetails(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3518,18 +3481,18 @@ func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInf
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoAddnDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoAddnDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get("key"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".key")))) {
 		request.Key = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get("value"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3541,7 +3504,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInf
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3549,92 +3512,92 @@ func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInf
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkRunSummaryListHistoryTaskInfoWorkItemList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get("command"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".command")))) {
 		request.Command = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get("output_str"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".output_str")))) {
 		request.OutputStr = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflow(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflow {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflow(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflow {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflow{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get("id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.TypeID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".add_to_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".add_to_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get("add_to_inventory"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".add_to_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".add_to_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".add_to_inventory")))) {
 		request.AddToInventory = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get("added_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".added_on")))) {
 		request.AddedOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get("config_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_id")))) {
 		request.ConfigID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_task_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_task_idx")))) && (ok || !reflect.DeepEqual(v, d.Get("curr_task_idx"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_task_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_task_idx")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".curr_task_idx")))) {
 		request.CurrTaskIDx = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get("description"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
 		request.Description = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".exec_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".exec_time")))) && (ok || !reflect.DeepEqual(v, d.Get("exec_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".exec_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".exec_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".exec_time")))) {
 		request.ExecTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_id")))) && (ok || !reflect.DeepEqual(v, d.Get("image_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_id")))) {
 		request.ImageID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_type")))) && (ok || !reflect.DeepEqual(v, d.Get("instance_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_type")))) {
 		request.InstanceType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lastupdate_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lastupdate_on")))) && (ok || !reflect.DeepEqual(v, d.Get("lastupdate_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lastupdate_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lastupdate_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".lastupdate_on")))) {
 		request.LastupdateOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tasks")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tasks")))) && (ok || !reflect.DeepEqual(v, d.Get("tasks"))) {
-		request.Tasks = expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksArray(ctx, key+".tasks", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tasks")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tasks")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tasks")))) {
+		request.Tasks = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksArray(ctx, key+".tasks", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get("tenant_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tenant_id")))) {
 		request.TenantID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".use_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".use_state")))) && (ok || !reflect.DeepEqual(v, d.Get("use_state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".use_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".use_state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".use_state")))) {
 		request.UseState = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get("version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasks {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasks{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3646,7 +3609,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksArra
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3654,39 +3617,39 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksArra
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasks {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasks{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_work_item_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_work_item_idx")))) && (ok || !reflect.DeepEqual(v, d.Get("curr_work_item_idx"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_work_item_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_work_item_idx")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".curr_work_item_idx")))) {
 		request.CurrWorkItemIDx = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".task_seq_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".task_seq_no")))) && (ok || !reflect.DeepEqual(v, d.Get("task_seq_no"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".task_seq_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".task_seq_no")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".task_seq_no")))) {
 		request.TaskSeqNo = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get("work_item_list"))) {
-		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
+		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasksWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasksWorkItemList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasksWorkItemList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3698,7 +3661,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksWork
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3706,92 +3669,92 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksWork
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemResetWorkflowTasksWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasksWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasksWorkItemList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemResetWorkflowTasksWorkItemList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get("command"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".command")))) {
 		request.Command = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get("output_str"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".output_str")))) {
 		request.OutputStr = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflow(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflow {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflow(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflow {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflow{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get("id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.TypeID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".add_to_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".add_to_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get("add_to_inventory"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".add_to_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".add_to_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".add_to_inventory")))) {
 		request.AddToInventory = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get("added_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".added_on")))) {
 		request.AddedOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get("config_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_id")))) {
 		request.ConfigID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_task_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_task_idx")))) && (ok || !reflect.DeepEqual(v, d.Get("curr_task_idx"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_task_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_task_idx")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".curr_task_idx")))) {
 		request.CurrTaskIDx = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get("description"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
 		request.Description = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".exec_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".exec_time")))) && (ok || !reflect.DeepEqual(v, d.Get("exec_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".exec_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".exec_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".exec_time")))) {
 		request.ExecTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_id")))) && (ok || !reflect.DeepEqual(v, d.Get("image_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_id")))) {
 		request.ImageID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_type")))) && (ok || !reflect.DeepEqual(v, d.Get("instance_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_type")))) {
 		request.InstanceType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lastupdate_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lastupdate_on")))) && (ok || !reflect.DeepEqual(v, d.Get("lastupdate_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lastupdate_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lastupdate_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".lastupdate_on")))) {
 		request.LastupdateOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tasks")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tasks")))) && (ok || !reflect.DeepEqual(v, d.Get("tasks"))) {
-		request.Tasks = expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksArray(ctx, key+".tasks", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tasks")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tasks")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tasks")))) {
+		request.Tasks = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksArray(ctx, key+".tasks", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get("tenant_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tenant_id")))) {
 		request.TenantID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".use_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".use_state")))) && (ok || !reflect.DeepEqual(v, d.Get("use_state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".use_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".use_state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".use_state")))) {
 		request.UseState = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get("version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasks {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasks{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3803,7 +3766,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksArray(ctx
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3811,39 +3774,39 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksArray(ctx
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasks {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasks{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_work_item_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_work_item_idx")))) && (ok || !reflect.DeepEqual(v, d.Get("curr_work_item_idx"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_work_item_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_work_item_idx")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".curr_work_item_idx")))) {
 		request.CurrWorkItemIDx = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".task_seq_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".task_seq_no")))) && (ok || !reflect.DeepEqual(v, d.Get("task_seq_no"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".task_seq_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".task_seq_no")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".task_seq_no")))) {
 		request.TaskSeqNo = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get("work_item_list"))) {
-		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
+		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasksWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasksWorkItemList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasksWorkItemList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3855,7 +3818,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksWorkItemL
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3863,92 +3826,92 @@ func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksWorkItemL
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkSystemWorkflowTasksWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasksWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasksWorkItemList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkSystemWorkflowTasksWorkItemList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get("command"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".command")))) {
 		request.Command = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get("output_str"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".output_str")))) {
 		request.OutputStr = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflow(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflow {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflow(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflow {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflow{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get("id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.TypeID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".add_to_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".add_to_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get("add_to_inventory"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".add_to_inventory")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".add_to_inventory")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".add_to_inventory")))) {
 		request.AddToInventory = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get("added_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".added_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".added_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".added_on")))) {
 		request.AddedOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get("config_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_id")))) {
 		request.ConfigID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_task_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_task_idx")))) && (ok || !reflect.DeepEqual(v, d.Get("curr_task_idx"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_task_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_task_idx")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".curr_task_idx")))) {
 		request.CurrTaskIDx = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get("description"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
 		request.Description = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".exec_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".exec_time")))) && (ok || !reflect.DeepEqual(v, d.Get("exec_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".exec_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".exec_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".exec_time")))) {
 		request.ExecTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_id")))) && (ok || !reflect.DeepEqual(v, d.Get("image_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_id")))) {
 		request.ImageID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_type")))) && (ok || !reflect.DeepEqual(v, d.Get("instance_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_type")))) {
 		request.InstanceType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lastupdate_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lastupdate_on")))) && (ok || !reflect.DeepEqual(v, d.Get("lastupdate_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lastupdate_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lastupdate_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".lastupdate_on")))) {
 		request.LastupdateOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tasks")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tasks")))) && (ok || !reflect.DeepEqual(v, d.Get("tasks"))) {
-		request.Tasks = expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksArray(ctx, key+".tasks", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tasks")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tasks")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tasks")))) {
+		request.Tasks = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksArray(ctx, key+".tasks", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get("tenant_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tenant_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tenant_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tenant_id")))) {
 		request.TenantID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".use_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".use_state")))) && (ok || !reflect.DeepEqual(v, d.Get("use_state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".use_state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".use_state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".use_state")))) {
 		request.UseState = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get("version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasks {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasks{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -3960,7 +3923,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksArray(ctx conte
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasks(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -3968,39 +3931,39 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksArray(ctx conte
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasks {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasks(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasks {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasks{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_work_item_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_work_item_idx")))) && (ok || !reflect.DeepEqual(v, d.Get("curr_work_item_idx"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".curr_work_item_idx")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".curr_work_item_idx")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".curr_work_item_idx")))) {
 		request.CurrWorkItemIDx = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".task_seq_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".task_seq_no")))) && (ok || !reflect.DeepEqual(v, d.Get("task_seq_no"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".task_seq_no")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".task_seq_no")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".task_seq_no")))) {
 		request.TaskSeqNo = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get("work_item_list"))) {
-		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
+		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasksWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasksWorkItemList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasksWorkItemList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -4012,7 +3975,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksWorkItemListArr
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -4020,47 +3983,47 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksWorkItemListArr
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowTasksWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasksWorkItemList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasksWorkItemList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowTasksWorkItemList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get("command"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".command")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".command")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".command")))) {
 		request.Command = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get("end_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".end_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".end_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".end_time")))) {
 		request.EndTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get("output_str"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".output_str")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".output_str")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".output_str")))) {
 		request.OutputStr = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get("start_time"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".start_time")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".start_time")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".start_time")))) {
 		request.StartTime = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get("state"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".state")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".state")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".state")))) {
 		request.State = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get("time_taken"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParameters(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParameters {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParameters(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParameters {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParameters{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_list")))) && (ok || !reflect.DeepEqual(v, d.Get("config_list"))) {
-		request.ConfigList = expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigListArray(ctx, key+".config_list", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_list")))) {
+		request.ConfigList = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListArray(ctx, key+".config_list", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_level")))) && (ok || !reflect.DeepEqual(v, d.Get("license_level"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".license_level")))) {
 		request.LicenseLevel = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_type")))) && (ok || !reflect.DeepEqual(v, d.Get("license_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".license_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".license_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".license_type")))) {
 		request.LicenseType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".top_of_stack_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get("top_of_stack_serial_number"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".top_of_stack_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) {
 		request.TopOfStackSerialNumber = interfaceToString(v)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigList {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigList{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -4072,7 +4035,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigList
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigList(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -4080,18 +4043,18 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigList
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigList {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigList {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get("config_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_id")))) {
 		request.ConfigID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get("config_parameters"))) {
-		request.ConfigParameters = expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigListConfigParametersArray(ctx, key+".config_parameters", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_parameters")))) {
+		request.ConfigParameters = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListConfigParametersArray(ctx, key+".config_parameters", d)
 	}
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigListConfigParametersArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigListConfigParameters {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListConfigParametersArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigListConfigParameters {
 	request := []dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigListConfigParameters{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -4103,7 +4066,7 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigList
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigListConfigParameters(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListConfigParameters(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -4111,12 +4074,12 @@ func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigList
 	return &request
 }
 
-func expandRequestPnpDeviceImportImportDevicesInBulkWorkflowParametersConfigListConfigParameters(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigListConfigParameters {
+func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListConfigParameters(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigListConfigParameters {
 	request := dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkWorkflowParametersConfigListConfigParameters{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get("key"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".key")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".key")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".key")))) {
 		request.Key = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get("value"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
 	return &request

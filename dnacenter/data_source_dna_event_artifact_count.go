@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -47,16 +48,19 @@ func dataSourceEventArtifactCountRead(ctx context.Context, d *schema.ResourceDat
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: EventArtifactCount")
 
-		response1, _, err := client.EventManagement.EventArtifactCount()
+		response1, restyResp1, err := client.EventManagement.EventArtifactCount()
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing EventArtifactCount", err,
 				"Failure at EventArtifactCount, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenEventManagementEventArtifactCountItem(response1)
 		if err := d.Set("item", vItem1); err != nil {

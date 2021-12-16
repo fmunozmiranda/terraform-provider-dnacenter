@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -54,16 +55,19 @@ func dataSourceTagMemberTypeRead(ctx context.Context, d *schema.ResourceData, m 
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetTagResourceTypes")
 
-		response1, _, err := client.Tag.GetTagResourceTypes()
+		response1, restyResp1, err := client.Tag.GetTagResourceTypes()
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetTagResourceTypes", err,
 				"Failure at GetTagResourceTypes, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenTagGetTagResourceTypesItems(response1)
 		if err := d.Set("items", vItems1); err != nil {

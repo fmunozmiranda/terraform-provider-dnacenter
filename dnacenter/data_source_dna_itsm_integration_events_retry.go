@@ -5,8 +5,9 @@ import (
 
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -56,51 +57,32 @@ func dataSourceItsmIntegrationEventsRetryRead(ctx context.Context, d *schema.Res
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vInstanceID, okInstanceID := d.GetOk("instance_id")
 
-	method1 := []bool{okInstanceID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: GetFailedItsmEvents")
-		queryParams1 := dnacentersdkgo.GetFailedItsmEventsQueryParams{}
+		log.Printf("[DEBUG] Selected method 1: RetryIntegrationEvents")
+		request1 := expandRequestItsmIntegrationEventsRetryRetryIntegrationEvents(ctx, "", d)
 
-		if okInstanceID {
-			queryParams1.InstanceID = vInstanceID.(string)
+		response1, restyResp1, err := client.Itsm.RetryIntegrationEvents(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
-
-		response1, _, err := client.Itsm.GetFailedItsmEvents(&queryParams1)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetFailedItsmEvents", err,
-				"Failure at GetFailedItsmEvents, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: RetryIntegrationEvents")
-		request2 := expandRequestItsmIntegrationEventsRetryRetryIntegrationEvents(ctx, "", d)
-
-		response2, _, err := client.Itsm.RetryIntegrationEvents(request2)
-
-		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing RetryIntegrationEvents", err,
 				"Failure at RetryIntegrationEvents, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItem2 := flattenItsmRetryIntegrationEventsItem(response2)
-		if err := d.Set("item", vItem2); err != nil {
+		vItem1 := flattenItsmRetryIntegrationEventsItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting RetryIntegrationEvents response",
 				err))
@@ -115,7 +97,7 @@ func dataSourceItsmIntegrationEventsRetryRead(ctx context.Context, d *schema.Res
 
 func expandRequestItsmIntegrationEventsRetryRetryIntegrationEvents(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItsmRetryIntegrationEvents {
 	request := dnacentersdkgo.RequestItsmRetryIntegrationEvents{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key)); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key)))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key)))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".")))) {
 		request = interfaceToSliceString(v)
 	}
 	return &request

@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -330,16 +331,19 @@ func dataSourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{
 			queryParams1.SystemTag = vSystemTag.(string)
 		}
 
-		response1, _, err := client.Tag.GetTag(&queryParams1)
+		response1, restyResp1, err := client.Tag.GetTag(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetTag", err,
 				"Failure at GetTag, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenTagGetTagItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {
@@ -356,16 +360,19 @@ func dataSourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{
 		log.Printf("[DEBUG] Selected method 2: GetTagByID")
 		vvID := vID.(string)
 
-		response2, _, err := client.Tag.GetTagByID(vvID)
+		response2, restyResp2, err := client.Tag.GetTagByID(vvID)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetTagByID", err,
 				"Failure at GetTagByID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItem2 := flattenTagGetTagByIDItem(response2.Response)
 		if err := d.Set("item", vItem2); err != nil {

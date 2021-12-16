@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -89,35 +90,41 @@ func dataSourceSwimTriggerActivationRead(ctx context.Context, d *schema.Resource
 
 	var diags diag.Diagnostics
 	vScheduleValidate, okScheduleValidate := d.GetOk("schedule_validate")
-	vClientType, okClientType := d.GetOk("client_type")
-	vClientURL, okClientURL := d.GetOk("client_url")
+	vClientType := d.Get("client_type")
+	vClientURL := d.Get("client_url")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: TriggerSoftwareImageActivation")
-		queryParams1 := dnacentersdkgo.TriggerSoftwareImageActivationQueryParams{}
-		headerParams1 := dnacentersdkgo.TriggerSoftwareImageActivationHeaderParams{}
 		request1 := expandRequestSwimTriggerActivationTriggerSoftwareImageActivation(ctx, "", d)
+
+		headerParams1 := dnacentersdkgo.TriggerSoftwareImageActivationHeaderParams{}
+		queryParams1 := dnacentersdkgo.TriggerSoftwareImageActivationQueryParams{}
+
 		if okScheduleValidate {
 			queryParams1.ScheduleValidate = vScheduleValidate.(bool)
 		}
-		if okClientType {
-			headerParams1.ClientType = vClientType.(string)
-		}
-		if okClientURL {
-			headerParams1.ClientURL = vClientURL.(string)
-		}
+		headerParams1.ClientType = vClientType.(string)
 
-		response1, _, err := client.SoftwareImageManagementSwim.TriggerSoftwareImageActivation(request1, &headerParams1, &queryParams1)
+		headerParams1.ClientURL = vClientURL.(string)
+
+		response1, restyResp1, err := client.SoftwareImageManagementSwim.TriggerSoftwareImageActivation(request1, &headerParams1, &queryParams1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing TriggerSoftwareImageActivation", err,
 				"Failure at TriggerSoftwareImageActivation, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSoftwareImageManagementSwimTriggerSoftwareImageActivationItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -135,13 +142,13 @@ func dataSourceSwimTriggerActivationRead(ctx context.Context, d *schema.Resource
 
 func expandRequestSwimTriggerActivationTriggerSoftwareImageActivation(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageActivation {
 	request := dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageActivation{}
-	if v := expandRequestSwimTriggerActivationTriggerSoftwareImageActivationArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageActivation {
+func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageActivation {
 	request := []dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageActivation{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -153,7 +160,7 @@ func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationArray(ctx c
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemSwimTriggerActivationTriggerSoftwareImageActivation(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -161,24 +168,24 @@ func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationArray(ctx c
 	return &request
 }
 
-func expandRequestItemSwimTriggerActivationTriggerSoftwareImageActivation(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageActivation {
+func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageActivation {
 	request := dnacentersdkgo.RequestItemSoftwareImageManagementSwimTriggerSoftwareImageActivation{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".activate_lower_image_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".activate_lower_image_version")))) && (ok || !reflect.DeepEqual(v, d.Get("activate_lower_image_version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".activate_lower_image_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".activate_lower_image_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".activate_lower_image_version")))) {
 		request.ActivateLowerImageVersion = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_upgrade_mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_upgrade_mode")))) && (ok || !reflect.DeepEqual(v, d.Get("device_upgrade_mode"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_upgrade_mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_upgrade_mode")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_upgrade_mode")))) {
 		request.DeviceUpgradeMode = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_uuid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_uuid")))) && (ok || !reflect.DeepEqual(v, d.Get("device_uuid"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_uuid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_uuid")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_uuid")))) {
 		request.DeviceUUID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".distribute_if_needed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".distribute_if_needed")))) && (ok || !reflect.DeepEqual(v, d.Get("distribute_if_needed"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".distribute_if_needed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".distribute_if_needed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".distribute_if_needed")))) {
 		request.DistributeIfNeeded = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_uuid_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_uuid_list")))) && (ok || !reflect.DeepEqual(v, d.Get("image_uuid_list"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_uuid_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_uuid_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_uuid_list")))) {
 		request.ImageUUIDList = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".smu_image_uuid_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".smu_image_uuid_list")))) && (ok || !reflect.DeepEqual(v, d.Get("smu_image_uuid_list"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".smu_image_uuid_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".smu_image_uuid_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".smu_image_uuid_list")))) {
 		request.SmuImageUUIDList = interfaceToSliceString(v)
 	}
 	return &request

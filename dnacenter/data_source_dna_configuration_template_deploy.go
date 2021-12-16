@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -175,16 +176,23 @@ func dataSourceConfigurationTemplateDeployRead(ctx context.Context, d *schema.Re
 		log.Printf("[DEBUG] Selected method 1: DeployTemplate")
 		request1 := expandRequestConfigurationTemplateDeployDeployTemplate(ctx, "", d)
 
-		response1, _, err := client.ConfigurationTemplates.DeployTemplate(request1)
+		response1, restyResp1, err := client.ConfigurationTemplates.DeployTemplate(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing DeployTemplate", err,
 				"Failure at DeployTemplate, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenConfigurationTemplatesDeployTemplateItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
@@ -245,7 +253,7 @@ func expandRequestConfigurationTemplateDeployDeployTemplateMemberTemplateDeploym
 
 func expandRequestConfigurationTemplateDeployDeployTemplateMemberTemplateDeploymentInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateMemberTemplateDeploymentInfo {
 	var request dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateMemberTemplateDeploymentInfo
-	request = d.Get(key + ".member_template_deployment_info")
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
@@ -271,22 +279,22 @@ func expandRequestConfigurationTemplateDeployDeployTemplateTargetInfoArray(ctx c
 
 func expandRequestConfigurationTemplateDeployDeployTemplateTargetInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateTargetInfo {
 	request := dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateTargetInfo{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".host_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".host_name")))) && (ok || !reflect.DeepEqual(v, d.Get("host_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".host_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".host_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".host_name")))) {
 		request.HostName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get("id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".params")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".params")))) && (ok || !reflect.DeepEqual(v, d.Get("params"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".params")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".params")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".params")))) {
 		request.Params = expandRequestConfigurationTemplateDeployDeployTemplateTargetInfoParams(ctx, key+".params.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".resource_params")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".resource_params")))) && (ok || !reflect.DeepEqual(v, d.Get("resource_params"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".resource_params")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".resource_params")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".resource_params")))) {
 		request.ResourceParams = expandRequestConfigurationTemplateDeployDeployTemplateTargetInfoResourceParamsArray(ctx, key+".resource_params", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".versioned_template_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".versioned_template_id")))) && (ok || !reflect.DeepEqual(v, d.Get("versioned_template_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".versioned_template_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".versioned_template_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".versioned_template_id")))) {
 		request.VersionedTemplateID = interfaceToString(v)
 	}
 	return &request
@@ -294,7 +302,7 @@ func expandRequestConfigurationTemplateDeployDeployTemplateTargetInfo(ctx contex
 
 func expandRequestConfigurationTemplateDeployDeployTemplateTargetInfoParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateTargetInfoParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateTargetInfoParams
-	request = d.Get("params")
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 
@@ -320,7 +328,7 @@ func expandRequestConfigurationTemplateDeployDeployTemplateTargetInfoResourcePar
 
 func expandRequestConfigurationTemplateDeployDeployTemplateTargetInfoResourceParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateTargetInfoResourceParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateTargetInfoResourceParams
-	request = d.Get("resource_params")
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 

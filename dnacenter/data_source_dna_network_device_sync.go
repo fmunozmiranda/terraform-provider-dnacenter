@@ -5,8 +5,9 @@ import (
 
 	"fmt"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -59,22 +60,30 @@ func dataSourceNetworkDeviceSyncRead(ctx context.Context, d *schema.ResourceData
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: SyncDevices")
-		queryParams1 := dnacentersdkgo.SyncDevicesQueryParams{}
 		request1 := expandRequestNetworkDeviceSyncSyncDevices(ctx, "", d)
+		queryParams1 := dnacentersdkgo.SyncDevicesQueryParams{}
+
 		if okForceSync {
 			queryParams1.ForceSync = vForceSync.(bool)
 		}
 
-		response1, _, err := client.Devices.SyncDevices(request1, &queryParams1)
+		response1, restyResp1, err := client.Devices.SyncDevices(request1, &queryParams1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing SyncDevices", err,
 				"Failure at SyncDevices, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenDevicesSyncDevicesItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -92,13 +101,13 @@ func dataSourceNetworkDeviceSyncRead(ctx context.Context, d *schema.ResourceData
 
 func expandRequestNetworkDeviceSyncSyncDevices(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDevicesSyncDevices {
 	request := dnacentersdkgo.RequestDevicesSyncDevices{}
-	if v := expandRequestNetworkDeviceSyncSyncDevicesArray(ctx, key+".", d); v != nil {
+	if v := expandRequestNetworkDeviceSyncSyncDevicesItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestNetworkDeviceSyncSyncDevicesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDevicesSyncDevices {
+func expandRequestNetworkDeviceSyncSyncDevicesItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDevicesSyncDevices {
 	request := []dnacentersdkgo.RequestItemDevicesSyncDevices{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -110,7 +119,7 @@ func expandRequestNetworkDeviceSyncSyncDevicesArray(ctx context.Context, key str
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemNetworkDeviceSyncSyncDevices(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestNetworkDeviceSyncSyncDevicesItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -118,7 +127,7 @@ func expandRequestNetworkDeviceSyncSyncDevicesArray(ctx context.Context, key str
 	return &request
 }
 
-func expandRequestItemNetworkDeviceSyncSyncDevices(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDevicesSyncDevices {
+func expandRequestNetworkDeviceSyncSyncDevicesItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDevicesSyncDevices {
 	var request dnacentersdkgo.RequestItemDevicesSyncDevices
 	request = d.Get(fixKeyAccess(key))
 	return &request

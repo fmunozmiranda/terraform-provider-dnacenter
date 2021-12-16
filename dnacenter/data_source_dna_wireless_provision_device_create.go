@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -141,51 +142,32 @@ func dataSourceWirelessProvisionDeviceCreateRead(ctx context.Context, d *schema.
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
-	method1 := []bool{okPersistbapioutput}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: ProvisionUpdate")
-		headerParams1 := dnacentersdkgo.ProvisionUpdateHeaderParams{}
-		request1 := expandRequestWirelessProvisionDeviceCreateProvisionUpdate(ctx, "", d)
-		if okPersistbapioutput {
-			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
-		}
+		log.Printf("[DEBUG] Selected method 1: Provision")
+		request1 := expandRequestWirelessProvisionDeviceCreateProvision(ctx, "", d)
 
-		response1, _, err := client.Wireless.ProvisionUpdate(request1, &headerParams1)
+		response1, restyResp1, err := client.Wireless.Provision(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing ProvisionUpdate", err,
-				"Failure at ProvisionUpdate, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: Provision")
-		request2 := expandRequestWirelessProvisionDeviceCreateProvision(ctx, "", d)
-
-		response2, _, err := client.Wireless.Provision(request2)
-
-		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing Provision", err,
 				"Failure at Provision, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItem2 := flattenWirelessProvisionItem(response2)
-		if err := d.Set("item", vItem2); err != nil {
+		vItem1 := flattenWirelessProvisionItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting Provision response",
 				err))
@@ -198,100 +180,15 @@ func dataSourceWirelessProvisionDeviceCreateRead(ctx context.Context, d *schema.
 	return diags
 }
 
-func expandRequestWirelessProvisionDeviceCreateProvisionUpdate(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessProvisionUpdate {
-	request := dnacentersdkgo.RequestWirelessProvisionUpdate{}
-	if v := expandRequestWirelessProvisionDeviceCreateProvisionUpdateArray(ctx, key+".", d); v != nil {
-		request = *v
-	}
-	return &request
-}
-
-func expandRequestWirelessProvisionDeviceCreateProvisionUpdateArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessProvisionUpdate {
-	request := []dnacentersdkgo.RequestItemWirelessProvisionUpdate{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestItemWirelessProvisionDeviceCreateProvisionUpdate(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	return &request
-}
-
-func expandRequestItemWirelessProvisionDeviceCreateProvisionUpdate(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessProvisionUpdate {
-	request := dnacentersdkgo.RequestItemWirelessProvisionUpdate{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_name")))) && (ok || !reflect.DeepEqual(v, d.Get("device_name"))) {
-		request.DeviceName = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".managed_aplocations")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".managed_aplocations")))) && (ok || !reflect.DeepEqual(v, d.Get("managed_aplocations"))) {
-		request.ManagedApLocations = interfaceToSliceString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dynamic_interfaces")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dynamic_interfaces")))) && (ok || !reflect.DeepEqual(v, d.Get("dynamic_interfaces"))) {
-		request.DynamicInterfaces = expandRequestWirelessProvisionDeviceCreateProvisionUpdateDynamicInterfacesArray(ctx, key+".dynamic_interfaces", d)
-	}
-	return &request
-}
-
-func expandRequestWirelessProvisionDeviceCreateProvisionUpdateDynamicInterfacesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessProvisionUpdateDynamicInterfaces {
-	request := []dnacentersdkgo.RequestItemWirelessProvisionUpdateDynamicInterfaces{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestWirelessProvisionDeviceCreateProvisionUpdateDynamicInterfaces(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	return &request
-}
-
-func expandRequestWirelessProvisionDeviceCreateProvisionUpdateDynamicInterfaces(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessProvisionUpdateDynamicInterfaces {
-	request := dnacentersdkgo.RequestItemWirelessProvisionUpdateDynamicInterfaces{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_ipaddress")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_ipaddress")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_ipaddress"))) {
-		request.InterfaceIPAddress = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_netmask_in_cid_r")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_netmask_in_cid_r")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_netmask_in_cid_r"))) {
-		request.InterfaceNetmaskInCIDR = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_gateway")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_gateway")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_gateway"))) {
-		request.InterfaceGateway = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lag_or_port_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lag_or_port_number")))) && (ok || !reflect.DeepEqual(v, d.Get("lag_or_port_number"))) {
-		request.LagOrPortNumber = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".vlan_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".vlan_id")))) && (ok || !reflect.DeepEqual(v, d.Get("vlan_id"))) {
-		request.VLANID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_name"))) {
-		request.InterfaceName = interfaceToString(v)
-	}
-	return &request
-}
-
 func expandRequestWirelessProvisionDeviceCreateProvision(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessProvision {
 	request := dnacentersdkgo.RequestWirelessProvision{}
-	if v := expandRequestWirelessProvisionDeviceCreateProvisionArray(ctx, key+".", d); v != nil {
+	if v := expandRequestWirelessProvisionDeviceCreateProvisionItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestWirelessProvisionDeviceCreateProvisionArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessProvision {
+func expandRequestWirelessProvisionDeviceCreateProvisionItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessProvision {
 	request := []dnacentersdkgo.RequestItemWirelessProvision{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -303,7 +200,7 @@ func expandRequestWirelessProvisionDeviceCreateProvisionArray(ctx context.Contex
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemWirelessProvisionDeviceCreateProvision(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestWirelessProvisionDeviceCreateProvisionItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -311,24 +208,24 @@ func expandRequestWirelessProvisionDeviceCreateProvisionArray(ctx context.Contex
 	return &request
 }
 
-func expandRequestItemWirelessProvisionDeviceCreateProvision(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessProvision {
+func expandRequestWirelessProvisionDeviceCreateProvisionItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessProvision {
 	request := dnacentersdkgo.RequestItemWirelessProvision{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_name")))) && (ok || !reflect.DeepEqual(v, d.Get("device_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_name")))) {
 		request.DeviceName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site")))) && (ok || !reflect.DeepEqual(v, d.Get("site"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site")))) {
 		request.Site = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".managed_aplocations")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".managed_aplocations")))) && (ok || !reflect.DeepEqual(v, d.Get("managed_aplocations"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".managed_aplocations")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".managed_aplocations")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".managed_aplocations")))) {
 		request.ManagedApLocations = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dynamic_interfaces")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dynamic_interfaces")))) && (ok || !reflect.DeepEqual(v, d.Get("dynamic_interfaces"))) {
-		request.DynamicInterfaces = expandRequestWirelessProvisionDeviceCreateProvisionDynamicInterfacesArray(ctx, key+".dynamic_interfaces", d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dynamic_interfaces")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dynamic_interfaces")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dynamic_interfaces")))) {
+		request.DynamicInterfaces = expandRequestWirelessProvisionDeviceCreateProvisionItemDynamicInterfacesArray(ctx, key+".dynamic_interfaces", d)
 	}
 	return &request
 }
 
-func expandRequestWirelessProvisionDeviceCreateProvisionDynamicInterfacesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessProvisionDynamicInterfaces {
+func expandRequestWirelessProvisionDeviceCreateProvisionItemDynamicInterfacesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessProvisionDynamicInterfaces {
 	request := []dnacentersdkgo.RequestItemWirelessProvisionDynamicInterfaces{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -340,7 +237,7 @@ func expandRequestWirelessProvisionDeviceCreateProvisionDynamicInterfacesArray(c
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestWirelessProvisionDeviceCreateProvisionDynamicInterfaces(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestWirelessProvisionDeviceCreateProvisionItemDynamicInterfaces(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -348,24 +245,24 @@ func expandRequestWirelessProvisionDeviceCreateProvisionDynamicInterfacesArray(c
 	return &request
 }
 
-func expandRequestWirelessProvisionDeviceCreateProvisionDynamicInterfaces(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessProvisionDynamicInterfaces {
+func expandRequestWirelessProvisionDeviceCreateProvisionItemDynamicInterfaces(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessProvisionDynamicInterfaces {
 	request := dnacentersdkgo.RequestItemWirelessProvisionDynamicInterfaces{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_ipaddress")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_ipaddress")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_ipaddress"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_ipaddress")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_ipaddress")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_ipaddress")))) {
 		request.InterfaceIPAddress = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_netmask_in_cid_r")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_netmask_in_cid_r")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_netmask_in_cid_r"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_netmask_in_cid_r")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_netmask_in_cid_r")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_netmask_in_cid_r")))) {
 		request.InterfaceNetmaskInCIDR = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_gateway")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_gateway")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_gateway"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_gateway")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_gateway")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_gateway")))) {
 		request.InterfaceGateway = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lag_or_port_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lag_or_port_number")))) && (ok || !reflect.DeepEqual(v, d.Get("lag_or_port_number"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lag_or_port_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lag_or_port_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".lag_or_port_number")))) {
 		request.LagOrPortNumber = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".vlan_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".vlan_id")))) && (ok || !reflect.DeepEqual(v, d.Get("vlan_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".vlan_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".vlan_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".vlan_id")))) {
 		request.VLANID = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get("interface_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_name")))) {
 		request.InterfaceName = interfaceToString(v)
 	}
 	return &request

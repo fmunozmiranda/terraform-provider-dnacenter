@@ -5,8 +5,9 @@ import (
 
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -60,31 +61,39 @@ func dataSourceNfvProvisionDetailsRead(ctx context.Context, d *schema.ResourceDa
 
 	var diags diag.Diagnostics
 	vRunsync := d.Get("runsync")
-	vRunsynctimeout, okRunsynctimeout := d.GetOk("runsynctimeout")
+	vRunsynctimeout := d.Get("runsynctimeout")
 	vPersistbapioutput := d.Get("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: NfvProvisioningDetail")
-		headerParams1 := dnacentersdkgo.NfvProvisioningDetailHeaderParams{}
 		request1 := expandRequestNfvProvisionDetailsNfvProvisioningDetail(ctx, "", d)
+
+		headerParams1 := dnacentersdkgo.NfvProvisioningDetailHeaderParams{}
+
 		headerParams1.Runsync = vRunsync.(string)
 
-		if okRunsynctimeout {
-			headerParams1.Runsynctimeout = vRunsynctimeout.(string)
-		}
+		headerParams1.Runsynctimeout = vRunsynctimeout.(string)
+
 		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
 
-		response1, _, err := client.SiteDesign.NfvProvisioningDetail(request1, &headerParams1)
+		response1, restyResp1, err := client.SiteDesign.NfvProvisioningDetail(request1, &headerParams1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing NfvProvisioningDetail", err,
 				"Failure at NfvProvisioningDetail, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSiteDesignNfvProvisioningDetailItem(response1)
 		if err := d.Set("item", vItem1); err != nil {

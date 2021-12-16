@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -730,22 +731,26 @@ func dataSourceUserEnrichmentDetailsRead(ctx context.Context, d *schema.Resource
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetUserEnrichmentDetails")
+
 		headerParams1 := dnacentersdkgo.GetUserEnrichmentDetailsHeaderParams{}
 
 		headerParams1.EntityType = vEntityType.(string)
 
 		headerParams1.EntityValue = vEntityValue.(string)
 
-		response1, _, err := client.Users.GetUserEnrichmentDetails(&headerParams1)
+		response1, restyResp1, err := client.Users.GetUserEnrichmentDetails(&headerParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetUserEnrichmentDetails", err,
 				"Failure at GetUserEnrichmentDetails, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenUsersGetUserEnrichmentDetailsItems(response1)
 		if err := d.Set("items", vItems1); err != nil {

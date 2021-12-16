@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -85,62 +86,31 @@ func dataSourceServiceProviderUpdateRead(ctx context.Context, d *schema.Resource
 
 	var diags diag.Diagnostics
 
-	method1 := []bool{}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-	method3 := []bool{}
-	log.Printf("[DEBUG] Selecting method. Method 3 %q", method3)
-
-	selectedMethod := pickMethod([][]bool{method1, method2, method3})
+	selectedMethod := 1
 	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: GetServiceProviderDetails")
+		log.Printf("[DEBUG] Selected method 1: UpdateSpProfile")
+		request1 := expandRequestServiceProviderUpdateUpdateSpProfile(ctx, "", d)
 
-		response1, _, err := client.NetworkSettings.GetServiceProviderDetails()
+		response1, restyResp1, err := client.NetworkSettings.UpdateSpProfile(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetServiceProviderDetails", err,
-				"Failure at GetServiceProviderDetails, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: CreateSpProfile")
-		request2 := expandRequestServiceProviderUpdateCreateSpProfile(ctx, "", d)
-
-		response2, _, err := client.NetworkSettings.CreateSpProfile(request2)
-
-		if err != nil || response2 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing CreateSpProfile", err,
-				"Failure at CreateSpProfile, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
-
-	}
-	if selectedMethod == 3 {
-		log.Printf("[DEBUG] Selected method 3: UpdateSpProfile")
-		request3 := expandRequestServiceProviderUpdateUpdateSpProfile(ctx, "", d)
-
-		response3, _, err := client.NetworkSettings.UpdateSpProfile(request3)
-
-		if err != nil || response3 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateSpProfile", err,
 				"Failure at UpdateSpProfile, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response3)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItem3 := flattenNetworkSettingsUpdateSpProfileItem(response3)
-		if err := d.Set("item", vItem3); err != nil {
+		vItem1 := flattenNetworkSettingsUpdateSpProfileItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting UpdateSpProfile response",
 				err))
@@ -153,54 +123,6 @@ func dataSourceServiceProviderUpdateRead(ctx context.Context, d *schema.Resource
 	return diags
 }
 
-func expandRequestServiceProviderUpdateCreateSpProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsCreateSpProfile {
-	request := dnacentersdkgo.RequestNetworkSettingsCreateSpProfile{}
-	request.Settings = expandRequestServiceProviderUpdateCreateSpProfileSettings(ctx, key, d)
-	return &request
-}
-
-func expandRequestServiceProviderUpdateCreateSpProfileSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsCreateSpProfileSettings {
-	request := dnacentersdkgo.RequestNetworkSettingsCreateSpProfileSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".qos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".qos")))) && (ok || !reflect.DeepEqual(v, d.Get("qos"))) {
-		request.Qos = expandRequestServiceProviderUpdateCreateSpProfileSettingsQosArray(ctx, key+".qos", d)
-	}
-	return &request
-}
-
-func expandRequestServiceProviderUpdateCreateSpProfileSettingsQosArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestNetworkSettingsCreateSpProfileSettingsQos {
-	request := []dnacentersdkgo.RequestNetworkSettingsCreateSpProfileSettingsQos{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestServiceProviderUpdateCreateSpProfileSettingsQos(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	return &request
-}
-
-func expandRequestServiceProviderUpdateCreateSpProfileSettingsQos(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsCreateSpProfileSettingsQos {
-	request := dnacentersdkgo.RequestNetworkSettingsCreateSpProfileSettingsQos{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get("profile_name"))) {
-		request.ProfileName = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".model")))) && (ok || !reflect.DeepEqual(v, d.Get("model"))) {
-		request.Model = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".wan_provider")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".wan_provider")))) && (ok || !reflect.DeepEqual(v, d.Get("wan_provider"))) {
-		request.WanProvider = interfaceToString(v)
-	}
-	return &request
-}
-
 func expandRequestServiceProviderUpdateUpdateSpProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateSpProfile {
 	request := dnacentersdkgo.RequestNetworkSettingsUpdateSpProfile{}
 	request.Settings = expandRequestServiceProviderUpdateUpdateSpProfileSettings(ctx, key, d)
@@ -209,7 +131,7 @@ func expandRequestServiceProviderUpdateUpdateSpProfile(ctx context.Context, key 
 
 func expandRequestServiceProviderUpdateUpdateSpProfileSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateSpProfileSettings {
 	request := dnacentersdkgo.RequestNetworkSettingsUpdateSpProfileSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".qos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".qos")))) && (ok || !reflect.DeepEqual(v, d.Get("qos"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".qos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".qos")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".qos")))) {
 		request.Qos = expandRequestServiceProviderUpdateUpdateSpProfileSettingsQosArray(ctx, key+".qos", d)
 	}
 	return &request
@@ -237,16 +159,16 @@ func expandRequestServiceProviderUpdateUpdateSpProfileSettingsQosArray(ctx conte
 
 func expandRequestServiceProviderUpdateUpdateSpProfileSettingsQos(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateSpProfileSettingsQos {
 	request := dnacentersdkgo.RequestNetworkSettingsUpdateSpProfileSettingsQos{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get("profile_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".profile_name")))) {
 		request.ProfileName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".model")))) && (ok || !reflect.DeepEqual(v, d.Get("model"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".model")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".model")))) {
 		request.Model = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".wan_provider")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".wan_provider")))) && (ok || !reflect.DeepEqual(v, d.Get("wan_provider"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".wan_provider")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".wan_provider")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".wan_provider")))) {
 		request.WanProvider = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".old_profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".old_profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get("old_profile_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".old_profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".old_profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".old_profile_name")))) {
 		request.OldProfileName = interfaceToString(v)
 	}
 	return &request

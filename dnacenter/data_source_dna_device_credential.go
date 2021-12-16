@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -440,16 +441,19 @@ func dataSourceDeviceCredentialRead(ctx context.Context, d *schema.ResourceData,
 			queryParams1.SiteID = vSiteID.(string)
 		}
 
-		response1, _, err := client.NetworkSettings.GetDeviceCredentialDetails(&queryParams1)
+		response1, restyResp1, err := client.NetworkSettings.GetDeviceCredentialDetails(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceCredentialDetails", err,
 				"Failure at GetDeviceCredentialDetails, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenNetworkSettingsGetDeviceCredentialDetailsItem(response1)
 		if err := d.Set("item", vItem1); err != nil {

@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -557,16 +558,19 @@ func dataSourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m in
 			queryParams1.Name = interfaceToSliceString(vName)
 		}
 
-		response1, _, err := client.DeviceOnboardingPnp.GetWorkflows(&queryParams1)
+		response1, restyResp1, err := client.DeviceOnboardingPnp.GetWorkflows(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetWorkflows", err,
 				"Failure at GetWorkflows, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenDeviceOnboardingPnpGetWorkflowsItems(response1)
 		if err := d.Set("items", vItems1); err != nil {
@@ -583,16 +587,19 @@ func dataSourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m in
 		log.Printf("[DEBUG] Selected method 2: GetWorkflowByID")
 		vvID := vID.(string)
 
-		response2, _, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
+		response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetWorkflowByID", err,
 				"Failure at GetWorkflowByID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItem2 := flattenDeviceOnboardingPnpGetWorkflowByIDItem(response2)
 		if err := d.Set("item", vItem2); err != nil {

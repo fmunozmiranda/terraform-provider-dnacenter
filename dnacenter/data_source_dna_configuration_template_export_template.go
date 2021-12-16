@@ -5,8 +5,9 @@ import (
 
 	"fmt"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -53,16 +54,23 @@ func dataSourceConfigurationTemplateExportTemplateRead(ctx context.Context, d *s
 		log.Printf("[DEBUG] Selected method 1: ExportsTheTemplatesForAGivenCriteria")
 		request1 := expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteria(ctx, "", d)
 
-		response1, _, err := client.ConfigurationTemplates.ExportsTheTemplatesForAGivenCriteria(request1)
+		response1, restyResp1, err := client.ConfigurationTemplates.ExportsTheTemplatesForAGivenCriteria(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ExportsTheTemplatesForAGivenCriteria", err,
 				"Failure at ExportsTheTemplatesForAGivenCriteria, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenConfigurationTemplatesExportsTheTemplatesForAGivenCriteriaItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -80,13 +88,13 @@ func dataSourceConfigurationTemplateExportTemplateRead(ctx context.Context, d *s
 
 func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteria(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesExportsTheTemplatesForAGivenCriteria {
 	request := dnacentersdkgo.RequestConfigurationTemplatesExportsTheTemplatesForAGivenCriteria{}
-	if v := expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaArray(ctx, key+".", d); v != nil {
+	if v := expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria {
+func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria {
 	request := []dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -98,7 +106,7 @@ func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGive
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteria(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -106,9 +114,9 @@ func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGive
 	return &request
 }
 
-func expandRequestItemConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteria(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria {
+func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria {
 	var request dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria
-	request = d.Get(key)
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }
 

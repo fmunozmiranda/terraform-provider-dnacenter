@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -358,16 +359,19 @@ func dataSourceDiscoveryRangeRead(ctx context.Context, d *schema.ResourceData, m
 		vvStartIndex := vStartIndex.(int)
 		vvRecordsToReturn := vRecordsToReturn.(int)
 
-		response1, _, err := client.Discovery.GetDiscoveriesByRange(vvStartIndex, vvRecordsToReturn)
+		response1, restyResp1, err := client.Discovery.GetDiscoveriesByRange(vvStartIndex, vvRecordsToReturn)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDiscoveriesByRange", err,
 				"Failure at GetDiscoveriesByRange, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenDiscoveryGetDiscoveriesByRangeItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {

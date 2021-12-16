@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -945,31 +946,33 @@ func dataSourceClientEnrichmentDetailsRead(ctx context.Context, d *schema.Resour
 	var diags diag.Diagnostics
 	vEntityType := d.Get("entity_type")
 	vEntityValue := d.Get("entity_value")
-	vIssueCategory, okIssueCategory := d.GetOk("issue_category")
+	vIssueCategory := d.Get("issue_category")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetClientEnrichmentDetails")
+
 		headerParams1 := dnacentersdkgo.GetClientEnrichmentDetailsHeaderParams{}
 
 		headerParams1.EntityType = vEntityType.(string)
 
 		headerParams1.EntityValue = vEntityValue.(string)
 
-		if okIssueCategory {
-			headerParams1.IssueCategory = vIssueCategory.(string)
-		}
+		headerParams1.IssueCategory = vIssueCategory.(string)
 
-		response1, _, err := client.Clients.GetClientEnrichmentDetails(&headerParams1)
+		response1, restyResp1, err := client.Clients.GetClientEnrichmentDetails(&headerParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetClientEnrichmentDetails", err,
 				"Failure at GetClientEnrichmentDetails, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenClientsGetClientEnrichmentDetailsItems(response1)
 		if err := d.Set("items", vItems1); err != nil {

@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -3688,32 +3689,38 @@ func dataSourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m inte
 			queryParams1.SiteName = vSiteName.(string)
 		}
 
-		response1, _, err := client.DeviceOnboardingPnp.GetDeviceList2(&queryParams1)
+		response1, restyResp1, err := client.DeviceOnboardingPnp.GetDeviceList2(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceList2", err,
 				"Failure at GetDeviceList2, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetDeviceByID")
 		vvID := vID.(string)
 
-		response2, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
+		response2, restyResp2, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceByID", err,
 				"Failure at GetDeviceByID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItemName2 := flattenDeviceOnboardingPnpGetDeviceByIDItemName(response2)
 		if err := d.Set("item_name", vItemName2); err != nil {

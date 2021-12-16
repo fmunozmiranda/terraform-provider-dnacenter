@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -210,16 +211,19 @@ func dataSourceGlobalPoolRead(ctx context.Context, d *schema.ResourceData, m int
 			queryParams1.Limit = vLimit.(string)
 		}
 
-		response1, _, err := client.NetworkSettings.GetGlobalPool(&queryParams1)
+		response1, restyResp1, err := client.NetworkSettings.GetGlobalPool(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetGlobalPool", err,
 				"Failure at GetGlobalPool, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenNetworkSettingsGetGlobalPoolItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {

@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -134,16 +135,19 @@ func dataSourceGlobalCredentialRead(ctx context.Context, d *schema.ResourceData,
 			queryParams1.Order = vOrder.(string)
 		}
 
-		response1, _, err := client.Discovery.GetGlobalCredentials(&queryParams1)
+		response1, restyResp1, err := client.Discovery.GetGlobalCredentials(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetGlobalCredentials", err,
 				"Failure at GetGlobalCredentials, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenDiscoveryGetGlobalCredentialsItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {
@@ -160,16 +164,19 @@ func dataSourceGlobalCredentialRead(ctx context.Context, d *schema.ResourceData,
 		log.Printf("[DEBUG] Selected method 2: GetCredentialSubTypeByCredentialID")
 		vvID := vID.(string)
 
-		response2, _, err := client.Discovery.GetCredentialSubTypeByCredentialID(vvID)
+		response2, restyResp2, err := client.Discovery.GetCredentialSubTypeByCredentialID(vvID)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetCredentialSubTypeByCredentialID", err,
 				"Failure at GetCredentialSubTypeByCredentialID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItem2 := flattenDiscoveryGetCredentialSubTypeByCredentialIDItem(response2)
 		if err := d.Set("item", vItem2); err != nil {

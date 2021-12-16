@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -61,6 +62,10 @@ func dataSourceWirelessPskOverrideRead(ctx context.Context, d *schema.ResourceDa
 
 		response1, err := client.Wireless.PSKOverride(request1)
 
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+
 		if err != nil || response1 == nil {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing PSKOverride", err,
@@ -68,7 +73,7 @@ func dataSourceWirelessPskOverrideRead(ctx context.Context, d *schema.ResourceDa
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %s", response1.String())
 
 		if err := d.Set("item", response1.String()); err != nil {
 			diags = append(diags, diagError(
@@ -85,13 +90,13 @@ func dataSourceWirelessPskOverrideRead(ctx context.Context, d *schema.ResourceDa
 
 func expandRequestWirelessPskOverridePSKOverride(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessPSKOverride {
 	request := dnacentersdkgo.RequestWirelessPSKOverride{}
-	if v := expandRequestWirelessPskOverridePSKOverrideArray(ctx, key+".", d); v != nil {
+	if v := expandRequestWirelessPskOverridePSKOverrideItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
 	return &request
 }
 
-func expandRequestWirelessPskOverridePSKOverrideArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessPSKOverride {
+func expandRequestWirelessPskOverridePSKOverrideItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemWirelessPSKOverride {
 	request := []dnacentersdkgo.RequestItemWirelessPSKOverride{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
@@ -103,7 +108,7 @@ func expandRequestWirelessPskOverridePSKOverrideArray(ctx context.Context, key s
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestItemWirelessPskOverridePSKOverride(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestWirelessPskOverridePSKOverrideItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -111,15 +116,15 @@ func expandRequestWirelessPskOverridePSKOverrideArray(ctx context.Context, key s
 	return &request
 }
 
-func expandRequestItemWirelessPskOverridePSKOverride(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessPSKOverride {
+func expandRequestWirelessPskOverridePSKOverrideItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemWirelessPSKOverride {
 	request := dnacentersdkgo.RequestItemWirelessPSKOverride{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ssid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ssid")))) && (ok || !reflect.DeepEqual(v, d.Get("ssid"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ssid")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ssid")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ssid")))) {
 		request.SSID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site")))) && (ok || !reflect.DeepEqual(v, d.Get("site"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site")))) {
 		request.Site = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pass_phrase")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pass_phrase")))) && (ok || !reflect.DeepEqual(v, d.Get("pass_phrase"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pass_phrase")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pass_phrase")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".pass_phrase")))) {
 		request.PassPhrase = interfaceToString(v)
 	}
 	return &request

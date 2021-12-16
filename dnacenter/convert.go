@@ -14,6 +14,7 @@ func interfaceToFloat64Ptr(item interface{}) *float64 {
 	}
 	return &nnItem
 }
+
 func mapInterfaceToMapString(m map[string]interface{}) map[string]string {
 	new_m := map[string]string{}
 	for k, v := range m {

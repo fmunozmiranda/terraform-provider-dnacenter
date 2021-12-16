@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -78,9 +79,6 @@ inserted.
 									"condition_group": &schema.Schema{
 										Type:     schema.TypeList,
 										Optional: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"operator": &schema.Schema{
 										Type:     schema.TypeString,
@@ -236,6 +234,10 @@ func dataSourceProfilingRulesInBulkCreateRead(ctx context.Context, d *schema.Res
 
 		response1, err := client.Policy.ImportProfilingRulesInBulk(request1)
 
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+
 		if err != nil || response1 == nil {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ImportProfilingRulesInBulk", err,
@@ -243,7 +245,7 @@ func dataSourceProfilingRulesInBulkCreateRead(ctx context.Context, d *schema.Res
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %s", response1.String())
 
 		if err := d.Set("item", response1.String()); err != nil {
 			diags = append(diags, diagError(
@@ -288,49 +290,49 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 
 func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRules(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRules {
 	request := dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRules{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_id")))) && (ok || !reflect.DeepEqual(v, d.Get("rule_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rule_id")))) {
 		request.RuleID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_name")))) && (ok || !reflect.DeepEqual(v, d.Get("rule_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rule_name")))) {
 		request.RuleName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_type")))) && (ok || !reflect.DeepEqual(v, d.Get("rule_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rule_type")))) {
 		request.RuleType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_version")))) && (ok || !reflect.DeepEqual(v, d.Get("rule_version"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rule_version")))) {
 		request.RuleVersion = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_priority")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_priority")))) && (ok || !reflect.DeepEqual(v, d.Get("rule_priority"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rule_priority")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rule_priority")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rule_priority")))) {
 		request.RulePriority = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".source_priority")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".source_priority")))) && (ok || !reflect.DeepEqual(v, d.Get("source_priority"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".source_priority")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".source_priority")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".source_priority")))) {
 		request.SourcePriority = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_deleted")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_deleted")))) && (ok || !reflect.DeepEqual(v, d.Get("is_deleted"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_deleted")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_deleted")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_deleted")))) {
 		request.IsDeleted = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_modified_by")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_modified_by")))) && (ok || !reflect.DeepEqual(v, d.Get("last_modified_by"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_modified_by")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_modified_by")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".last_modified_by")))) {
 		request.LastModifiedBy = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_modified_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_modified_on")))) && (ok || !reflect.DeepEqual(v, d.Get("last_modified_on"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".last_modified_on")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".last_modified_on")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".last_modified_on")))) {
 		request.LastModifiedOn = interfaceToIntPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".plugin_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".plugin_id")))) && (ok || !reflect.DeepEqual(v, d.Get("plugin_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".plugin_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".plugin_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".plugin_id")))) {
 		request.PluginID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cluster_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cluster_id")))) && (ok || !reflect.DeepEqual(v, d.Get("cluster_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cluster_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cluster_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".cluster_id")))) {
 		request.ClusterID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rejected")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rejected")))) && (ok || !reflect.DeepEqual(v, d.Get("rejected"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rejected")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rejected")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rejected")))) {
 		request.Rejected = interfaceToBoolPtr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".result")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".result")))) && (ok || !reflect.DeepEqual(v, d.Get("result"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".result")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".result")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".result")))) {
 		request.Result = expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesResult(ctx, key+".result.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition_groups")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition_groups")))) && (ok || !reflect.DeepEqual(v, d.Get("condition_groups"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition_groups")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition_groups")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".condition_groups")))) {
 		request.ConditionGroups = expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroups(ctx, key+".condition_groups.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".used_attributes")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".used_attributes")))) && (ok || !reflect.DeepEqual(v, d.Get("used_attributes"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".used_attributes")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".used_attributes")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".used_attributes")))) {
 		request.UsedAttributes = interfaceToSliceString(v)
 	}
 	return &request
@@ -338,16 +340,16 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 
 func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesResult(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesResult {
 	request := dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesResult{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_type")))) && (ok || !reflect.DeepEqual(v, d.Get("device_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_type")))) {
 		request.DeviceType = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hardware_manufacturer")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hardware_manufacturer")))) && (ok || !reflect.DeepEqual(v, d.Get("hardware_manufacturer"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hardware_manufacturer")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hardware_manufacturer")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".hardware_manufacturer")))) {
 		request.HardwareManufacturer = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hardware_model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hardware_model")))) && (ok || !reflect.DeepEqual(v, d.Get("hardware_model"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".hardware_model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".hardware_model")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".hardware_model")))) {
 		request.HardwareModel = interfaceToSliceString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operating_system")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operating_system")))) && (ok || !reflect.DeepEqual(v, d.Get("operating_system"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operating_system")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operating_system")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".operating_system")))) {
 		request.OperatingSystem = interfaceToSliceString(v)
 	}
 	return &request
@@ -355,16 +357,16 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 
 func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroups(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroups {
 	request := dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroups{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get("type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition")))) && (ok || !reflect.DeepEqual(v, d.Get("condition"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".condition")))) {
 		request.Condition = expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroupsCondition(ctx, key+".condition.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operator")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operator")))) && (ok || !reflect.DeepEqual(v, d.Get("operator"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operator")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operator")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".operator")))) {
 		request.Operator = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition_group")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition_group")))) && (ok || !reflect.DeepEqual(v, d.Get("condition_group"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition_group")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition_group")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".condition_group")))) {
 		request.ConditionGroup = expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroupArray(ctx, key+".condition_group", d)
 	}
 	return &request
@@ -372,16 +374,16 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 
 func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroupsCondition(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroupsCondition {
 	request := dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroupsCondition{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".attribute")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".attribute")))) && (ok || !reflect.DeepEqual(v, d.Get("attribute"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".attribute")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".attribute")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".attribute")))) {
 		request.Attribute = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operator")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operator")))) && (ok || !reflect.DeepEqual(v, d.Get("operator"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operator")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operator")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".operator")))) {
 		request.Operator = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get("value"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".attribute_dictionary")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".attribute_dictionary")))) && (ok || !reflect.DeepEqual(v, d.Get("attribute_dictionary"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".attribute_dictionary")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".attribute_dictionary")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".attribute_dictionary")))) {
 		request.AttributeDictionary = interfaceToString(v)
 	}
 	return &request
@@ -409,6 +411,6 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 
 func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroup(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroup {
 	var request dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroup
-	request = d.Get("condition_group")
+	request = d.Get(fixKeyAccess(key))
 	return &request
 }

@@ -5,8 +5,9 @@ import (
 
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -60,48 +61,34 @@ func dataSourceGlobalCredentialUpdateRead(ctx context.Context, d *schema.Resourc
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vGlobalCredentialID, okGlobalCredentialID := d.GetOk("global_credential_id")
+	vGlobalCredentialID := d.Get("global_credential_id")
 
-	method1 := []bool{okGlobalCredentialID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okGlobalCredentialID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: DeleteGlobalCredentialsByID")
+		log.Printf("[DEBUG] Selected method 1: UpdateGlobalCredentials")
 		vvGlobalCredentialID := vGlobalCredentialID.(string)
+		request1 := expandRequestGlobalCredentialUpdateUpdateGlobalCredentials(ctx, "", d)
 
-		response1, _, err := client.Discovery.DeleteGlobalCredentialsByID(vvGlobalCredentialID)
+		response1, restyResp1, err := client.Discovery.UpdateGlobalCredentials(vvGlobalCredentialID, request1)
 
-		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing DeleteGlobalCredentialsByID", err,
-				"Failure at DeleteGlobalCredentialsByID, unexpected response", ""))
-			return diags
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: UpdateGlobalCredentials")
-		vvGlobalCredentialID := vGlobalCredentialID.(string)
-		request2 := expandRequestGlobalCredentialUpdateUpdateGlobalCredentials(ctx, "", d)
-
-		response2, _, err := client.Discovery.UpdateGlobalCredentials(vvGlobalCredentialID, request2)
-
-		if err != nil || response2 == nil {
+		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateGlobalCredentials", err,
 				"Failure at UpdateGlobalCredentials, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItem2 := flattenDiscoveryUpdateGlobalCredentialsItem(response2.Response)
-		if err := d.Set("item", vItem2); err != nil {
+		vItem1 := flattenDiscoveryUpdateGlobalCredentialsItem(response1.Response)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting UpdateGlobalCredentials response",
 				err))

@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -51,16 +52,19 @@ func dataSourceDiscoveryCountRead(ctx context.Context, d *schema.ResourceData, m
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetCountOfAllDiscoveryJobs")
 
-		response1, _, err := client.Discovery.GetCountOfAllDiscoveryJobs()
+		response1, restyResp1, err := client.Discovery.GetCountOfAllDiscoveryJobs()
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetCountOfAllDiscoveryJobs", err,
 				"Failure at GetCountOfAllDiscoveryJobs, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenDiscoveryGetCountOfAllDiscoveryJobsItem(response1)
 		if err := d.Set("item", vItem1); err != nil {

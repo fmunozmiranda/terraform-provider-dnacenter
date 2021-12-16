@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -416,16 +417,19 @@ func dataSourceWirelessSensorTestResultsRead(ctx context.Context, d *schema.Reso
 			queryParams1.TestFailureBy = vTestFailureBy.(string)
 		}
 
-		response1, _, err := client.Wireless.SensorTestResults(&queryParams1)
+		response1, restyResp1, err := client.Wireless.SensorTestResults(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing SensorTestResults", err,
 				"Failure at SensorTestResults, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenWirelessSensorTestResultsItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
@@ -534,7 +538,7 @@ func flattenWirelessSensorTestResultsItemSummaryPERfORMAncE(item *dnacentersdkgo
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["ips_las_end_er"] = flattenWirelessSensorTestResultsItemSummaryPERfORMAncEIPSLASender(item.IPSLASENDER)
+	respItem["ips_las_end_er"] = flattenWirelessSensorTestResultsItemSummaryPERfORMAncEIPSLASENDER(item.IPSLASENDER)
 
 	return []map[string]interface{}{
 		respItem,
@@ -542,7 +546,7 @@ func flattenWirelessSensorTestResultsItemSummaryPERfORMAncE(item *dnacentersdkgo
 
 }
 
-func flattenWirelessSensorTestResultsItemSummaryPERfORMAncEIPSLASender(item *dnacentersdkgo.ResponseWirelessSensorTestResultsSummaryPERfORMAncEIPSLASENDER) []map[string]interface{} {
+func flattenWirelessSensorTestResultsItemSummaryPERfORMAncEIPSLASENDER(item *dnacentersdkgo.ResponseWirelessSensorTestResultsSummaryPERfORMAncEIPSLASENDER) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}

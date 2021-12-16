@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -79,9 +80,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 							Description: `Frequency`,
 							Type:        schema.TypeList,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"last_modified_time": &schema.Schema{
 							Description: `Last Modified Time`,
@@ -98,9 +96,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 							Description: `Location`,
 							Type:        schema.TypeList,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"location_info_list": &schema.Schema{
 							Type:     schema.TypeList,
@@ -128,9 +123,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Mac Address List`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"site_hierarchy": &schema.Schema{
 										Description: `Site Hierarchy`,
@@ -275,9 +267,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 							Description: `Sensors`,
 							Type:        schema.TypeList,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"show_wlc_upgrade_banner": &schema.Schema{
 							Description: `Show Wlc Upgrade Banner`,
@@ -289,9 +278,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 							Description: `Site Hierarchy`,
 							Type:        schema.TypeList,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"ssids": &schema.Schema{
 							Type:     schema.TypeList,
@@ -303,9 +289,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Auth Protocol`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"auth_type": &schema.Schema{
 										Description: `Auth Type`,
@@ -316,49 +299,31 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Auth Type Rcvd`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"bands": &schema.Schema{
 										Description: `Bands`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"certdownloadurl": &schema.Schema{
 										Description: `Certdownloadurl`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"certfilename": &schema.Schema{
 										Description: `Certfilename`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"certpassphrase": &schema.Schema{
 										Description: `Certpassphrase`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"certstatus": &schema.Schema{
 										Description: `Certstatus`,
 										Type:        schema.TypeString,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"certxferprotocol": &schema.Schema{
 										Description: `Certxferprotocol`,
@@ -369,9 +334,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Eap Method`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"ext_web_auth": &schema.Schema{
 										Description: `Ext Web Auth`,
@@ -383,33 +345,21 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Ext Web Auth Access Url`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"ext_web_auth_html_tag": &schema.Schema{
 										Description: `Ext Web Auth Html Tag`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"ext_web_auth_portal": &schema.Schema{
 										Description: `Ext Web Auth Portal`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"ext_web_auth_virtual_ip": &schema.Schema{
 										Description: `Ext Web Auth Virtual Ip`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"id": &schema.Schema{
 										Description: `Id`,
@@ -420,33 +370,21 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Layer3web Auth Email Address`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"layer3web_authpassword": &schema.Schema{
 										Description: `Layer3web Authpassword`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"layer3web_authsecurity": &schema.Schema{
 										Description: `Layer3web Authsecurity`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"layer3web_authuser_name": &schema.Schema{
 										Description: `Layer3web Authuser Name`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"num_aps": &schema.Schema{
 										Description: `Num Aps`,
@@ -462,9 +400,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Password`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"profile_name": &schema.Schema{
 										Description: `Profile Name`,
@@ -507,9 +442,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 													Description: `Config`,
 													Type:        schema.TypeList,
 													Computed:    true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"name": &schema.Schema{
 													Description: `Name`,
@@ -538,9 +470,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Username`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 									"valid_from": &schema.Schema{
 										Description: `Valid From`,
@@ -567,9 +496,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 										Description: `Wlc`,
 										Type:        schema.TypeList,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 								},
 							},
@@ -609,9 +535,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 							Description: `Tests`,
 							Type:        schema.TypeList,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"version": &schema.Schema{
 							Description: `Version`,
@@ -622,9 +545,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 							Description: `Wlans`,
 							Type:        schema.TypeList,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 					},
 				},
@@ -658,16 +578,23 @@ func dataSourceSensorTestTemplateEditRead(ctx context.Context, d *schema.Resourc
 		log.Printf("[DEBUG] Selected method 1: EditSensorTestTemplate")
 		request1 := expandRequestSensorTestTemplateEditEditSensorTestTemplate(ctx, "", d)
 
-		response1, _, err := client.Sensors.EditSensorTestTemplate(request1)
+		response1, restyResp1, err := client.Sensors.EditSensorTestTemplate(request1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing EditSensorTestTemplate", err,
 				"Failure at EditSensorTestTemplate, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSensorsEditSensorTestTemplateItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -719,16 +646,16 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateLocationInfoListAr
 
 func expandRequestSensorTestTemplateEditEditSensorTestTemplateLocationInfoList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSensorsEditSensorTestTemplateLocationInfoList {
 	request := dnacentersdkgo.RequestSensorsEditSensorTestTemplateLocationInfoList{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".location_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".location_id")))) && (ok || !reflect.DeepEqual(v, d.Get("location_id"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".location_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".location_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".location_id")))) {
 		request.LocationID = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".location_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".location_type")))) && (ok || !reflect.DeepEqual(v, d.Get("location_type"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".location_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".location_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".location_type")))) {
 		request.LocationType = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site_hierarchy")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site_hierarchy")))) && (ok || !reflect.DeepEqual(v, d.Get("site_hierarchy"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site_hierarchy")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site_hierarchy")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site_hierarchy")))) {
 		request.SiteHierarchy = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".all_sensors")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".all_sensors")))) && (ok || !reflect.DeepEqual(v, d.Get("all_sensors"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".all_sensors")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".all_sensors")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".all_sensors")))) {
 		request.AllSensors = interfaceToBoolPtr(v)
 	}
 	return &request
@@ -736,13 +663,13 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateLocationInfoList(c
 
 func expandRequestSensorTestTemplateEditEditSensorTestTemplateSchedule(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSensorsEditSensorTestTemplateSchedule {
 	request := dnacentersdkgo.RequestSensorsEditSensorTestTemplateSchedule{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".test_schedule_mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".test_schedule_mode")))) && (ok || !reflect.DeepEqual(v, d.Get("test_schedule_mode"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".test_schedule_mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".test_schedule_mode")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".test_schedule_mode")))) {
 		request.TestScheduleMode = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".frequency")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".frequency")))) && (ok || !reflect.DeepEqual(v, d.Get("frequency"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".frequency")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".frequency")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".frequency")))) {
 		request.Frequency = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleFrequency(ctx, key+".frequency.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".schedule_range")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".schedule_range")))) && (ok || !reflect.DeepEqual(v, d.Get("schedule_range"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".schedule_range")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".schedule_range")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".schedule_range")))) {
 		request.ScheduleRange = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeArray(ctx, key+".schedule_range", d)
 	}
 	return &request
@@ -750,10 +677,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateSchedule(ctx conte
 
 func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleFrequency(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleFrequency {
 	request := dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleFrequency{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".unit")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".unit")))) && (ok || !reflect.DeepEqual(v, d.Get("unit"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".unit")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".unit")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".unit")))) {
 		request.Unit = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get("value"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToIntPtr(v)
 	}
 	return &request
@@ -781,10 +708,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 
 func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRange(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleScheduleRange {
 	request := dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleScheduleRange{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".day")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".day")))) && (ok || !reflect.DeepEqual(v, d.Get("day"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".day")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".day")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".day")))) {
 		request.Day = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_range")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_range")))) && (ok || !reflect.DeepEqual(v, d.Get("time_range"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_range")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_range")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_range")))) {
 		request.TimeRange = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeTimeRangeArray(ctx, key+".time_range", d)
 	}
 	return &request
@@ -812,13 +739,13 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 
 func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeTimeRange(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleScheduleRangeTimeRange {
 	request := dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleScheduleRangeTimeRange{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".from")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".from")))) && (ok || !reflect.DeepEqual(v, d.Get("from"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".from")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".from")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".from")))) {
 		request.From = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".to")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".to")))) && (ok || !reflect.DeepEqual(v, d.Get("to"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".to")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".to")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".to")))) {
 		request.To = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".frequency")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".frequency")))) && (ok || !reflect.DeepEqual(v, d.Get("frequency"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".frequency")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".frequency")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".frequency")))) {
 		request.Frequency = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeTimeRangeFrequency(ctx, key+".frequency.0", d)
 	}
 	return &request
@@ -826,10 +753,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 
 func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeTimeRangeFrequency(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleScheduleRangeTimeRangeFrequency {
 	request := dnacentersdkgo.RequestSensorsEditSensorTestTemplateScheduleScheduleRangeTimeRangeFrequency{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".unit")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".unit")))) && (ok || !reflect.DeepEqual(v, d.Get("unit"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".unit")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".unit")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".unit")))) {
 		request.Unit = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get("value"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToIntPtr(v)
 	}
 	return &request

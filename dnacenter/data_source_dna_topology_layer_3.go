@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -324,16 +325,19 @@ func dataSourceTopologyLayer3Read(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Selected method 1: GetL3TopologyDetails")
 		vvTopologyType := vTopologyType.(string)
 
-		response1, _, err := client.Topology.GetL3TopologyDetails(vvTopologyType)
+		response1, restyResp1, err := client.Topology.GetL3TopologyDetails(vvTopologyType)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetL3TopologyDetails", err,
 				"Failure at GetL3TopologyDetails, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenTopologyGetL3TopologyDetailsItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {

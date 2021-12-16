@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -1437,16 +1438,19 @@ func dataSourceConfigurationTemplateRead(ctx context.Context, d *schema.Resource
 			queryParams1.SortOrder = vSortOrder.(string)
 		}
 
-		response1, _, err := client.ConfigurationTemplates.GetsTheTemplatesAvailable(&queryParams1)
+		response1, restyResp1, err := client.ConfigurationTemplates.GetsTheTemplatesAvailable(&queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetsTheTemplatesAvailable", err,
 				"Failure at GetsTheTemplatesAvailable, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenConfigurationTemplatesGetsTheTemplatesAvailableItems(response1)
 		if err := d.Set("items", vItems1); err != nil {
@@ -1468,16 +1472,19 @@ func dataSourceConfigurationTemplateRead(ctx context.Context, d *schema.Resource
 			queryParams2.LatestVersion = vLatestVersion.(bool)
 		}
 
-		response2, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)
+		response2, restyResp2, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetsDetailsOfAGivenTemplate", err,
 				"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItem2 := flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItem(response2)
 		if err := d.Set("item", vItem2); err != nil {

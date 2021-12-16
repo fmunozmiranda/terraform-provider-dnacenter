@@ -3,14 +3,15 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceDiscoveryIDJob() *schema.Resource {
+func dataSourceDiscoveryJobByID() *schema.Resource {
 	return &schema.Resource{
 		Description: `It performs read operation on Discovery.
 
@@ -18,7 +19,7 @@ func dataSourceDiscoveryIDJob() *schema.Resource {
 Discovery ID can be obtained using the "Get Discoveries by range" API.
 `,
 
-		ReadContext: dataSourceDiscoveryIDJobRead,
+		ReadContext: dataSourceDiscoveryJobByIDRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Description: `id path parameter. Discovery ID
@@ -137,7 +138,7 @@ Discovery ID can be obtained using the "Get Discoveries by range" API.
 	}
 }
 
-func dataSourceDiscoveryIDJobRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceDiscoveryJobByIDRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
@@ -162,16 +163,19 @@ func dataSourceDiscoveryIDJobRead(ctx context.Context, d *schema.ResourceData, m
 			queryParams1.IPAddress = vIPAddress.(string)
 		}
 
-		response1, _, err := client.Discovery.GetListOfDiscoveriesByDiscoveryID(vvID, &queryParams1)
+		response1, restyResp1, err := client.Discovery.GetListOfDiscoveriesByDiscoveryID(vvID, &queryParams1)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetListOfDiscoveriesByDiscoveryID", err,
 				"Failure at GetListOfDiscoveriesByDiscoveryID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItems1 := flattenDiscoveryGetListOfDiscoveriesByDiscoveryIDItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {

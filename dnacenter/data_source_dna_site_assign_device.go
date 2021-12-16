@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -70,32 +71,39 @@ func dataSourceSiteAssignDeviceRead(ctx context.Context, d *schema.ResourceData,
 	vSiteID := d.Get("site_id")
 	vRunsync := d.Get("runsync")
 	vPersistbapioutput := d.Get("persistbapioutput")
-	vRunsynctimeout, okRunsynctimeout := d.GetOk("runsynctimeout")
+	vRunsynctimeout := d.Get("runsynctimeout")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: AssignDeviceToSite")
 		vvSiteID := vSiteID.(string)
-		headerParams1 := dnacentersdkgo.AssignDeviceToSiteHeaderParams{}
 		request1 := expandRequestSiteAssignDeviceAssignDeviceToSite(ctx, "", d)
+
+		headerParams1 := dnacentersdkgo.AssignDeviceToSiteHeaderParams{}
+
 		headerParams1.Runsync = vRunsync.(string)
 
 		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
 
-		if okRunsynctimeout {
-			headerParams1.Runsynctimeout = vRunsynctimeout.(string)
+		headerParams1.Runsynctimeout = vRunsynctimeout.(string)
+
+		response1, restyResp1, err := client.Sites.AssignDeviceToSite(vvSiteID, request1, &headerParams1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
 
-		response1, _, err := client.Sites.AssignDeviceToSite(vvSiteID, request1, &headerParams1)
-
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing AssignDeviceToSite", err,
 				"Failure at AssignDeviceToSite, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSitesAssignDeviceToSiteItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
@@ -141,7 +149,7 @@ func expandRequestSiteAssignDeviceAssignDeviceToSiteDeviceArray(ctx context.Cont
 
 func expandRequestSiteAssignDeviceAssignDeviceToSiteDevice(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSitesAssignDeviceToSiteDevice {
 	request := dnacentersdkgo.RequestSitesAssignDeviceToSiteDevice{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ip")))) && (ok || !reflect.DeepEqual(v, d.Get("ip"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ip")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ip")))) {
 		request.IP = interfaceToString(v)
 	}
 	return &request

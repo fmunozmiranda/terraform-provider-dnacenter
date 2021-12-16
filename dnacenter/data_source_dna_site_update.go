@@ -5,8 +5,9 @@ import (
 
 	"reflect"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -191,42 +192,42 @@ func dataSourceSiteUpdateRead(ctx context.Context, d *schema.ResourceData, m int
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vSiteID, okSiteID := d.GetOk("site_id")
-	vRunsync, okRunsync := d.GetOk("runsync")
-	vTimeout, okTimeout := d.GetOk("timeout")
-	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
+	vSiteID := d.Get("site_id")
+	vRunsync := d.Get("runsync")
+	vTimeout := d.Get("timeout")
+	vPersistbapioutput := d.Get("persistbapioutput")
 
-	method1 := []bool{okSiteID, okRunsync, okTimeout, okPersistbapioutput}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okSiteID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
+	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: UpdateSite")
 		vvSiteID := vSiteID.(string)
-		headerParams1 := dnacentersdkgo.UpdateSiteHeaderParams{}
 		request1 := expandRequestSiteUpdateUpdateSite(ctx, "", d)
-		if okRunsync {
-			headerParams1.Runsync = vRunsync.(string)
-		}
-		if okTimeout {
-			headerParams1.Timeout = vTimeout.(string)
-		}
-		if okPersistbapioutput {
-			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
-		}
 
-		response1, _, err := client.Sites.UpdateSite(vvSiteID, request1, &headerParams1)
+		headerParams1 := dnacentersdkgo.UpdateSiteHeaderParams{}
+
+		headerParams1.Runsync = vRunsync.(string)
+
+		headerParams1.Timeout = vTimeout.(string)
+
+		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+
+		response1, restyResp1, err := client.Sites.UpdateSite(vvSiteID, request1, &headerParams1)
+
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateSite", err,
 				"Failure at UpdateSite, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenSitesUpdateSiteItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -237,22 +238,6 @@ func dataSourceSiteUpdateRead(ctx context.Context, d *schema.ResourceData, m int
 		}
 		d.SetId(getUnixTimeString())
 		return diags
-
-	}
-	if selectedMethod == 2 {
-		log.Printf("[DEBUG] Selected method 2: DeleteSite")
-		vvSiteID := vSiteID.(string)
-
-		response2, _, err := client.Sites.DeleteSite(vvSiteID)
-
-		if err != nil || response2 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing DeleteSite", err,
-				"Failure at DeleteSite, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
 
 	}
 	return diags
@@ -271,13 +256,13 @@ func expandRequestSiteUpdateUpdateSite(ctx context.Context, key string, d *schem
 
 func expandRequestSiteUpdateUpdateSiteSite(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSitesUpdateSiteSite {
 	request := dnacentersdkgo.RequestSitesUpdateSiteSite{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".area")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".area")))) && (ok || !reflect.DeepEqual(v, d.Get("area"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".area")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".area")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".area")))) {
 		request.Area = expandRequestSiteUpdateUpdateSiteSiteArea(ctx, key+".area.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".building")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".building")))) && (ok || !reflect.DeepEqual(v, d.Get("building"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".building")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".building")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".building")))) {
 		request.Building = expandRequestSiteUpdateUpdateSiteSiteBuilding(ctx, key+".building.0", d)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".floor")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".floor")))) && (ok || !reflect.DeepEqual(v, d.Get("floor"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".floor")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".floor")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".floor")))) {
 		request.Floor = expandRequestSiteUpdateUpdateSiteSiteFloor(ctx, key+".floor.0", d)
 	}
 	return &request
@@ -285,10 +270,10 @@ func expandRequestSiteUpdateUpdateSiteSite(ctx context.Context, key string, d *s
 
 func expandRequestSiteUpdateUpdateSiteSiteArea(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSitesUpdateSiteSiteArea {
 	request := dnacentersdkgo.RequestSitesUpdateSiteSiteArea{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get("parent_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_name")))) {
 		request.ParentName = interfaceToString(v)
 	}
 	return &request
@@ -296,19 +281,19 @@ func expandRequestSiteUpdateUpdateSiteSiteArea(ctx context.Context, key string, 
 
 func expandRequestSiteUpdateUpdateSiteSiteBuilding(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSitesUpdateSiteSiteBuilding {
 	request := dnacentersdkgo.RequestSitesUpdateSiteSiteBuilding{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".address")))) && (ok || !reflect.DeepEqual(v, d.Get("address"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".address")))) {
 		request.Address = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get("parent_name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_name")))) {
 		request.ParentName = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".latitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".latitude")))) && (ok || !reflect.DeepEqual(v, d.Get("latitude"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".latitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".latitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".latitude")))) {
 		request.Latitude = interfaceToFloat64Ptr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".longitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".longitude")))) && (ok || !reflect.DeepEqual(v, d.Get("longitude"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".longitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".longitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".longitude")))) {
 		request.Longitude = interfaceToFloat64Ptr(v)
 	}
 	return &request
@@ -316,19 +301,19 @@ func expandRequestSiteUpdateUpdateSiteSiteBuilding(ctx context.Context, key stri
 
 func expandRequestSiteUpdateUpdateSiteSiteFloor(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSitesUpdateSiteSiteFloor {
 	request := dnacentersdkgo.RequestSitesUpdateSiteSiteFloor{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get("name"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rf_model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rf_model")))) && (ok || !reflect.DeepEqual(v, d.Get("rf_model"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rf_model")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rf_model")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rf_model")))) {
 		request.RfModel = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".width")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".width")))) && (ok || !reflect.DeepEqual(v, d.Get("width"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".width")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".width")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".width")))) {
 		request.Width = interfaceToFloat64Ptr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".length")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".length")))) && (ok || !reflect.DeepEqual(v, d.Get("length"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".length")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".length")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".length")))) {
 		request.Length = interfaceToFloat64Ptr(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".height")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".height")))) && (ok || !reflect.DeepEqual(v, d.Get("height"))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".height")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".height")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".height")))) {
 		request.Height = interfaceToFloat64Ptr(v)
 	}
 	return &request

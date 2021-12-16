@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -86,31 +87,37 @@ func dataSourceNetworkDeviceCountRead(ctx context.Context, d *schema.ResourceDat
 		log.Printf("[DEBUG] Selected method 1: GetDeviceInterfaceCount2")
 		vvDeviceID := vDeviceID.(string)
 
-		response1, _, err := client.Devices.GetDeviceInterfaceCount2(vvDeviceID)
+		response1, restyResp1, err := client.Devices.GetDeviceInterfaceCount2(vvDeviceID)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceInterfaceCount2", err,
 				"Failure at GetDeviceInterfaceCount2, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetDeviceCount2")
 
-		response2, _, err := client.Devices.GetDeviceCount2()
+		response2, restyResp2, err := client.Devices.GetDeviceCount2()
 
 		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceCount2", err,
 				"Failure at GetDeviceCount2, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response2)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
 		vItemName2 := flattenDevicesGetDeviceCount2ItemName(response2)
 		if err := d.Set("item_name", vItemName2); err != nil {

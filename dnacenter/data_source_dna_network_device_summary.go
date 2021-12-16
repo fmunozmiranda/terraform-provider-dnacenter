@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -64,16 +65,19 @@ func dataSourceNetworkDeviceSummaryRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Selected method 1: GetDeviceSummary")
 		vvID := vID.(string)
 
-		response1, _, err := client.Devices.GetDeviceSummary(vvID)
+		response1, restyResp1, err := client.Devices.GetDeviceSummary(vvID)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetDeviceSummary", err,
 				"Failure at GetDeviceSummary, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenDevicesGetDeviceSummaryItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {

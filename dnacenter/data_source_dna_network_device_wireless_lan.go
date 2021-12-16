@@ -3,8 +3,9 @@ package dnacenter
 import (
 	"context"
 
-	dnacentersdkgo "dnacenter-go-sdk/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -35,9 +36,6 @@ func dataSourceNetworkDeviceWirelessLan() *schema.Resource {
 						"admin_enabled_ports": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeInt,
-							},
 						},
 
 						"ap_group_name": &schema.Schema{
@@ -115,16 +113,19 @@ func dataSourceNetworkDeviceWirelessLanRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Selected method 1: GetWirelessLanControllerDetailsByID")
 		vvID := vID.(string)
 
-		response1, _, err := client.Devices.GetWirelessLanControllerDetailsByID(vvID)
+		response1, restyResp1, err := client.Devices.GetWirelessLanControllerDetailsByID(vvID)
 
 		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetWirelessLanControllerDetailsByID", err,
 				"Failure at GetWirelessLanControllerDetailsByID, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", *response1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		vItem1 := flattenDevicesGetWirelessLanControllerDetailsByIDItem(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
