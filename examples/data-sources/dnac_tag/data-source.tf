@@ -1,5 +1,5 @@
 
-data "dnac_tag" "example" {
+data "dnacenter_tag" "example" {
     provider = dnac
     additional_info_attributes = "string"
     additional_info_name_space = "string"
@@ -14,15 +14,15 @@ data "dnac_tag" "example" {
     system_tag = "string"
 }
 
-output "dnac_tag_example" {
+output "dnacenter_tag_example" {
     value = data.dnac_tag.example.items
 }
 
-data "dnac_tag" "example" {
+data "dnacenter_tag" "example" {
     provider = dnac
     id = "string"
 }
 
-output "dnac_tag_example" {
+output "dnacenter_tag_example" {
     value = data.dnac_tag.example.item
 }

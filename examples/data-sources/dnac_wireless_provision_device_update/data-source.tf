@@ -1,5 +1,5 @@
 
-data "dnacwireless_provision_device_update" "example" {
+data "dnacenter_wireless_provision_device_update" "example" {
     provider = dnac
     device_name = "string"
     dynamic_interfaces {

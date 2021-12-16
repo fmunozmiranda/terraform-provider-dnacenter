@@ -1,5 +1,5 @@
 
-data "dnac_license_device_license_summary" "example" {
+data "dnacenter_license_device_license_summary" "example" {
     provider = dnac
     device_type = "string"
     device_uuid = "string"
@@ -13,6 +13,6 @@ data "dnac_license_device_license_summary" "example" {
     virtual_account_name = "string"
 }
 
-output "dnac_license_device_license_summary_example" {
+output "dnacenter_license_device_license_summary_example" {
     value = data.dnac_license_device_license_summary.example.items
 }

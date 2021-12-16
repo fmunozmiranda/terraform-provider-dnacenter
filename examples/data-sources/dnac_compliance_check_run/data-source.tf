@@ -1,5 +1,5 @@
 
-data "dnaccompliance_check_run" "example" {
+data "dnacenter_compliance_check_run" "example" {
     provider = dnac
     categories = ["string"]
     device_uuids = ["string"]

@@ -1,5 +1,5 @@
 
-data "dnacthreat_detail_count" "example" {
+data "dnacenter_threat_detail_count" "example" {
     provider = dnac
     end_time = 1
     is_new_threat = "false"

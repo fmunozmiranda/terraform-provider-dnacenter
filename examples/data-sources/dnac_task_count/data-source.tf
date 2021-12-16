@@ -1,5 +1,5 @@
 
-data "dnac_task_count" "example" {
+data "dnacenter_task_count" "example" {
     provider = dnac
     data = "string"
     end_time = "string"
@@ -13,6 +13,6 @@ data "dnac_task_count" "example" {
     username = "string"
 }
 
-output "dnac_task_count_example" {
+output "dnacenter_task_count_example" {
     value = data.dnac_task_count.example.item
 }

@@ -1,5 +1,5 @@
 
-data "dnacbusiness_sda_wireless_controller_create" "example" {
+data "dnacenter_business_sda_wireless_controller_create" "example" {
     provider = dnac
     device_name = "string"
     items {

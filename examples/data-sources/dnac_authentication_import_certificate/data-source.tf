@@ -1,5 +1,5 @@
 
-data "dnacauthentication_import_certificate" "example" {
+data "dnacenter_authentication_import_certificate" "example" {
     provider = dnac
     list_of_users = ["string"]
     pk_password = "******"

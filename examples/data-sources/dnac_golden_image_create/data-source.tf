@@ -1,5 +1,5 @@
 
-data "dnacgolden_image_create" "example" {
+data "dnacenter_golden_image_create" "example" {
     provider = dnac
     device_family_identifier = "string"
     device_role = "string"

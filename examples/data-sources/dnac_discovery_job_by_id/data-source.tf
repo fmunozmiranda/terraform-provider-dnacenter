@@ -1,5 +1,5 @@
 
-data "dnac_discovery_job_by_id" "example" {
+data "dnacenter_discovery_job_by_id" "example" {
     provider = dnac
     id = "string"
     ip_address = "string"
@@ -7,6 +7,6 @@ data "dnac_discovery_job_by_id" "example" {
     offset = 1
 }
 
-output "dnac_discovery_job_by_id_example" {
+output "dnacenter_discovery_job_by_id_example" {
     value = data.dnac_discovery_job_by_id.example.items
 }

@@ -1,5 +1,5 @@
 
-data "dnac_compliance_device_details" "example" {
+data "dnacenter_compliance_device_details" "example" {
     provider = dnac
     compliance_status = "string"
     compliance_type = "string"
@@ -8,6 +8,6 @@ data "dnac_compliance_device_details" "example" {
     offset = "string"
 }
 
-output "dnac_compliance_device_details_example" {
+output "dnacenter_compliance_device_details_example" {
     value = data.dnac_compliance_device_details.example.items
 }

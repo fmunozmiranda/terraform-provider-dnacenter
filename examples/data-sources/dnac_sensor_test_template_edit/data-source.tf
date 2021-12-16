@@ -1,5 +1,5 @@
 
-data "dnacsensor_test_template_edit" "example" {
+data "dnacenter_sensor_test_template_edit" "example" {
     provider = dnac
     all_sensors = "false"
     item {

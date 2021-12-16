@@ -1,5 +1,5 @@
 
-data "dnacpnp_device_claim_to_site" "example" {
+data "dnacenter_pnp_device_claim_to_site" "example" {
     provider = dnac
     device_id = "string"
     item {

@@ -1,5 +1,5 @@
 
-data "dnac_issues" "example" {
+data "dnacenter_issues" "example" {
     provider = dnac
     ai_driven = "string"
     device_id = "string"
@@ -11,6 +11,6 @@ data "dnac_issues" "example" {
     start_time = ------
 }
 
-output "dnac_issues_example" {
+output "dnacenter_issues_example" {
     value = data.dnac_issues.example.items
 }

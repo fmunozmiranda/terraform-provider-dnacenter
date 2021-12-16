@@ -1,5 +1,5 @@
 
-data "dnacnetwork_create" "example" {
+data "dnacenter_network_create" "example" {
     provider = dnac
     site_id = "string"
     client_and_endpoint_aaa {

@@ -1,5 +1,5 @@
 
-data "dnac_system_performance" "example" {
+data "dnacenter_system_performance" "example" {
     provider = dnac
     end_time = ------
     function = "string"
@@ -7,6 +7,6 @@ data "dnac_system_performance" "example" {
     start_time = ------
 }
 
-output "dnac_system_performance_example" {
+output "dnacenter_system_performance_example" {
     value = data.dnac_system_performance.example.item
 }

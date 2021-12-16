@@ -1,5 +1,5 @@
 
-data "dnacpnp_virtual_account_devices_sync" "example" {
+data "dnacenter_pnp_virtual_account_devices_sync" "example" {
     provider = dnac
     address_fqdn = "string"
     address_ip_v4 = "string"

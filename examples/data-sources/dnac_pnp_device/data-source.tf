@@ -1,5 +1,5 @@
 
-data "dnac_pnp_device" "example" {
+data "dnacenter_pnp_device" "example" {
     provider = dnac
     cm_state = ["string"]
     hostname = "string"
@@ -25,15 +25,15 @@ data "dnac_pnp_device" "example" {
     workflow_name = ["string"]
 }
 
-output "dnac_pnp_device_example" {
+output "dnacenter_pnp_device_example" {
     value = data.dnac_pnp_device.example.item_name
 }
 
-data "dnac_pnp_device" "example" {
+data "dnacenter_pnp_device" "example" {
     provider = dnac
     id = "string"
 }
 
-output "dnac_pnp_device_example" {
+output "dnacenter_pnp_device_example" {
     value = data.dnac_pnp_device.example.item_id
 }

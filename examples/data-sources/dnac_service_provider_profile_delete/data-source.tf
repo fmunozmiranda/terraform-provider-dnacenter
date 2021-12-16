@@ -1,5 +1,5 @@
 
-data "dnacservice_provider_profile_delete" "example" {
+data "dnacenter_service_provider_profile_delete" "example" {
     provider = dnac
     sp_profile_name = "string"
     item {

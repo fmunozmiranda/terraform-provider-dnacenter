@@ -1,8 +1,8 @@
 
-data "dnac_client_enrichment_details" "example" {
+data "dnacenter_client_enrichment_details" "example" {
     provider = dnac
 }
 
-output "dnac_client_enrichment_details_example" {
+output "dnacenter_client_enrichment_details_example" {
     value = data.dnac_client_enrichment_details.example.items
 }

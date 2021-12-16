@@ -1,5 +1,5 @@
 
-data "dnacconfiguration_template_create" "example" {
+data "dnacenter_configuration_template_create" "example" {
     provider = dnac
     project_id = "string"
     id = "string"

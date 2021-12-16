@@ -1,5 +1,5 @@
 
-data "dnac_pnp_device_count" "example" {
+data "dnacenter_pnp_device_count" "example" {
     provider = dnac
     cm_state = ["string"]
     last_contact = "false"
@@ -17,6 +17,6 @@ data "dnac_pnp_device_count" "example" {
     workflow_name = ["string"]
 }
 
-output "dnac_pnp_device_count_example" {
+output "dnacenter_pnp_device_count_example" {
     value = data.dnac_pnp_device_count.example.item
 }

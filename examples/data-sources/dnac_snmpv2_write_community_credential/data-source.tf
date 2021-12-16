@@ -1,5 +1,5 @@
 
-data "dnacsnmpv2_write_community_credential" "example" {
+data "dnacenter_snmpv2_write_community_credential" "example" {
     provider = dnac
     comments = "string"
     credential_type = "string"

@@ -1,5 +1,5 @@
 
-data "dnac_pnp_workflow" "example" {
+data "dnacenter_pnp_workflow" "example" {
     provider = dnac
     limit = 1
     name = ["string"]
@@ -9,15 +9,15 @@ data "dnac_pnp_workflow" "example" {
     type = ["string"]
 }
 
-output "dnac_pnp_workflow_example" {
+output "dnacenter_pnp_workflow_example" {
     value = data.dnac_pnp_workflow.example.items
 }
 
-data "dnac_pnp_workflow" "example" {
+data "dnacenter_pnp_workflow" "example" {
     provider = dnac
     id = "string"
 }
 
-output "dnac_pnp_workflow_example" {
+output "dnacenter_pnp_workflow_example" {
     value = data.dnac_pnp_workflow.example.item
 }

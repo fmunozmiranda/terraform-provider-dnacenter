@@ -1,5 +1,5 @@
 
-data "dnacwireless_provision_access_point" "example" {
+data "dnacenter_wireless_provision_access_point" "example" {
     provider = dnac
     custom_ap_group_name = "string"
     custom_flex_group_name = ["string"]

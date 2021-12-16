@@ -1,5 +1,5 @@
 
-data "dnacswim_import_via_url" "example" {
+data "dnacenter_swim_import_via_url" "example" {
     provider = dnac
     schedule_at = "string"
     schedule_desc = "string"

@@ -1,5 +1,5 @@
 
-data "dnacglobal_credential_delete" "example" {
+data "dnacenter_global_credential_delete" "example" {
     provider = dnac
     global_credential_id = "string"
     item {

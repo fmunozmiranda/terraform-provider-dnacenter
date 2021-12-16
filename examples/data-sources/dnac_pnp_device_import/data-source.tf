@@ -1,5 +1,5 @@
 
-data "dnacpnp_device_import" "example" {
+data "dnacenter_pnp_device_import" "example" {
     provider = dnac
     id = "string"
     device_info {

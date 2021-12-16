@@ -1,5 +1,5 @@
 
-data "dnacsnmpv3_credential" "example" {
+data "dnacenter_snmpv3_credential" "example" {
     provider = dnac
     auth_password = "string"
     auth_type = "string"

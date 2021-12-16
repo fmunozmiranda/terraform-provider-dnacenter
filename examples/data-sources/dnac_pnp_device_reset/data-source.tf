@@ -1,5 +1,5 @@
 
-data "dnacpnp_device_reset" "example" {
+data "dnacenter_pnp_device_reset" "example" {
     provider = dnac
     config_list {
       

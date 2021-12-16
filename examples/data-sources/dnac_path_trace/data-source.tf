@@ -1,5 +1,5 @@
 
-data "dnac_path_trace" "example" {
+data "dnacenter_path_trace" "example" {
     provider = dnac
     dest_ip = "string"
     dest_port = "string"
@@ -18,15 +18,15 @@ data "dnac_path_trace" "example" {
     task_id = "string"
 }
 
-output "dnac_path_trace_example" {
+output "dnacenter_path_trace_example" {
     value = data.dnac_path_trace.example.items
 }
 
-data "dnac_path_trace" "example" {
+data "dnacenter_path_trace" "example" {
     provider = dnac
     flow_analysis_id = "string"
 }
 
-output "dnac_path_trace_example" {
+output "dnacenter_path_trace_example" {
     value = data.dnac_path_trace.example.item
 }

@@ -1,5 +1,5 @@
 
-data "dnacnetwork_update" "example" {
+data "dnacenter_network_update" "example" {
     provider = dnac
     site_id = "string"
     client_and_endpoint_aaa {

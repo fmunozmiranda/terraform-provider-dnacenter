@@ -1,5 +1,5 @@
 
-data "dnac_templates_details" "example" {
+data "dnacenter_templates_details" "example" {
     provider = dnac
     all_template_attributes = "false"
     filter_conflicting_templates = "false"
@@ -20,6 +20,6 @@ data "dnac_templates_details" "example" {
     un_committed = "false"
 }
 
-output "dnac_templates_details_example" {
+output "dnacenter_templates_details_example" {
     value = data.dnac_templates_details.example.items
 }

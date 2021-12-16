@@ -1,8 +1,8 @@
 
-data "dnac_security_advisories_summary" "example" {
+data "dnacenter_security_advisories_summary" "example" {
     provider = dnac
 }
 
-output "dnac_security_advisories_summary_example" {
+output "dnacenter_security_advisories_summary_example" {
     value = data.dnac_security_advisories_summary.example.item
 }

@@ -1,5 +1,5 @@
 
-data "dnacdevice_configurations_export" "example" {
+data "dnacenter_device_configurations_export" "example" {
     provider = dnac
     device_id = ["string"]
     item {

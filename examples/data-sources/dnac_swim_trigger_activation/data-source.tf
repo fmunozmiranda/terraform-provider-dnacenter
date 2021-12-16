@@ -1,5 +1,5 @@
 
-data "dnacswim_trigger_activation" "example" {
+data "dnacenter_swim_trigger_activation" "example" {
     provider = dnac
     schedule_validate = "false"
     activate_lower_image_version = "false"

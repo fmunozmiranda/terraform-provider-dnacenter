@@ -1,5 +1,5 @@
 
-data "dnacprofiling_rules_in_bulk_create" "example" {
+data "dnacenter_profiling_rules_in_bulk_create" "example" {
     provider = dnac
     # item = ------
     profiling_rules {

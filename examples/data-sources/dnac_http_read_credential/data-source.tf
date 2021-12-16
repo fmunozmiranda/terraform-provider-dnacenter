@@ -1,5 +1,5 @@
 
-data "dnachttp_read_credential" "example" {
+data "dnacenter_http_read_credential" "example" {
     provider = dnac
     comments = "string"
     credential_type = "string"

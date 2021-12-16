@@ -1,5 +1,5 @@
 
-data "dnac_site_membership" "example" {
+data "dnacenter_site_membership" "example" {
     provider = dnac
     device_family = "string"
     limit = "string"
@@ -8,6 +8,6 @@ data "dnac_site_membership" "example" {
     site_id = "string"
 }
 
-output "dnac_site_membership_example" {
+output "dnacenter_site_membership_example" {
     value = data.dnac_site_membership.example.item
 }

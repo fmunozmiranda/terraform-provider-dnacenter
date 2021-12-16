@@ -1,5 +1,5 @@
 
-data "dnacnfv_provision_details" "example" {
+data "dnacenter_nfv_provision_details" "example" {
     provider = dnac
     device_ip = "string"
     item {

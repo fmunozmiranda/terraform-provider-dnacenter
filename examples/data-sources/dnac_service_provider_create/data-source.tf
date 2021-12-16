@@ -1,5 +1,5 @@
 
-data "dnacservice_provider_create" "example" {
+data "dnacenter_service_provider_create" "example" {
     provider = dnac
     item {
       

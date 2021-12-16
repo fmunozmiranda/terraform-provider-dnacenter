@@ -1,5 +1,5 @@
 
-data "dnacsite_create" "example" {
+data "dnacenter_site_create" "example" {
     provider = dnac
     area {
       

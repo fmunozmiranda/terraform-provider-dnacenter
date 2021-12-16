@@ -1,5 +1,5 @@
 
-data "dnacsite_assign_device" "example" {
+data "dnacenter_site_assign_device" "example" {
     provider = dnac
     site_id = "string"
     ip = "string"

@@ -1,5 +1,5 @@
 
-data "dnacswim_import_local" "example" {
+data "dnacenter_swim_import_local" "example" {
     provider = dnac
     is_third_party = "false"
     third_party_application_type = "string"

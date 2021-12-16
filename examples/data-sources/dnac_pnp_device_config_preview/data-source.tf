@@ -1,5 +1,5 @@
 
-data "dnacpnp_device_config_preview" "example" {
+data "dnacenter_pnp_device_config_preview" "example" {
     provider = dnac
     device_id = "string"
     item {

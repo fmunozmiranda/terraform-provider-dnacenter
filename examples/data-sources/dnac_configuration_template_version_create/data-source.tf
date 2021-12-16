@@ -1,5 +1,5 @@
 
-data "dnacconfiguration_template_version_create" "example" {
+data "dnacenter_configuration_template_version_create" "example" {
     provider = dnac
     comments = "string"
     item {

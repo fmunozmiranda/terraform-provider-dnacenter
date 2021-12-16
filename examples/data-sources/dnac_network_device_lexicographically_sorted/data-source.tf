@@ -1,5 +1,5 @@
 
-data "dnac_network_device_lexicographically_sorted" "example" {
+data "dnacenter_network_device_lexicographically_sorted" "example" {
     provider = dnac
     associated_wlc_ip = "string"
     collection_interval = "string"
@@ -25,6 +25,6 @@ data "dnac_network_device_lexicographically_sorted" "example" {
     vrf_name = "string"
 }
 
-output "dnac_network_device_lexicographically_sorted_example" {
+output "dnacenter_network_device_lexicographically_sorted_example" {
     value = data.dnac_network_device_lexicographically_sorted.example.items
 }

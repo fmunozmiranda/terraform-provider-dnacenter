@@ -1,5 +1,5 @@
 
-data "dnac_discovery_jobs" "example" {
+data "dnacenter_discovery_jobs" "example" {
     provider = dnac
     ip_address = "string"
     limit = 1
@@ -7,6 +7,6 @@ data "dnac_discovery_jobs" "example" {
     offset = 1
 }
 
-output "dnac_discovery_jobs_example" {
+output "dnacenter_discovery_jobs_example" {
     value = data.dnac_discovery_jobs.example.items
 }

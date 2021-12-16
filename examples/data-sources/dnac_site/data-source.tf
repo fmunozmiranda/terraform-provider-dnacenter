@@ -1,5 +1,5 @@
 
-data "dnac_site" "example" {
+data "dnacenter_site" "example" {
     provider = dnac
     limit = "string"
     name = "string"
@@ -8,6 +8,6 @@ data "dnac_site" "example" {
     type = "string"
 }
 
-output "dnac_site_example" {
+output "dnacenter_site_example" {
     value = data.dnac_site.example.items
 }

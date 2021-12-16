@@ -1,5 +1,5 @@
 
-data "dnac_nfv_profile" "example" {
+data "dnacenter_nfv_profile" "example" {
     provider = dnac
     id = "string"
     limit = "string"
@@ -7,6 +7,6 @@ data "dnac_nfv_profile" "example" {
     offset = "string"
 }
 
-output "dnac_nfv_profile_example" {
+output "dnacenter_nfv_profile_example" {
     value = data.dnac_nfv_profile.example.items
 }

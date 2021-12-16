@@ -1,5 +1,5 @@
 
-data "dnacapp_policy_intent_create" "example" {
+data "dnacenter_app_policy_intent_create" "example" {
     provider = dnac
     advanced_policy_scope {
       

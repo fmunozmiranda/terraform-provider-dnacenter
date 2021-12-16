@@ -1,11 +1,11 @@
 
-data "dnac_applications" "example" {
+data "dnacenter_applications" "example" {
     provider = dnac
     limit = ------
     name = "string"
     offset = ------
 }
 
-output "dnac_applications_example" {
+output "dnacenter_applications_example" {
     value = data.dnac_applications.example.items
 }

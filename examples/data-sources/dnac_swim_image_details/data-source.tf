@@ -1,5 +1,5 @@
 
-data "dnac_swim_image_details" "example" {
+data "dnacenter_swim_image_details" "example" {
     provider = dnac
     application_type = "string"
     created_time = 1
@@ -21,6 +21,6 @@ data "dnac_swim_image_details" "example" {
     version = "string"
 }
 
-output "dnac_swim_image_details_example" {
+output "dnacenter_swim_image_details_example" {
     value = data.dnac_swim_image_details.example.items
 }

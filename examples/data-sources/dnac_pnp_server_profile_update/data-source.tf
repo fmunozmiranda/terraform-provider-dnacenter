@@ -1,5 +1,5 @@
 
-data "dnacpnp_server_profile_update" "example" {
+data "dnacenter_pnp_server_profile_update" "example" {
     provider = dnac
     address_fqdn = "string"
     address_ip_v4 = "string"

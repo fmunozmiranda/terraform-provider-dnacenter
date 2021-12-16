@@ -1,5 +1,5 @@
 
-data "dnactemplate_preview" "example" {
+data "dnacenter_template_preview" "example" {
     provider = dnac
     item {
       

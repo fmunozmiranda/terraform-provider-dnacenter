@@ -1,5 +1,5 @@
 
-data "dnacsite_update" "example" {
+data "dnacenter_site_update" "example" {
     provider = dnac
     site_id = "string"
     area {

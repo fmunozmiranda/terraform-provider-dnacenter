@@ -1,5 +1,5 @@
 
-data "dnac_network_device_list" "example" {
+data "dnacenter_network_device_list" "example" {
     provider = dnac
     associated_wlc_ip = ["string"]
     collection_interval = ["string"]
@@ -35,6 +35,6 @@ data "dnac_network_device_list" "example" {
     up_time = ["string"]
 }
 
-output "dnac_network_device_list_example" {
+output "dnacenter_network_device_list_example" {
     value = data.dnac_network_device_list.example.items
 }

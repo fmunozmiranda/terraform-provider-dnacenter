@@ -1,5 +1,5 @@
 
-data "dnac_event_artifact" "example" {
+data "dnacenter_event_artifact" "example" {
     provider = dnac
     event_ids = "string"
     limit = ------
@@ -10,6 +10,6 @@ data "dnac_event_artifact" "example" {
     tags = "string"
 }
 
-output "dnac_event_artifact_example" {
+output "dnacenter_event_artifact_example" {
     value = data.dnac_event_artifact.example.items
 }

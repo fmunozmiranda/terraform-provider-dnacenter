@@ -1,5 +1,5 @@
 
-data "dnac_site_health" "example" {
+data "dnacenter_site_health" "example" {
     provider = dnac
     limit = ------
     offset = ------
@@ -7,6 +7,6 @@ data "dnac_site_health" "example" {
     timestamp = "string"
 }
 
-output "dnac_site_health_example" {
+output "dnacenter_site_health_example" {
     value = data.dnac_site_health.example.items
 }

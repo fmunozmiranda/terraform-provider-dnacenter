@@ -1,5 +1,5 @@
 
-data "dnac_event_subscription_email" "example" {
+data "dnacenter_event_subscription_email" "example" {
     provider = dnac
     event_ids = "string"
     limit = ------
@@ -8,6 +8,6 @@ data "dnac_event_subscription_email" "example" {
     sort_by = "string"
 }
 
-output "dnac_event_subscription_email_example" {
+output "dnacenter_event_subscription_email_example" {
     value = data.dnac_event_subscription_email.example.items
 }

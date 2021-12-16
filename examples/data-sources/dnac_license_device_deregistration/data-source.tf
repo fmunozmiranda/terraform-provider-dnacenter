@@ -1,5 +1,5 @@
 
-data "dnaclicense_device_deregistration" "example" {
+data "dnacenter_license_device_deregistration" "example" {
     provider = dnac
     device_uuids = ["string"]
     item {

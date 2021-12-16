@@ -1,5 +1,5 @@
 
-data "dnac_applications_health" "example" {
+data "dnacenter_applications_health" "example" {
     provider = dnac
     application_health = "string"
     application_name = "string"
@@ -12,6 +12,6 @@ data "dnac_applications_health" "example" {
     start_time = ------
 }
 
-output "dnac_applications_health_example" {
+output "dnacenter_applications_health_example" {
     value = data.dnac_applications_health.example.items
 }

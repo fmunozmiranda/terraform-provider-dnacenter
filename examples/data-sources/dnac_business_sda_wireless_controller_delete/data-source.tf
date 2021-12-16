@@ -1,5 +1,5 @@
 
-data "dnacbusiness_sda_wireless_controller_delete" "example" {
+data "dnacenter_business_sda_wireless_controller_delete" "example" {
     provider = dnac
     device_ipaddress = "string"
     item {

@@ -1,5 +1,5 @@
 
-data "dnac_device_replacement" "example" {
+data "dnacenter_device_replacement" "example" {
     provider = dnac
     family = ["string"]
     faulty_device_name = "string"
@@ -14,6 +14,6 @@ data "dnac_device_replacement" "example" {
     sort_order = "string"
 }
 
-output "dnac_device_replacement_example" {
+output "dnacenter_device_replacement_example" {
     value = data.dnac_device_replacement.example.items
 }

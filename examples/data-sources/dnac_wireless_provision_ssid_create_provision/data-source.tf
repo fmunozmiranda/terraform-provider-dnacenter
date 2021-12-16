@@ -1,5 +1,5 @@
 
-data "dnacwireless_provision_ssid_create_provision" "example" {
+data "dnacenter_wireless_provision_ssid_create_provision" "example" {
     provider = dnac
     enable_broadcast_ssi_d = "false"
     enable_fast_lane = "false"

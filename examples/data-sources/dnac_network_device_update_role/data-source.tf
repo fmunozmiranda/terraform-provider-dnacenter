@@ -1,5 +1,5 @@
 
-data "dnacnetwork_device_update_role" "example" {
+data "dnacenter_network_device_update_role" "example" {
     provider = dnac
     id = "string"
     item {

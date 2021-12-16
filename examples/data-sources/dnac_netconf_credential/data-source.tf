@@ -1,5 +1,5 @@
 
-data "dnacnetconf_credential" "example" {
+data "dnacenter_netconf_credential" "example" {
     provider = dnac
     comments = "string"
     credential_type = "string"

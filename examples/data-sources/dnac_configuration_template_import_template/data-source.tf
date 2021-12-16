@@ -1,5 +1,5 @@
 
-data "dnacconfiguration_template_import_template" "example" {
+data "dnacenter_configuration_template_import_template" "example" {
     provider = dnac
     do_version = "false"
     project_name = "string"

@@ -1,5 +1,5 @@
 
-data "dnacwireless_psk_override" "example" {
+data "dnacenter_wireless_psk_override" "example" {
     provider = dnac
     # item = ------
     pass_phrase = "string"

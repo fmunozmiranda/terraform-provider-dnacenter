@@ -1,5 +1,5 @@
 
-data "dnacpnp_virtual_account_deregister" "example" {
+data "dnacenter_pnp_virtual_account_deregister" "example" {
     provider = dnac
     domain = "string"
     name = "string"

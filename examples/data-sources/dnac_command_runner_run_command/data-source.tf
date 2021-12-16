@@ -1,5 +1,5 @@
 
-data "dnaccommand_runner_run_command" "example" {
+data "dnacenter_command_runner_run_command" "example" {
     provider = dnac
     commands = ["string"]
     description = "string"

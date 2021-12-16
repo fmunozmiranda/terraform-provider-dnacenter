@@ -1,5 +1,5 @@
 
-data "dnacsensor_test_template_duplicate" "example" {
+data "dnacenter_sensor_test_template_duplicate" "example" {
     provider = dnac
     item {
       

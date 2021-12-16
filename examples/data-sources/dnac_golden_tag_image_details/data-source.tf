@@ -1,5 +1,5 @@
 
-data "dnac_golden_tag_image_details" "example" {
+data "dnacenter_golden_tag_image_details" "example" {
     provider = dnac
     device_family_identifier = "string"
     device_role = "string"
@@ -7,6 +7,6 @@ data "dnac_golden_tag_image_details" "example" {
     site_id = "string"
 }
 
-output "dnac_golden_tag_image_details_example" {
+output "dnacenter_golden_tag_image_details_example" {
     value = data.dnac_golden_tag_image_details.example.item
 }

@@ -1,5 +1,5 @@
 
-data "dnac_event_series" "example" {
+data "dnacenter_event_series" "example" {
     provider = dnac
     category = "string"
     domain = "string"
@@ -16,6 +16,6 @@ data "dnac_event_series" "example" {
     type = "string"
 }
 
-output "dnac_event_series_example" {
+output "dnacenter_event_series_example" {
     value = data.dnac_event_series.example.items
 }

@@ -1,5 +1,5 @@
 
-data "dnacswim_trigger_distribution" "example" {
+data "dnacenter_swim_trigger_distribution" "example" {
     provider = dnac
     device_uuid = "string"
     image_uuid = "string"

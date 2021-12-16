@@ -1,5 +1,5 @@
 
-data "dnacnfv_provision" "example" {
+data "dnacenter_nfv_provision" "example" {
     provider = dnac
     device {
       

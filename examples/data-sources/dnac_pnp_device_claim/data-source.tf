@@ -1,5 +1,5 @@
 
-data "dnacpnp_device_claim" "example" {
+data "dnacenter_pnp_device_claim" "example" {
     provider = dnac
     config_list {
       

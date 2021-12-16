@@ -1,5 +1,5 @@
 
-data "dnacconfiguration_template_export_project" "example" {
+data "dnacenter_configuration_template_export_project" "example" {
     provider = dnac
     item {
       

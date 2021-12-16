@@ -1,5 +1,5 @@
 
-data "dnac_network_device_module_count" "example" {
+data "dnacenter_network_device_module_count" "example" {
     provider = dnac
     device_id = "string"
     name_list = ["string"]
@@ -8,6 +8,6 @@ data "dnac_network_device_module_count" "example" {
     vendor_equipment_type_list = ["string"]
 }
 
-output "dnac_network_device_module_count_example" {
+output "dnacenter_network_device_module_count_example" {
     value = data.dnac_network_device_module_count.example.item
 }

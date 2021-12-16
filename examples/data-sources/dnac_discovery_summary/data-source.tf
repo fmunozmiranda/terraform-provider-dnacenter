@@ -1,5 +1,5 @@
 
-data "dnac_discovery_summary" "example" {
+data "dnacenter_discovery_summary" "example" {
     provider = dnac
     cli_status = ["string"]
     http_status = ["string"]
@@ -13,6 +13,6 @@ data "dnac_discovery_summary" "example" {
     task_id = "string"
 }
 
-output "dnac_discovery_summary_example" {
+output "dnacenter_discovery_summary_example" {
     value = data.dnac_discovery_summary.example.item
 }

@@ -1,5 +1,5 @@
 
-data "dnac_configuration_template" "example" {
+data "dnacenter_configuration_template" "example" {
     provider = dnac
     filter_conflicting_templates = "false"
     product_family = "string"
@@ -14,16 +14,16 @@ data "dnac_configuration_template" "example" {
     un_committed = "false"
 }
 
-output "dnac_configuration_template_example" {
+output "dnacenter_configuration_template_example" {
     value = data.dnac_configuration_template.example.items
 }
 
-data "dnac_configuration_template" "example" {
+data "dnacenter_configuration_template" "example" {
     provider = dnac
     latest_version = "false"
     template_id = "string"
 }
 
-output "dnac_configuration_template_example" {
+output "dnacenter_configuration_template_example" {
     value = data.dnac_configuration_template.example.item
 }

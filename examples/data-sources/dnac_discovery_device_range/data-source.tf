@@ -1,5 +1,5 @@
 
-data "dnac_discovery_device_range" "example" {
+data "dnacenter_discovery_device_range" "example" {
     provider = dnac
     id = "string"
     records_to_return = 1
@@ -7,6 +7,6 @@ data "dnac_discovery_device_range" "example" {
     task_id = "string"
 }
 
-output "dnac_discovery_device_range_example" {
+output "dnacenter_discovery_device_range_example" {
     value = data.dnac_discovery_device_range.example.items
 }

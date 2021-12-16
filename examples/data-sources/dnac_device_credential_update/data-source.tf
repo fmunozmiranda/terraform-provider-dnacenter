@@ -1,5 +1,5 @@
 
-data "dnacdevice_credential_update" "example" {
+data "dnacenter_device_credential_update" "example" {
     provider = dnac
     cli_credential {
       

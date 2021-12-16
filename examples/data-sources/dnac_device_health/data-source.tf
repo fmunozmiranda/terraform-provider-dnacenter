@@ -1,5 +1,5 @@
 
-data "dnac_device_health" "example" {
+data "dnacenter_device_health" "example" {
     provider = dnac
     device_role = "string"
     end_time = ------
@@ -10,6 +10,6 @@ data "dnac_device_health" "example" {
     start_time = ------
 }
 
-output "dnac_device_health_example" {
+output "dnacenter_device_health_example" {
     value = data.dnac_device_health.example.items
 }

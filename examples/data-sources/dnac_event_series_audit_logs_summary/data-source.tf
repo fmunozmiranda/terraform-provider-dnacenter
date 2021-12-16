@@ -1,5 +1,5 @@
 
-data "dnac_event_series_audit_logs_summary" "example" {
+data "dnacenter_event_series_audit_logs_summary" "example" {
     provider = dnac
     category = "string"
     context = "string"
@@ -22,6 +22,6 @@ data "dnac_event_series_audit_logs_summary" "example" {
     user_id = "string"
 }
 
-output "dnac_event_series_audit_logs_summary_example" {
+output "dnacenter_event_series_audit_logs_summary_example" {
     value = data.dnac_event_series_audit_logs_summary.example.items
 }

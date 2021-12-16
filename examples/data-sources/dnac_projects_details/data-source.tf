@@ -1,5 +1,5 @@
 
-data "dnac_projects_details" "example" {
+data "dnacenter_projects_details" "example" {
     provider = dnac
     id = "string"
     limit = 1
@@ -8,6 +8,6 @@ data "dnac_projects_details" "example" {
     sort_order = "string"
 }
 
-output "dnac_projects_details_example" {
+output "dnacenter_projects_details_example" {
     value = data.dnac_projects_details.example.items
 }

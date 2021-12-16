@@ -1,5 +1,5 @@
 
-data "dnacservice_provider_update" "example" {
+data "dnacenter_service_provider_update" "example" {
     provider = dnac
     item {
       
