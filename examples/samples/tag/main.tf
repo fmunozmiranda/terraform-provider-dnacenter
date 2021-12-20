@@ -2,7 +2,7 @@ terraform {
   required_providers {
     dnacenter = {
       version = "0.0.3"
-      source   = "hashicorp.com/edu/dnacenter"
+      source  = "hashicorp.com/edu/dnacenter"
       # "hashicorp.com/edu/dnacenter" is the local built source, change to "cisco-en-programmability/dnacenter" to use downloaded version from registry
     }
   }
@@ -14,9 +14,9 @@ provider "dnacenter" {
 resource "dna_tag" "tf_tag" {
   provider = dnacenter
   item {
-    system_tag = false
+    system_tag  = false
     description = "Terraform Tag"
-    name = "Terraform"
+    name        = "Terraform"
   }
 }
 
