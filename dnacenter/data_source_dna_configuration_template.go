@@ -1706,9 +1706,9 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemContainingTempl
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1777,9 +1777,9 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemContainingTempl
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1863,9 +1863,9 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemRollbackTemplat
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1934,9 +1934,9 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemTemplateParamsS
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1963,7 +1963,7 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationError
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1975,7 +1975,7 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemValidationError
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

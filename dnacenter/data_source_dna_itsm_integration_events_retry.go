@@ -49,6 +49,14 @@ Ids can be retrieved using the 'Get Failed ITSM Events' API in the 'instanceId' 
 					},
 				},
 			},
+			"payload": &schema.Schema{
+				Description: `Array of RequestItsmRetryIntegrationEvents`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -97,7 +105,7 @@ func dataSourceItsmIntegrationEventsRetryRead(ctx context.Context, d *schema.Res
 
 func expandRequestItsmIntegrationEventsRetryRetryIntegrationEvents(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItsmRetryIntegrationEvents {
 	request := dnacentersdkgo.RequestItsmRetryIntegrationEvents{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".")))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".payload")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".payload")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".payload")))) {
 		request = interfaceToSliceString(v)
 	}
 	return &request

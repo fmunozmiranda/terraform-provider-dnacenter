@@ -206,8 +206,8 @@ func flattenTaskGetTaskTreeItemsOperationIDList(item *dnacentersdkgo.ResponseTas
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

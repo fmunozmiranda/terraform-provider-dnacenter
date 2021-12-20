@@ -674,7 +674,7 @@ func flattenPolicyGetListOfProfilingRulesItemsConditionGroupsConditionGroup(item
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -759,7 +759,7 @@ func flattenPolicyGetDetailsOfASingleProfilingRuleItemConditionGroupsConditionGr
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

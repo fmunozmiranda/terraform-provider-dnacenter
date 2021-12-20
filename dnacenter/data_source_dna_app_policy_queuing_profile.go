@@ -598,7 +598,7 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsTargetIDList
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -610,7 +610,7 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsCfsChangeInf
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -622,7 +622,7 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsCustomProvis
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -717,7 +717,7 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsContractClas
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

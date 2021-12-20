@@ -275,9 +275,9 @@ func flattenSiteDesignGetDeviceDetailsByIPItemTaskNodesProvisionedNames(item *dn
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -285,9 +285,9 @@ func flattenSiteDesignGetDeviceDetailsByIPItemTaskNodesErrorPayload(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -295,9 +295,9 @@ func flattenSiteDesignGetDeviceDetailsByIPItemTaskNodesParentTask(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -305,8 +305,8 @@ func flattenSiteDesignGetDeviceDetailsByIPItemTaskNodesCliTemplateUserMessageDTO
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

@@ -274,9 +274,9 @@ func flattenNetworkSettingsGetGlobalPoolItemsClientOptions(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

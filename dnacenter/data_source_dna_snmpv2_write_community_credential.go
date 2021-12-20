@@ -26,28 +26,6 @@ func dataSourceSNMPv2WriteCommunityCredential() *schema.Resource {
 
 		ReadContext: dataSourceSNMPv2WriteCommunityCredentialRead,
 		Schema: map[string]*schema.Schema{
-			"comments": &schema.Schema{
-				Description: `Comments to identify the credential
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"credential_type": &schema.Schema{
-				Description: `Credential type to identify the application that uses the credential
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"description": &schema.Schema{
-				Description: `Name/Description of the credential
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item_id": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -82,11 +60,43 @@ func dataSourceSNMPv2WriteCommunityCredential() *schema.Resource {
 					},
 				},
 			},
-			"write_community": &schema.Schema{
-				Description: `SNMP write community
+			"payload": &schema.Schema{
+				Description: `Array of RequestDiscoveryCreateSNMPWriteCommunity`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"comments": &schema.Schema{
+							Description: `Comments to identify the credential
 `,
-				Type:     schema.TypeString,
-				Optional: true,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"credential_type": &schema.Schema{
+							Description: `Credential type to identify the application that uses the credential
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"description": &schema.Schema{
+							Description: `Name/Description of the credential
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"write_community": &schema.Schema{
+							Description: `SNMP write community
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -173,7 +183,7 @@ func dataSourceSNMPv2WriteCommunityCredentialRead(ctx context.Context, d *schema
 
 func expandRequestSNMPv2WriteCommunityCredentialCreateSNMPWriteCommunity(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateSNMPWriteCommunity {
 	request := dnacentersdkgo.RequestDiscoveryCreateSNMPWriteCommunity{}
-	if v := expandRequestSNMPv2WriteCommunityCredentialCreateSNMPWriteCommunityItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSNMPv2WriteCommunityCredentialCreateSNMPWriteCommunityItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

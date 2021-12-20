@@ -207,7 +207,7 @@ func flattenSitesGetMembershipItemSiteResponse(items *[]dnacentersdkgo.ResponseS
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -234,7 +234,7 @@ func flattenSitesGetMembershipItemDeviceResponse(items *[]dnacentersdkgo.Respons
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

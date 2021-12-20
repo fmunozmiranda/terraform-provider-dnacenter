@@ -400,7 +400,7 @@ func flattenPlatformConfigurationCiscoDnaCenterNodesConfigurationSummaryItemNode
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -412,7 +412,7 @@ func flattenPlatformConfigurationCiscoDnaCenterNodesConfigurationSummaryItemNode
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

@@ -396,9 +396,9 @@ func flattenDevicesGetModulesItemsAttributeInfo(item *dnacentersdkgo.ResponseDev
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -432,8 +432,8 @@ func flattenDevicesGetModuleInfoByIDItemAttributeInfo(item *dnacentersdkgo.Respo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

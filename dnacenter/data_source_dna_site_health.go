@@ -624,9 +624,9 @@ func flattenSitesGetSiteHealthItemsHealthyNetworkDevicePercentage(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -634,9 +634,9 @@ func flattenSitesGetSiteHealthItemsHealthyClientsPercentage(item *dnacentersdkgo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -644,9 +644,9 @@ func flattenSitesGetSiteHealthItemsClientHealthWired(item *dnacentersdkgo.Respon
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -654,9 +654,9 @@ func flattenSitesGetSiteHealthItemsClientHealthWireless(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -664,9 +664,9 @@ func flattenSitesGetSiteHealthItemsNumberOfClients(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -674,9 +674,9 @@ func flattenSitesGetSiteHealthItemsNumberOfNetworkDevice(item *dnacentersdkgo.Re
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -684,9 +684,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthAverage(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -694,9 +694,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthAccess(item *dnacentersdkgo.Resp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -704,9 +704,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthCore(item *dnacentersdkgo.Respon
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -714,9 +714,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthDistribution(item *dnacentersdkg
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -724,9 +724,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthRouter(item *dnacentersdkgo.Resp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -734,9 +734,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthWireless(item *dnacentersdkgo.Re
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -744,9 +744,9 @@ func flattenSitesGetSiteHealthItemsNetworkHealthOthers(item *dnacentersdkgo.Resp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -754,9 +754,9 @@ func flattenSitesGetSiteHealthItemsNumberOfWiredClients(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -764,9 +764,9 @@ func flattenSitesGetSiteHealthItemsNumberOfWirelessClients(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -774,9 +774,9 @@ func flattenSitesGetSiteHealthItemsTotalNumberOfConnectedWiredClients(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -784,9 +784,9 @@ func flattenSitesGetSiteHealthItemsTotalNumberOfActiveWirelessClients(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -794,9 +794,9 @@ func flattenSitesGetSiteHealthItemsWiredGoodClients(item *dnacentersdkgo.Respons
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -804,9 +804,9 @@ func flattenSitesGetSiteHealthItemsWirelessGoodClients(item *dnacentersdkgo.Resp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -814,9 +814,9 @@ func flattenSitesGetSiteHealthItemsOverallGoodDevices(item *dnacentersdkgo.Respo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -824,9 +824,9 @@ func flattenSitesGetSiteHealthItemsAccessGoodCount(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -834,9 +834,9 @@ func flattenSitesGetSiteHealthItemsAccessTotalCount(item *dnacentersdkgo.Respons
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -844,9 +844,9 @@ func flattenSitesGetSiteHealthItemsCoreGoodCount(item *dnacentersdkgo.ResponseSi
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -854,9 +854,9 @@ func flattenSitesGetSiteHealthItemsCoreTotalCount(item *dnacentersdkgo.ResponseS
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -864,9 +864,9 @@ func flattenSitesGetSiteHealthItemsDistributionGoodCount(item *dnacentersdkgo.Re
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -874,9 +874,9 @@ func flattenSitesGetSiteHealthItemsDistributionTotalCount(item *dnacentersdkgo.R
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -884,9 +884,9 @@ func flattenSitesGetSiteHealthItemsRouterGoodCount(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -894,9 +894,9 @@ func flattenSitesGetSiteHealthItemsRouterTotalCount(item *dnacentersdkgo.Respons
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -904,9 +904,9 @@ func flattenSitesGetSiteHealthItemsWirelessDeviceGoodCount(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -914,9 +914,9 @@ func flattenSitesGetSiteHealthItemsWirelessDeviceTotalCount(item *dnacentersdkgo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -924,9 +924,9 @@ func flattenSitesGetSiteHealthItemsApplicationHealth(item *dnacentersdkgo.Respon
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -934,9 +934,9 @@ func flattenSitesGetSiteHealthItemsApplicationGoodCount(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -944,9 +944,9 @@ func flattenSitesGetSiteHealthItemsApplicationTotalCount(item *dnacentersdkgo.Re
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -954,9 +954,9 @@ func flattenSitesGetSiteHealthItemsApplicationBytesTotalCount(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -964,9 +964,9 @@ func flattenSitesGetSiteHealthItemsDnacInfo(item *dnacentersdkgo.ResponseSitesGe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

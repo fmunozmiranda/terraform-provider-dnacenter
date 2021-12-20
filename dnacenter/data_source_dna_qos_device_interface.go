@@ -402,7 +402,7 @@ func flattenApplicationPolicyGetQosDeviceInterfaceInfoItemsTargetIDList(items *[
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -414,7 +414,7 @@ func flattenApplicationPolicyGetQosDeviceInterfaceInfoItemsCfsChangeInfo(items *
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -426,7 +426,7 @@ func flattenApplicationPolicyGetQosDeviceInterfaceInfoItemsCustomProvisions(item
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

@@ -399,9 +399,9 @@ func flattenTopologyGetL3TopologyDetailsItemLinksAdditionalInfo(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -446,9 +446,9 @@ func flattenTopologyGetL3TopologyDetailsItemNodesAdditionalInfo(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

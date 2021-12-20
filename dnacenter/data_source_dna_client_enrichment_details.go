@@ -1043,9 +1043,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsHostName(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1053,9 +1053,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsHostOs(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1063,9 +1063,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsHostVersion(item *d
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1073,9 +1073,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsSubType(item *dnace
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1101,7 +1101,7 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsHostIPV6(items *[]d
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1110,9 +1110,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsAuthType(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1120,9 +1120,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsSSID(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1130,9 +1130,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsLocation(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1143,7 +1143,7 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsConnectedDevice(ite
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1152,9 +1152,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsRssi(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1162,9 +1162,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsSnr(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1172,9 +1172,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsDataRate(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1182,9 +1182,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsUserDetailsPort(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1256,9 +1256,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsLo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1266,9 +1266,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsBo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1276,9 +1276,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsIn
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1286,9 +1286,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsLi
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1296,9 +1296,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsLi
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1306,9 +1306,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsWa
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1316,9 +1316,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsEr
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1326,9 +1326,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsLo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1379,9 +1379,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1389,9 +1389,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1399,9 +1399,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1409,9 +1409,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1419,9 +1419,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1429,9 +1429,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1439,9 +1439,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1449,9 +1449,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1459,9 +1459,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1469,9 +1469,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1479,9 +1479,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1510,7 +1510,7 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1519,9 +1519,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1529,9 +1529,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsConnectedDeviceDeviceDetailsNe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1594,7 +1594,7 @@ func flattenClientsGetClientEnrichmentDetailsItemsIssueDetailsIssueSuggestedActi
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1642,9 +1642,9 @@ func flattenClientsGetClientEnrichmentDetailsItemsIssueDetailsIssueImpactedHosts
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1655,7 +1655,7 @@ func flattenClientsGetClientEnrichmentDetailsItemsIssueDetailsIssueImpactedHosts
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

@@ -608,7 +608,7 @@ func flattenApplicationPolicyGetApplicationPolicyDefaultItemsTargetIDList(items 
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -620,7 +620,7 @@ func flattenApplicationPolicyGetApplicationPolicyDefaultItemsCfsChangeInfo(items
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -632,7 +632,7 @@ func flattenApplicationPolicyGetApplicationPolicyDefaultItemsCustomProvisions(it
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -644,7 +644,7 @@ func flattenApplicationPolicyGetApplicationPolicyDefaultItemsContractList(items 
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

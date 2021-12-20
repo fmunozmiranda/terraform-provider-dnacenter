@@ -759,7 +759,7 @@ func flattenReportsGetListOfScheduledReportsItemsDeliveries(items *[]dnacentersd
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -787,9 +787,9 @@ func flattenReportsGetListOfScheduledReportsItemsSchedule(item *dnacentersdkgo.R
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -861,9 +861,9 @@ func flattenReportsGetListOfScheduledReportsItemsViewFiltersValue(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -911,7 +911,7 @@ func flattenReportsGetAScheduledReportItemDeliveries(items *[]dnacentersdkgo.Res
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -939,9 +939,9 @@ func flattenReportsGetAScheduledReportItemSchedule(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1013,9 +1013,9 @@ func flattenReportsGetAScheduledReportItemViewFiltersValue(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

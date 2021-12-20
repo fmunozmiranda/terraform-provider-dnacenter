@@ -494,9 +494,9 @@ func flattenReportsGetViewDetailsForAGivenViewGroupViewItemFiltersAdditionalInfo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -520,9 +520,9 @@ func flattenReportsGetViewDetailsForAGivenViewGroupViewItemFiltersFilterSourceDa
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

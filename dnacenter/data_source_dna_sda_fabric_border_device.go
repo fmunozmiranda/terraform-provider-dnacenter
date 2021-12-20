@@ -893,7 +893,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadTargetIDList(items 
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -905,7 +905,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadCfsChangeInfo(items
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -917,7 +917,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadCustomProvisions(it
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -929,7 +929,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadConfigs(items *[]dn
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -941,7 +941,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadManagedSites(items 
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -953,7 +953,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadAkcSettingsCfs(item
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -965,7 +965,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadDeviceInterfaceInfo
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1005,7 +1005,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadDeviceSettingsConne
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1041,7 +1041,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadDeviceSettingsExtCo
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1116,7 +1116,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1128,7 +1128,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1201,7 +1201,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1213,7 +1213,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1225,7 +1225,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1237,7 +1237,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1249,7 +1249,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1261,7 +1261,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadNetworkWideSettings
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1273,7 +1273,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadOtherDevice(items *
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1298,7 +1298,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadVirtualNetwork(item
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1310,7 +1310,7 @@ func flattenSdaGetsBorderDeviceDetailFromSdaFabricItemPayloadWLAN(items *[]dnace
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

@@ -43,14 +43,6 @@ files extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz and qcow2
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"application_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"image_family": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -68,19 +60,37 @@ files extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz and qcow2
 					},
 				},
 			},
-			"source_url": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"third_party": &schema.Schema{
-				// Type:     schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"vendor": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"payload": &schema.Schema{
+				Description: `Array of RequestSoftwareImageManagementSwimImportSoftwareImageViaURL`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"application_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image_family": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"source_url": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"third_party": &schema.Schema{
+							// Type:     schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"vendor": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -144,7 +154,7 @@ func dataSourceSwimImportViaURLRead(ctx context.Context, d *schema.ResourceData,
 
 func expandRequestSwimImportViaURLImportSoftwareImageViaURL(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSoftwareImageManagementSwimImportSoftwareImageViaURL {
 	request := dnacentersdkgo.RequestSoftwareImageManagementSwimImportSoftwareImageViaURL{}
-	if v := expandRequestSwimImportViaURLImportSoftwareImageViaURLItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSwimImportViaURLImportSoftwareImageViaURLItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

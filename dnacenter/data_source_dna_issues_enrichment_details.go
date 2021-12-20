@@ -244,7 +244,7 @@ func flattenIssuesGetIssueEnrichmentDetailsItemIssueSuggestedActionsSteps(items 
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -256,7 +256,7 @@ func flattenIssuesGetIssueEnrichmentDetailsItemIssueImpactedHosts(items *[]dnace
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

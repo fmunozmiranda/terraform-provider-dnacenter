@@ -28,23 +28,33 @@ func dataSourceWirelessPskOverride() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"pass_phrase": &schema.Schema{
-				Description: `Pass phrase (create/update)
+			"payload": &schema.Schema{
+				Description: `Array of RequestWirelessPSKOverride`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"pass_phrase": &schema.Schema{
+							Description: `Pass phrase (create/update)
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"site": &schema.Schema{
-				Description: `site name hierarchy (ex: Global/aaa/zzz/...) 
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"site": &schema.Schema{
+							Description: `site name hierarchy (ex: Global/aaa/zzz/...) 
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"ssid": &schema.Schema{
-				Description: `enterprise ssid name(already created/present)
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ssid": &schema.Schema{
+							Description: `enterprise ssid name(already created/present)
 `,
-				Type:     schema.TypeString,
-				Optional: true,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -90,7 +100,7 @@ func dataSourceWirelessPskOverrideRead(ctx context.Context, d *schema.ResourceDa
 
 func expandRequestWirelessPskOverridePSKOverride(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessPSKOverride {
 	request := dnacentersdkgo.RequestWirelessPSKOverride{}
-	if v := expandRequestWirelessPskOverridePSKOverrideItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestWirelessPskOverridePSKOverrideItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

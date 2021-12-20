@@ -444,7 +444,7 @@ func flattenTagGetTagItemsDynamicRulesRulesItems(items *[]dnacentersdkgo.Respons
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -503,7 +503,7 @@ func flattenTagGetTagByIDItemDynamicRulesRulesItems(items *[]dnacentersdkgo.Resp
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

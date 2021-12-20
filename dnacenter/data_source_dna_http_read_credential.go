@@ -26,30 +26,6 @@ func dataSourceHTTPReadCredential() *schema.Resource {
 
 		ReadContext: dataSourceHTTPReadCredentialRead,
 		Schema: map[string]*schema.Schema{
-			"comments": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"credential_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_tenant_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item_id": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -84,24 +60,58 @@ func dataSourceHTTPReadCredential() *schema.Resource {
 					},
 				},
 			},
-			"password": &schema.Schema{
-				Type:      schema.TypeString,
-				Optional:  true,
-				Sensitive: true,
-			},
-			"port": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"secure": &schema.Schema{
-				// Type:     schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"username": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"payload": &schema.Schema{
+				Description: `Array of RequestDiscoveryCreateHTTPReadCredentials`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"comments": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"credential_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_tenant_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"password": &schema.Schema{
+							Type:      schema.TypeString,
+							Optional:  true,
+							Sensitive: true,
+						},
+						"port": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"secure": &schema.Schema{
+							// Type:     schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"username": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -188,7 +198,7 @@ func dataSourceHTTPReadCredentialRead(ctx context.Context, d *schema.ResourceDat
 
 func expandRequestHTTPReadCredentialCreateHTTPReadCredentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateHTTPReadCredentials {
 	request := dnacentersdkgo.RequestDiscoveryCreateHTTPReadCredentials{}
-	if v := expandRequestHTTPReadCredentialCreateHTTPReadCredentialsItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestHTTPReadCredentialCreateHTTPReadCredentialsItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

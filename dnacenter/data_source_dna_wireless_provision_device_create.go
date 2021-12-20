@@ -24,57 +24,6 @@ func dataSourceWirelessProvisionDeviceCreate() *schema.Resource {
 
 		ReadContext: dataSourceWirelessProvisionDeviceCreateRead,
 		Schema: map[string]*schema.Schema{
-			"device_name": &schema.Schema{
-				Description: `Controller Name
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"dynamic_interfaces": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"interface_gateway": &schema.Schema{
-							Description: `Interface Gateway
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"interface_ipaddress": &schema.Schema{
-							Description: `Interface IP Address
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"interface_name": &schema.Schema{
-							Description: `Interface Name
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"interface_netmask_in_cid_r": &schema.Schema{
-							Description: `Interface Netmask In CIDR
-`,
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"lag_or_port_number": &schema.Schema{
-							Description: `Lag Or Port Number
-`,
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"vlan_id": &schema.Schema{
-							Description: `VLAN ID
-`,
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -119,20 +68,81 @@ func dataSourceWirelessProvisionDeviceCreate() *schema.Resource {
 					},
 				},
 			},
-			"managed_aplocations": &schema.Schema{
-				Description: `List of managed AP locations (Site Hierarchies)
+			"payload": &schema.Schema{
+				Description: `Array of RequestWirelessProvision`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"device_name": &schema.Schema{
+							Description: `Controller Name
 `,
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"dynamic_interfaces": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"interface_gateway": &schema.Schema{
+										Description: `Interface Gateway
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"interface_ipaddress": &schema.Schema{
+										Description: `Interface IP Address
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"interface_name": &schema.Schema{
+										Description: `Interface Name
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"interface_netmask_in_cid_r": &schema.Schema{
+										Description: `Interface Netmask In CIDR
+`,
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"lag_or_port_number": &schema.Schema{
+										Description: `Lag Or Port Number
+`,
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"vlan_id": &schema.Schema{
+										Description: `VLAN ID
+`,
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"managed_aplocations": &schema.Schema{
+							Description: `List of managed AP locations (Site Hierarchies)
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"site": &schema.Schema{
+							Description: `Full Site Hierarchy where device has to be assigned
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
 				},
-			},
-			"site": &schema.Schema{
-				Description: `Full Site Hierarchy where device has to be assigned
-`,
-				Type:     schema.TypeString,
-				Optional: true,
 			},
 		},
 	}
@@ -182,7 +192,7 @@ func dataSourceWirelessProvisionDeviceCreateRead(ctx context.Context, d *schema.
 
 func expandRequestWirelessProvisionDeviceCreateProvision(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessProvision {
 	request := dnacentersdkgo.RequestWirelessProvision{}
-	if v := expandRequestWirelessProvisionDeviceCreateProvisionItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestWirelessProvisionDeviceCreateProvisionItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

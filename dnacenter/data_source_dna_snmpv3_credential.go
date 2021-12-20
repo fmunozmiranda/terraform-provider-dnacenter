@@ -26,38 +26,6 @@ func dataSourceSNMPv3Credential() *schema.Resource {
 
 		ReadContext: dataSourceSNMPv3CredentialRead,
 		Schema: map[string]*schema.Schema{
-			"auth_password": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"auth_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"comments": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"credential_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_tenant_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item_id": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -92,21 +60,62 @@ func dataSourceSNMPv3Credential() *schema.Resource {
 					},
 				},
 			},
-			"privacy_password": &schema.Schema{
-				Type:     schema.TypeString,
+			"payload": &schema.Schema{
+				Type:     schema.TypeList,
 				Optional: true,
-			},
-			"privacy_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"snmp_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"username": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"auth_password": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"auth_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"comments": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"credential_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_tenant_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"privacy_password": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"privacy_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"snmp_mode": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"username": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -234,7 +243,7 @@ func expandRequestSNMPv3CredentialUpdateSNMPv3Credentials(ctx context.Context, k
 
 func expandRequestSNMPv3CredentialCreateSNMPv3Credentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateSNMPv3Credentials {
 	request := dnacentersdkgo.RequestDiscoveryCreateSNMPv3Credentials{}
-	if v := expandRequestSNMPv3CredentialCreateSNMPv3CredentialsItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSNMPv3CredentialCreateSNMPv3CredentialsItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

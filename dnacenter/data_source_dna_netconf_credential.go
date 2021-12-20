@@ -26,30 +26,6 @@ func dataSourceNetconfCredential() *schema.Resource {
 
 		ReadContext: dataSourceNetconfCredentialRead,
 		Schema: map[string]*schema.Schema{
-			"comments": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"credential_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_tenant_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item_id": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -84,9 +60,42 @@ func dataSourceNetconfCredential() *schema.Resource {
 					},
 				},
 			},
-			"netconf_port": &schema.Schema{
-				Type:     schema.TypeString,
+			"payload": &schema.Schema{
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"comments": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"credential_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_tenant_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"netconf_port": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -199,7 +208,7 @@ func expandRequestNetconfCredentialUpdateNetconfCredentials(ctx context.Context,
 
 func expandRequestNetconfCredentialCreateNetconfCredentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateNetconfCredentials {
 	request := dnacentersdkgo.RequestDiscoveryCreateNetconfCredentials{}
-	if v := expandRequestNetconfCredentialCreateNetconfCredentialsItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestNetconfCredentialCreateNetconfCredentialsItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

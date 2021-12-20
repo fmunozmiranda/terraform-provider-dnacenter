@@ -3903,9 +3903,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrim
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -3913,9 +3913,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrim
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -3941,9 +3941,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSeco
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -3951,9 +3951,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSeco
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4013,9 +4013,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv4Ad
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4026,7 +4026,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv6Ad
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -4105,9 +4105,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoTags(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4447,9 +4447,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfigPreview(item *d
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4611,9 +4611,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimar
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4621,9 +4621,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimar
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4649,9 +4649,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecond
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4659,9 +4659,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecond
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4721,9 +4721,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv4Addr
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -4734,7 +4734,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv6Addr
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -4813,9 +4813,9 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoTags(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -5155,8 +5155,8 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDayZeroConfigPreview(item *dna
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

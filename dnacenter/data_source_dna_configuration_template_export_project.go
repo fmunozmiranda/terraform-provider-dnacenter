@@ -40,6 +40,11 @@ func dataSourceConfigurationTemplateExportProject() *schema.Resource {
 					},
 				},
 			},
+			"payload": &schema.Schema{
+				Description: `Array of RequestConfigurationTemplatesExportsTheProjectsForAGivenCriteria`,
+				Type:        schema.TypeList,
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -88,7 +93,7 @@ func dataSourceConfigurationTemplateExportProjectRead(ctx context.Context, d *sc
 
 func expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteria(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesExportsTheProjectsForAGivenCriteria {
 	request := dnacentersdkgo.RequestConfigurationTemplatesExportsTheProjectsForAGivenCriteria{}
-	if v := expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestConfigurationTemplateExportProjectExportsTheProjectsForAGivenCriteriaItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

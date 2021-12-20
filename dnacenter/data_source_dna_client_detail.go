@@ -890,9 +890,9 @@ func flattenClientsGetClientDetailItemDetailUserID(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -900,9 +900,9 @@ func flattenClientsGetClientDetailItemDetailHostOs(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -910,9 +910,9 @@ func flattenClientsGetClientDetailItemDetailHostVersion(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -935,9 +935,9 @@ func flattenClientsGetClientDetailItemDetailApGroup(item *dnacentersdkgo.Respons
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -945,9 +945,9 @@ func flattenClientsGetClientDetailItemDetailLocation(item *dnacentersdkgo.Respon
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -958,7 +958,7 @@ func flattenClientsGetClientDetailItemDetailConnectedDevice(items *[]dnacentersd
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -967,9 +967,9 @@ func flattenClientsGetClientDetailItemDetailAvgRssi(item *dnacentersdkgo.Respons
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -977,9 +977,9 @@ func flattenClientsGetClientDetailItemDetailAvgSnr(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -987,9 +987,9 @@ func flattenClientsGetClientDetailItemDetailDNSSuccess(item *dnacentersdkgo.Resp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -997,9 +997,9 @@ func flattenClientsGetClientDetailItemDetailDNSFailure(item *dnacentersdkgo.Resp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1036,9 +1036,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingAverageRunDuration(item *d
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1046,9 +1046,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingMaxRunDuration(item *dnace
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1056,9 +1056,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingAverageAssocDuration(item 
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1066,9 +1066,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingMaxAssocDuration(item *dna
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1076,9 +1076,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingAverageAuthDuration(item *
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1086,9 +1086,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingMaxAuthDuration(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1096,9 +1096,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingAverageDhcpDuration(item *
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1106,9 +1106,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingMaxDhcpDuration(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1116,9 +1116,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingDhcpServerIP(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1126,9 +1126,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingAuthDoneTime(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1136,9 +1136,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingAssocDoneTime(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1146,9 +1146,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingDhcpDoneTime(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1159,7 +1159,7 @@ func flattenClientsGetClientDetailItemDetailOnboardingAssocRootcauseList(items *
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1171,7 +1171,7 @@ func flattenClientsGetClientDetailItemDetailOnboardingAAARootcauseList(items *[]
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1183,7 +1183,7 @@ func flattenClientsGetClientDetailItemDetailOnboardingDhcpRootcauseList(items *[
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1195,7 +1195,7 @@ func flattenClientsGetClientDetailItemDetailOnboardingOtherRootcauseList(items *
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1204,9 +1204,9 @@ func flattenClientsGetClientDetailItemDetailOnboardingTime(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1214,9 +1214,9 @@ func flattenClientsGetClientDetailItemDetailPort(item *dnacentersdkgo.ResponseCl
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1291,9 +1291,9 @@ func flattenClientsGetClientDetailItemTopologyNodesPlatformID(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1301,9 +1301,9 @@ func flattenClientsGetClientDetailItemTopologyNodesFamily(item *dnacentersdkgo.R
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1311,9 +1311,9 @@ func flattenClientsGetClientDetailItemTopologyNodesSoftwareVersion(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1321,9 +1321,9 @@ func flattenClientsGetClientDetailItemTopologyNodesUserID(item *dnacentersdkgo.R
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1331,9 +1331,9 @@ func flattenClientsGetClientDetailItemTopologyNodesRadioFrequency(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1341,9 +1341,9 @@ func flattenClientsGetClientDetailItemTopologyNodesClients(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1351,9 +1351,9 @@ func flattenClientsGetClientDetailItemTopologyNodesCount(item *dnacentersdkgo.Re
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1361,9 +1361,9 @@ func flattenClientsGetClientDetailItemTopologyNodesFabricGroup(item *dnacentersd
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1371,9 +1371,9 @@ func flattenClientsGetClientDetailItemTopologyNodesConnectedDevice(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1399,9 +1399,9 @@ func flattenClientsGetClientDetailItemTopologyLinksID(item *dnacentersdkgo.Respo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1409,8 +1409,8 @@ func flattenClientsGetClientDetailItemTopologyLinksPortUtilization(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

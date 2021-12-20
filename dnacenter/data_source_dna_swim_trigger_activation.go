@@ -30,33 +30,6 @@ func dataSourceSwimTriggerActivation() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"activate_lower_image_version": &schema.Schema{
-				// Type:     schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"device_upgrade_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"device_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"distribute_if_needed": &schema.Schema{
-				// Type:     schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"image_uuid_list": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -74,11 +47,48 @@ func dataSourceSwimTriggerActivation() *schema.Resource {
 					},
 				},
 			},
-			"smu_image_uuid_list": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+			"payload": &schema.Schema{
+				Description: `Array of RequestSoftwareImageManagementSwimTriggerSoftwareImageActivation`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"activate_lower_image_version": &schema.Schema{
+							// Type:     schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"device_upgrade_mode": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"device_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"distribute_if_needed": &schema.Schema{
+							// Type:     schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"image_uuid_list": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"smu_image_uuid_list": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
 				},
 			},
 		},
@@ -142,7 +152,7 @@ func dataSourceSwimTriggerActivationRead(ctx context.Context, d *schema.Resource
 
 func expandRequestSwimTriggerActivationTriggerSoftwareImageActivation(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageActivation {
 	request := dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageActivation{}
-	if v := expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

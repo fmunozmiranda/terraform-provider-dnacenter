@@ -653,9 +653,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemLocation(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -663,9 +663,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSiteHierarchy(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -673,9 +673,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemFrequency(item *dnacentersdkgo
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -686,7 +686,7 @@ func flattenSensorsDuplicateSensorTestTemplateItemWLANs(items *[]dnacentersdkgo.
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -744,9 +744,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsBands(item *dnacentersdkg
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -754,9 +754,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsAuthTypeRcvd(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -764,9 +764,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsUsername(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -774,9 +774,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsPassword(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -784,9 +784,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsEapMethod(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -794,9 +794,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsAuthProtocol(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -804,9 +804,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsCertfilename(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -814,9 +814,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsCertpassphrase(item *dnac
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -824,9 +824,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsCertdownloadurl(item *dna
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -834,9 +834,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsLayer3WebAuthsecurity(ite
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -844,9 +844,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsLayer3WebAuthuserName(ite
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -854,9 +854,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsLayer3WebAuthpassword(ite
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -864,9 +864,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsExtWebAuthVirtualIP(item 
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -874,9 +874,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsLayer3WebAuthEmailAddress
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -884,9 +884,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsExtWebAuthPortal(item *dn
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -894,9 +894,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsExtWebAuthAccessURL(item 
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -907,7 +907,7 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsExtWebAuthHTMLTag(items *
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -929,9 +929,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsWlc(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -956,7 +956,7 @@ func flattenSensorsDuplicateSensorTestTemplateItemSSIDsTestsConfig(items *[]dnac
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -985,7 +985,7 @@ func flattenSensorsDuplicateSensorTestTemplateItemLocationInfoListMacAddressList
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1067,9 +1067,9 @@ func flattenSensorsDuplicateSensorTestTemplateItemTests(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1080,7 +1080,7 @@ func flattenSensorsDuplicateSensorTestTemplateItemSensors(items *[]dnacentersdkg
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -1104,8 +1104,8 @@ func flattenSensorsDuplicateSensorTestTemplateItemTenantID(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

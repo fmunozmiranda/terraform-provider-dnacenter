@@ -841,7 +841,7 @@ func flattenApplicationPolicyGetApplicationPolicyItemsTargetIDList(items *[]dnac
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -853,7 +853,7 @@ func flattenApplicationPolicyGetApplicationPolicyItemsCfsChangeInfo(items *[]dna
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -865,7 +865,7 @@ func flattenApplicationPolicyGetApplicationPolicyItemsCustomProvisions(items *[]
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -917,7 +917,7 @@ func flattenApplicationPolicyGetApplicationPolicyItemsAdvancedPolicyScopeAdvance
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -929,7 +929,7 @@ func flattenApplicationPolicyGetApplicationPolicyItemsContractList(items *[]dnac
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }

@@ -25,14 +25,6 @@ can be distributed
 
 		ReadContext: dataSourceSwimTriggerDistributionRead,
 		Schema: map[string]*schema.Schema{
-			"device_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"image_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -46,6 +38,24 @@ can be distributed
 						"url": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
+						},
+					},
+				},
+			},
+			"payload": &schema.Schema{
+				Description: `Array of RequestSoftwareImageManagementSwimTriggerSoftwareImageDistribution`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"device_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"image_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -98,7 +108,7 @@ func dataSourceSwimTriggerDistributionRead(ctx context.Context, d *schema.Resour
 
 func expandRequestSwimTriggerDistributionTriggerSoftwareImageDistribution(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageDistribution {
 	request := dnacentersdkgo.RequestSoftwareImageManagementSwimTriggerSoftwareImageDistribution{}
-	if v := expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSwimTriggerDistributionTriggerSoftwareImageDistributionItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

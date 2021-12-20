@@ -513,7 +513,7 @@ func flattenEventManagementGetAuditLogParentRecordsItemsTags(items *[]dnacenters
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -522,9 +522,9 @@ func flattenEventManagementGetAuditLogParentRecordsItemsDetails(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -532,8 +532,8 @@ func flattenEventManagementGetAuditLogParentRecordsItemsAdditionalDetails(item *
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

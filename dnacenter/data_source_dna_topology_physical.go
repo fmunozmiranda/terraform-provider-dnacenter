@@ -402,9 +402,9 @@ func flattenTopologyGetPhysicalTopologyItemLinksAdditionalInfo(item *dnacentersd
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -449,9 +449,9 @@ func flattenTopologyGetPhysicalTopologyItemNodesAdditionalInfo(item *dnacentersd
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

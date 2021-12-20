@@ -24,50 +24,6 @@ func dataSourceWirelessProvisionDeviceUpdate() *schema.Resource {
 
 		ReadContext: dataSourceWirelessProvisionDeviceUpdateRead,
 		Schema: map[string]*schema.Schema{
-			"device_name": &schema.Schema{
-				Description: `Device Name`,
-				Type:        schema.TypeString,
-				Optional:    true,
-			},
-			"dynamic_interfaces": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"interface_gateway": &schema.Schema{
-							Description: `Interface Gateway`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"interface_ipaddress": &schema.Schema{
-							Description: `Interface IPAddress`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"interface_name": &schema.Schema{
-							Description: `Interface Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"interface_netmask_in_cid_r": &schema.Schema{
-							Description: `Interface Netmask In CIDR`,
-							Type:        schema.TypeInt,
-							Optional:    true,
-						},
-						"lag_or_port_number": &schema.Schema{
-							Description: `Lag Or Port Number`,
-							Type:        schema.TypeInt,
-							Optional:    true,
-						},
-						"vlan_id": &schema.Schema{
-							Description: `Vlan Id`,
-							Type:        schema.TypeInt,
-							Optional:    true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -112,12 +68,66 @@ func dataSourceWirelessProvisionDeviceUpdate() *schema.Resource {
 					},
 				},
 			},
-			"managed_aplocations": &schema.Schema{
-				Description: `Managed APLocations`,
+			"payload": &schema.Schema{
+				Description: `Array of RequestWirelessProvisionUpdate`,
 				Type:        schema.TypeList,
 				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"device_name": &schema.Schema{
+							Description: `Device Name`,
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+						"dynamic_interfaces": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"interface_gateway": &schema.Schema{
+										Description: `Interface Gateway`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"interface_ipaddress": &schema.Schema{
+										Description: `Interface IPAddress`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"interface_name": &schema.Schema{
+										Description: `Interface Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"interface_netmask_in_cid_r": &schema.Schema{
+										Description: `Interface Netmask In CIDR`,
+										Type:        schema.TypeInt,
+										Optional:    true,
+									},
+									"lag_or_port_number": &schema.Schema{
+										Description: `Lag Or Port Number`,
+										Type:        schema.TypeInt,
+										Optional:    true,
+									},
+									"vlan_id": &schema.Schema{
+										Description: `Vlan Id`,
+										Type:        schema.TypeInt,
+										Optional:    true,
+									},
+								},
+							},
+						},
+						"managed_aplocations": &schema.Schema{
+							Description: `Managed APLocations`,
+							Type:        schema.TypeList,
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
 				},
 			},
 		},
@@ -173,7 +183,7 @@ func dataSourceWirelessProvisionDeviceUpdateRead(ctx context.Context, d *schema.
 
 func expandRequestWirelessProvisionDeviceUpdateProvisionUpdate(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessProvisionUpdate {
 	request := dnacentersdkgo.RequestWirelessProvisionUpdate{}
-	if v := expandRequestWirelessProvisionDeviceUpdateProvisionUpdateItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestWirelessProvisionDeviceUpdateProvisionUpdateItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

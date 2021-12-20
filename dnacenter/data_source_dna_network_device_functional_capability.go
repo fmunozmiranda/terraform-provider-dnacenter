@@ -303,9 +303,9 @@ func flattenDevicesGetFunctionalCapabilityForDevicesItemsAttributeInfo(item *dna
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -330,9 +330,9 @@ func flattenDevicesGetFunctionalCapabilityForDevicesItemsFunctionalCapabilityAtt
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -356,9 +356,9 @@ func flattenDevicesGetFunctionalCapabilityForDevicesItemsFunctionalCapabilityFun
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -381,9 +381,9 @@ func flattenDevicesGetFunctionalCapabilityByIDItemAttributeInfo(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -407,8 +407,8 @@ func flattenDevicesGetFunctionalCapabilityByIDItemFunctionDetailsAttributeInfo(i
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

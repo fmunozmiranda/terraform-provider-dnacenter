@@ -831,9 +831,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsUserID(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -841,9 +841,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsHostName(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -851,9 +851,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsHostOs(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -861,9 +861,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsHostVersion(item *dnace
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -889,7 +889,7 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsHostIPV6(items *[]dnace
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -898,9 +898,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsAuthType(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -908,9 +908,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsSSID(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -918,9 +918,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsFrequency(item *dnacent
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -928,9 +928,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsChannel(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -938,9 +938,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsApGroup(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -948,9 +948,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsLocation(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -961,7 +961,7 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsConnectedDevice(items *
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -970,9 +970,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsRssi(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -980,9 +980,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsAvgRssi(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -990,9 +990,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsSnr(item *dnacentersdkg
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1000,9 +1000,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsAvgSnr(item *dnacenters
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1010,9 +1010,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsDataRate(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1020,9 +1020,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsTxBytes(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1030,9 +1030,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsRxBytes(item *dnacenter
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1040,9 +1040,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsDNSSuccess(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1050,9 +1050,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsDNSFailure(item *dnacen
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1082,9 +1082,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingAverageRunDur
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1092,9 +1092,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingMaxRunDuratio
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1102,9 +1102,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingAverageAssocD
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1112,9 +1112,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingMaxAssocDurat
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1122,9 +1122,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingAverageAuthDu
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1132,9 +1132,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingMaxAuthDurati
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1142,9 +1142,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingAverageDhcpDu
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1152,9 +1152,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingMaxDhcpDurati
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1162,9 +1162,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingAAAServerIP(i
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1172,9 +1172,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingDhcpServerIP(
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1182,9 +1182,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsOnboardingTime(item *dn
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1192,9 +1192,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsUserDetailsPort(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1265,9 +1265,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsConnectedDeviceDeviceDetailsLocati
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1275,9 +1275,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsConnectedDeviceDeviceDetailsErrorC
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1285,9 +1285,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsConnectedDeviceDeviceDetailsTunnel
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1295,9 +1295,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsConnectedDeviceDeviceDetailsWaasDe
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1305,9 +1305,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsConnectedDeviceDeviceDetailsErrorD
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -1315,9 +1315,9 @@ func flattenUsersGetUserEnrichmentDetailsItemsConnectedDeviceDeviceDetailsLocati
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 

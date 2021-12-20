@@ -803,9 +803,9 @@ func flattenDevicesGetDeviceListItemsTunnelUDPPort(item *dnacentersdkgo.Response
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -813,9 +813,9 @@ func flattenDevicesGetDeviceListItemsWaasDeviceMode(item *dnacentersdkgo.Respons
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -823,9 +823,9 @@ func flattenDevicesGetDeviceListItemsLocation(item *dnacentersdkgo.ResponseDevic
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -833,9 +833,9 @@ func flattenDevicesGetDeviceListItemsApEthernetMacAddress(item *dnacentersdkgo.R
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -843,8 +843,8 @@ func flattenDevicesGetDeviceListItemsLocationName(item *dnacentersdkgo.ResponseD
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

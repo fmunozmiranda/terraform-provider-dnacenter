@@ -24,27 +24,6 @@ func dataSourceWirelessProvisionAccessPoint() *schema.Resource {
 
 		ReadContext: dataSourceWirelessProvisionAccessPointRead,
 		Schema: map[string]*schema.Schema{
-			"custom_ap_group_name": &schema.Schema{
-				Description: `Custom AP group name
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"custom_flex_group_name": &schema.Schema{
-				Description: `["Custom flex group name"]
-`,
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"device_name": &schema.Schema{
-				Description: `Device name
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"items": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -69,29 +48,60 @@ func dataSourceWirelessProvisionAccessPoint() *schema.Resource {
 					},
 				},
 			},
-			"rf_profile": &schema.Schema{
-				Description: `Radio frequency profile name
+			"payload": &schema.Schema{
+				Description: `Array of RequestWirelessAPProvision`,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"custom_ap_group_name": &schema.Schema{
+							Description: `Custom AP group name
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"site_id": &schema.Schema{
-				Description: `Site name hierarchy(ex: Global/...)
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"custom_flex_group_name": &schema.Schema{
+							Description: `["Custom flex group name"]
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"site_name_hierarchy": &schema.Schema{
-				Description: `Site name hierarchy(ex: Global/...)
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"device_name": &schema.Schema{
+							Description: `Device name
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"type": &schema.Schema{
-				Description: `ApWirelessConfiguration
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"rf_profile": &schema.Schema{
+							Description: `Radio frequency profile name
 `,
-				Type:     schema.TypeString,
-				Optional: true,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"site_id": &schema.Schema{
+							Description: `Site name hierarchy(ex: Global/...)
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"site_name_hierarchy": &schema.Schema{
+							Description: `Site name hierarchy(ex: Global/...)
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"type": &schema.Schema{
+							Description: `ApWirelessConfiguration
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -146,7 +156,7 @@ func dataSourceWirelessProvisionAccessPointRead(ctx context.Context, d *schema.R
 
 func expandRequestWirelessProvisionAccessPointApProvision(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessApProvision {
 	request := dnacentersdkgo.RequestWirelessApProvision{}
-	if v := expandRequestWirelessProvisionAccessPointApProvisionItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestWirelessProvisionAccessPointApProvisionItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

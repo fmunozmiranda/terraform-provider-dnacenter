@@ -47,6 +47,11 @@ can be seen in the child task of each device
 					},
 				},
 			},
+			"payload": &schema.Schema{
+				Description: `Array of RequestDevicesSyncDevices`,
+				Type:        schema.TypeList,
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -101,7 +106,7 @@ func dataSourceNetworkDeviceSyncRead(ctx context.Context, d *schema.ResourceData
 
 func expandRequestNetworkDeviceSyncSyncDevices(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDevicesSyncDevices {
 	request := dnacentersdkgo.RequestDevicesSyncDevices{}
-	if v := expandRequestNetworkDeviceSyncSyncDevicesItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestNetworkDeviceSyncSyncDevicesItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

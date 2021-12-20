@@ -445,9 +445,9 @@ func flattenApplicationsApplicationsItemsPacketLossPercent(item *dnacentersdkgo.
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -455,9 +455,9 @@ func flattenApplicationsApplicationsItemsNetworkLatency(item *dnacentersdkgo.Res
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -465,9 +465,9 @@ func flattenApplicationsApplicationsItemsJitter(item *dnacentersdkgo.ResponseApp
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -475,9 +475,9 @@ func flattenApplicationsApplicationsItemsApplicationServerLatency(item *dnacente
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -485,9 +485,9 @@ func flattenApplicationsApplicationsItemsClientNetworkLatency(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -495,8 +495,8 @@ func flattenApplicationsApplicationsItemsServerNetworkLatency(item *dnacentersdk
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }

@@ -26,28 +26,6 @@ func dataSourceSNMPv2ReadCommunityCredential() *schema.Resource {
 
 		ReadContext: dataSourceSNMPv2ReadCommunityCredentialRead,
 		Schema: map[string]*schema.Schema{
-			"comments": &schema.Schema{
-				Description: `Comments to identify the credential
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"credential_type": &schema.Schema{
-				Description: `Credential type to identify the application that uses the credential
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"description": &schema.Schema{
-				Description: `Name/Description of the credential
-`,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"instance_uuid": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"item_id": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -82,11 +60,42 @@ func dataSourceSNMPv2ReadCommunityCredential() *schema.Resource {
 					},
 				},
 			},
-			"read_community": &schema.Schema{
-				Description: `SNMP read community. NO!$DATA!$ for no value change
-`,
-				Type:     schema.TypeString,
+			"payload": &schema.Schema{
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"comments": &schema.Schema{
+							Description: `Comments to identify the credential
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"credential_type": &schema.Schema{
+							Description: `Credential type to identify the application that uses the credential
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"description": &schema.Schema{
+							Description: `Name/Description of the credential
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"instance_uuid": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"read_community": &schema.Schema{
+							Description: `SNMP read community. NO!$DATA!$ for no value change
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -193,7 +202,7 @@ func expandRequestSNMPv2ReadCommunityCredentialUpdateSNMPReadCommunity(ctx conte
 
 func expandRequestSNMPv2ReadCommunityCredentialCreateSNMPReadCommunity(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateSNMPReadCommunity {
 	request := dnacentersdkgo.RequestDiscoveryCreateSNMPReadCommunity{}
-	if v := expandRequestSNMPv2ReadCommunityCredentialCreateSNMPReadCommunityItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSNMPv2ReadCommunityCredentialCreateSNMPReadCommunityItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
 	return &request

@@ -587,9 +587,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsLocation(item *dn
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -597,9 +597,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsTunnelUDPPort(ite
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -607,9 +607,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsWaasDeviceMode(it
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -617,9 +617,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsLocationName(item
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -671,9 +671,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyN
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -681,9 +681,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyN
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -691,9 +691,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyN
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -701,9 +701,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyN
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -711,9 +711,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyN
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -721,9 +721,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyN
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -752,7 +752,7 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyL
 	var respItems []interface{}
 	for _, item := range *items {
 		respItem := item
-		respItems = append(respItems, respItem)
+		respItems = append(respItems, responseInterfaceToString(respItem))
 	}
 	return respItems
 }
@@ -761,9 +761,9 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyL
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
 
@@ -771,8 +771,8 @@ func flattenDevicesGetDeviceEnrichmentDetailsItemsDeviceDetailsNeighborTopologyL
 	if item == nil {
 		return nil
 	}
-	respItem := item
+	respItem := *item
 
-	return respItem
+	return responseInterfaceToString(respItem)
 
 }
