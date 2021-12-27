@@ -2,6 +2,9 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"os"
 
 	"log"
 
@@ -22,6 +25,11 @@ Upload the file to the **p12FileUpload** form data field
 
 		ReadContext: dataSourceAuthenticationImportCertificateP12Read,
 		Schema: map[string]*schema.Schema{
+			"file_name": &schema.Schema{
+				Description: `File name.`,
+				Type:        schema.TypeString,
+				Required:    true,
+			},
 			"list_of_users": &schema.Schema{
 				Description: `listOfUsers query parameter.`,
 				Type:        schema.TypeList,
@@ -29,6 +37,11 @@ Upload the file to the **p12FileUpload** form data field
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"p12_file_path": &schema.Schema{
+				Description: `P12 file absolute path.`,
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"p12_password": &schema.Schema{
 				Description: `p12Password query parameter. P12 Passsword
@@ -72,6 +85,8 @@ func dataSourceAuthenticationImportCertificateP12Read(ctx context.Context, d *sc
 	vP12Password, okP12Password := d.GetOk("p12_password")
 	vPkPassword, okPkPassword := d.GetOk("pk_password")
 	vListOfUsers, okListOfUsers := d.GetOk("list_of_users")
+	vFileName := d.Get("file_name")
+	vP12FilePath := d.Get("p12_file_path")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -88,7 +103,30 @@ func dataSourceAuthenticationImportCertificateP12Read(ctx context.Context, d *sc
 			queryParams1.ListOfUsers = interfaceToSliceString(vListOfUsers)
 		}
 
-		response1, restyResp1, err := client.AuthenticationManagement.ImportCertificateP12(&queryParams1)
+		f, err := os.Open(vP12FilePath.(string))
+		if err != nil {
+			fmt.Println(err)
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing ImportCertificateP12", err,
+				"Failure at ImportCertificateP12, unexpected response", ""))
+			return diags
+		}
+		defer func() {
+			if err = f.Close(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+
+		var r io.Reader
+		r = f
+
+		response1, restyResp1, err := client.AuthenticationManagement.ImportCertificateP12(
+			&queryParams1,
+			&dnacentersdkgo.ImportCertificateP12MultipartFields{
+				P12FileUpload:     r,
+				P12FileUploadName: vFileName.(string),
+			},
+		)
 
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

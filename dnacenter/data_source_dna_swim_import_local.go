@@ -2,6 +2,9 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"os"
 
 	"log"
 
@@ -23,6 +26,16 @@ Upload the file to the **file** form data field
 
 		ReadContext: dataSourceSwimImportLocalRead,
 		Schema: map[string]*schema.Schema{
+			"file_name": &schema.Schema{
+				Description: `File name.`,
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+			"file_path": &schema.Schema{
+				Description: `File absolute path.`,
+				Type:        schema.TypeString,
+				Required:    true,
+			},
 			"is_third_party": &schema.Schema{
 				Description: `isThirdParty query parameter. Third party Image check
 `,
@@ -76,6 +89,8 @@ func dataSourceSwimImportLocalRead(ctx context.Context, d *schema.ResourceData, 
 	vThirdPartyVendor, okThirdPartyVendor := d.GetOk("third_party_vendor")
 	vThirdPartyImageFamily, okThirdPartyImageFamily := d.GetOk("third_party_image_family")
 	vThirdPartyApplicationType, okThirdPartyApplicationType := d.GetOk("third_party_application_type")
+	vFileName := d.Get("file_name")
+	vFilePath := d.Get("file_path")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -95,7 +110,30 @@ func dataSourceSwimImportLocalRead(ctx context.Context, d *schema.ResourceData, 
 			queryParams1.ThirdPartyApplicationType = vThirdPartyApplicationType.(string)
 		}
 
-		response1, restyResp1, err := client.SoftwareImageManagementSwim.ImportLocalSoftwareImage(&queryParams1)
+		f, err := os.Open(vFilePath.(string))
+		if err != nil {
+			fmt.Println(err)
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing ImportLocalSoftwareImage", err,
+				"Failure at ImportLocalSoftwareImage, unexpected response", ""))
+			return diags
+		}
+		defer func() {
+			if err = f.Close(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+
+		var r io.Reader
+		r = f
+
+		response1, restyResp1, err := client.SoftwareImageManagementSwim.ImportLocalSoftwareImage(
+			&queryParams1,
+			&dnacentersdkgo.ImportLocalSoftwareImageMultipartFields{
+				File:     r,
+				FileName: vFileName.(string),
+			},
+		)
 
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

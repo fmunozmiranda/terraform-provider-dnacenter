@@ -108,6 +108,10 @@ func expandRequestItsmIntegrationEventsRetryRetryIntegrationEvents(ctx context.C
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".payload")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".payload")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".payload")))) {
 		request = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

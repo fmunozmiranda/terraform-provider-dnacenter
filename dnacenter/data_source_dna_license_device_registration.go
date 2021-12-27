@@ -112,6 +112,10 @@ func expandRequestLicenseDeviceRegistrationDeviceRegistration(ctx context.Contex
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_uuids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_uuids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_uuids")))) {
 		request.DeviceUUIDs = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

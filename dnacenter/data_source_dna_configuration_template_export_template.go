@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"fmt"
+	"reflect"
 
 	"log"
 
@@ -96,6 +97,10 @@ func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGive
 	if v := expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -116,12 +121,20 @@ func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGive
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestConfigurationTemplateExportTemplateExportsTheTemplatesForAGivenCriteriaItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria {
 	var request dnacentersdkgo.RequestItemConfigurationTemplatesExportsTheTemplatesForAGivenCriteria
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

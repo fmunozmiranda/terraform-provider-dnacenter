@@ -158,6 +158,10 @@ func expandRequestThreatSummaryThreatSummary(ctx context.Context, key string, d 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".threat_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".threat_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".threat_type")))) {
 		request.ThreatType = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

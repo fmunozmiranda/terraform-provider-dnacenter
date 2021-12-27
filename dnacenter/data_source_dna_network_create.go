@@ -29,81 +29,6 @@ func dataSourceNetworkCreate() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"client_and_endpoint_aaa": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"ip_address": &schema.Schema{
-							Description: `IP address for ISE serve (eg: 1.1.1.4). Mandatory for ISE servers.
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"network": &schema.Schema{
-							Description: `IP address for AAA or ISE server (eg: 2.2.2.1)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"protocol": &schema.Schema{
-							Description: `Protocol for AAA or ISE serve (eg: RADIUS)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"servers": &schema.Schema{
-							Description: `Server type AAA or ISE server (eg: AAA)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"shared_secret": &schema.Schema{
-							Description: `Shared secret for ISE server. Supported only by ISE servers
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"dhcp_server": &schema.Schema{
-				Description: `Dhcp serve Ip (eg: 1.1.1.1)
-`,
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"dns_server": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"domain_name": &schema.Schema{
-							Description: `Domain name of DHCP (eg; cisco). It can only contain alphanumeric characters or hyphen.
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"primary_ip_address": &schema.Schema{
-							Description: `Primary ip address for DHCP (eg: 2.2.2.2). valid range : 1.0.0.0 - 223.255.255.255 
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"secondary_ip_address": &schema.Schema{
-							Description: `Secondary ip address for DHCP (eg: 3.3.3.3). valid range : 1.0.0.0 - 223.255.255.255
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -128,112 +53,53 @@ func dataSourceNetworkCreate() *schema.Resource {
 					},
 				},
 			},
-			"message_of_theday": &schema.Schema{
+			"settings": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
-						"banner_message": &schema.Schema{
-							Description: `Massage for banner message (eg; Good day)
-`,
-							Type:     schema.TypeString,
+						"client_and_endpoint_aaa": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
-						},
-						"retain_existing_banner": &schema.Schema{
-							Description: `Retain existing banner message (eg: "true" or "false")
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"netflowcollector": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
 
-						"ip_address": &schema.Schema{
-							Description: `IP address for netflow collector (eg: 3.3.3.1)
+									"ip_address": &schema.Schema{
+										Description: `IP address for ISE serve (eg: 1.1.1.4). Mandatory for ISE servers.
 `,
-							Type:     schema.TypeString,
-							Optional: true,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"network": &schema.Schema{
+										Description: `IP address for AAA or ISE server (eg: 2.2.2.1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"protocol": &schema.Schema{
+										Description: `Protocol for AAA or ISE serve (eg: RADIUS)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"servers": &schema.Schema{
+										Description: `Server type AAA or ISE server (eg: AAA)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"shared_secret": &schema.Schema{
+										Description: `Shared secret for ISE server. Supported only by ISE servers
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-						"port": &schema.Schema{
-							Description: `Port for netflow collector (eg; 443)
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"network_aaa": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"ip_address": &schema.Schema{
-							Description: `IP address for AAA and ISE server (eg: 1.1.1.1). Mandatory for ISE servers and for AAA consider this as additional Ip.
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"network": &schema.Schema{
-							Description: `IP address for AAA or ISE server (eg: 2.2.2.2). For AAA server consider it as primary IP and For ISE consider as Network
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"protocol": &schema.Schema{
-							Description: `Protocol for AAA or ISE serve (eg: RADIUS)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"servers": &schema.Schema{
-							Description: `Server type for AAA network (eg: AAA)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"shared_secret": &schema.Schema{
-							Description: `Shared secret for ISE server. Supported only by ISE servers
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"ntp_server": &schema.Schema{
-				Description: `IP address for NTP server (eg: 1.1.1.2)
-`,
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"snmp_server": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"configure_dnac_ip": &schema.Schema{
-							Description: `Configuration dnac ip for snmp server (eg: true)
-`,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"ip_addresses": &schema.Schema{
-							Description: `IP address for snmp server (eg: 4.4.4.1)
+						"dhcp_server": &schema.Schema{
+							Description: `Dhcp serve Ip (eg: 1.1.1.1)
 `,
 							Type:     schema.TypeList,
 							Optional: true,
@@ -241,25 +107,116 @@ func dataSourceNetworkCreate() *schema.Resource {
 								Type: schema.TypeString,
 							},
 						},
-					},
-				},
-			},
-			"syslog_server": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+						"dns_server": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
 
-						"configure_dnac_ip": &schema.Schema{
-							Description: `Configuration dnac ip for syslog server (eg: true)
+									"domain_name": &schema.Schema{
+										Description: `Domain name of DHCP (eg; cisco). It can only contain alphanumeric characters or hyphen.
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"primary_ip_address": &schema.Schema{
+										Description: `Primary ip address for DHCP (eg: 2.2.2.2). valid range : 1.0.0.0 - 223.255.255.255 
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"secondary_ip_address": &schema.Schema{
+										Description: `Secondary ip address for DHCP (eg: 3.3.3.3). valid range : 1.0.0.0 - 223.255.255.255
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-						"ip_addresses": &schema.Schema{
-							Description: `IP address for syslog server (eg: 4.4.4.4)
+						"message_of_theday": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"banner_message": &schema.Schema{
+										Description: `Massage for banner message (eg; Good day)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"retain_existing_banner": &schema.Schema{
+										Description: `Retain existing banner message (eg: "true" or "false")
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"netflowcollector": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"ip_address": &schema.Schema{
+										Description: `IP address for netflow collector (eg: 3.3.3.1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"port": &schema.Schema{
+										Description: `Port for netflow collector (eg; 443)
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"network_aaa": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"ip_address": &schema.Schema{
+										Description: `IP address for AAA and ISE server (eg: 1.1.1.1). Mandatory for ISE servers and for AAA consider this as additional Ip.
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"network": &schema.Schema{
+										Description: `IP address for AAA or ISE server (eg: 2.2.2.2). For AAA server consider it as primary IP and For ISE consider as Network
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"protocol": &schema.Schema{
+										Description: `Protocol for AAA or ISE serve (eg: RADIUS)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"servers": &schema.Schema{
+										Description: `Server type for AAA network (eg: AAA)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"shared_secret": &schema.Schema{
+										Description: `Shared secret for ISE server. Supported only by ISE servers
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"ntp_server": &schema.Schema{
+							Description: `IP address for NTP server (eg: 1.1.1.2)
 `,
 							Type:     schema.TypeList,
 							Optional: true,
@@ -267,14 +224,66 @@ func dataSourceNetworkCreate() *schema.Resource {
 								Type: schema.TypeString,
 							},
 						},
+						"snmp_server": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"configure_dnac_ip": &schema.Schema{
+										Description: `Configuration dnac ip for snmp server (eg: true)
+`,
+										// Type:        schema.TypeBool,
+										Type:         schema.TypeString,
+										ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+										Optional:     true,
+									},
+									"ip_addresses": &schema.Schema{
+										Description: `IP address for snmp server (eg: 4.4.4.1)
+`,
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+						"syslog_server": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"configure_dnac_ip": &schema.Schema{
+										Description: `Configuration dnac ip for syslog server (eg: true)
+`,
+										// Type:        schema.TypeBool,
+										Type:         schema.TypeString,
+										ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+										Optional:     true,
+									},
+									"ip_addresses": &schema.Schema{
+										Description: `IP address for syslog server (eg: 4.4.4.4)
+`,
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+						"timezone": &schema.Schema{
+							Description: `Input for time zone (eg: Africa/Abidjan)
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 					},
 				},
-			},
-			"timezone": &schema.Schema{
-				Description: `Input for time zone (eg: Africa/Abidjan)
-`,
-				Type:     schema.TypeString,
-				Optional: true,
 			},
 		},
 	}
@@ -332,6 +341,10 @@ func dataSourceNetworkCreateRead(ctx context.Context, d *schema.ResourceData, m 
 func expandRequestNetworkCreateCreateNetwork(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsCreateNetwork {
 	request := dnacentersdkgo.RequestNetworkSettingsCreateNetwork{}
 	request.Settings = expandRequestNetworkCreateCreateNetworkSettings(ctx, key, d)
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -367,6 +380,10 @@ func expandRequestNetworkCreateCreateNetworkSettings(ctx context.Context, key st
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".client_and_endpoint_aaa")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".client_and_endpoint_aaa")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".client_and_endpoint_aaa")))) {
 		request.ClientAndEndpointAAA = expandRequestNetworkCreateCreateNetworkSettingsClientAndEndpointAAA(ctx, key+".client_and_endpoint_aaa.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -381,6 +398,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsDNSServer(ctx context.Contex
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".secondary_ip_address")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".secondary_ip_address")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".secondary_ip_address")))) {
 		request.SecondaryIPAddress = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -392,6 +413,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsSyslogServer(ctx context.Con
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".configure_dnac_ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".configure_dnac_ip")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".configure_dnac_ip")))) {
 		request.ConfigureDnacIP = interfaceToBoolPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -403,6 +428,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsSNMPServer(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".configure_dnac_ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".configure_dnac_ip")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".configure_dnac_ip")))) {
 		request.ConfigureDnacIP = interfaceToBoolPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -414,6 +443,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsNetflowcollector(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".port")))) {
 		request.Port = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -425,6 +458,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsMessageOfTheday(ctx context.
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".retain_existing_banner")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".retain_existing_banner")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".retain_existing_banner")))) {
 		request.RetainExistingBanner = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -445,6 +482,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsNetworkAAA(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".shared_secret")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".shared_secret")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".shared_secret")))) {
 		request.SharedSecret = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -465,6 +506,10 @@ func expandRequestNetworkCreateCreateNetworkSettingsClientAndEndpointAAA(ctx con
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".shared_secret")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".shared_secret")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".shared_secret")))) {
 		request.SharedSecret = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

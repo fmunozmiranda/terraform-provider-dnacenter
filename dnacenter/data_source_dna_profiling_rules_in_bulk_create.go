@@ -265,6 +265,10 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulk(ctx conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".profiling_rules")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".profiling_rules")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".profiling_rules")))) {
 		request.ProfilingRules = expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesArray(ctx, key+".profiling_rules", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -285,6 +289,10 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -335,6 +343,10 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".used_attributes")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".used_attributes")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".used_attributes")))) {
 		request.UsedAttributes = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -352,6 +364,10 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".operating_system")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".operating_system")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".operating_system")))) {
 		request.OperatingSystem = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -369,6 +385,10 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".condition_group")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".condition_group")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".condition_group")))) {
 		request.ConditionGroup = expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroupArray(ctx, key+".condition_group", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -386,6 +406,10 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".attribute_dictionary")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".attribute_dictionary")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".attribute_dictionary")))) {
 		request.AttributeDictionary = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -406,11 +430,19 @@ func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingR
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestProfilingRulesInBulkCreateImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroup(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroup {
 	var request dnacentersdkgo.RequestPolicyImportProfilingRulesInBulkProfilingRulesConditionGroupsConditionGroup
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }

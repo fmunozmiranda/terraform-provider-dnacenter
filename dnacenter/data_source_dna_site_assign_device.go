@@ -30,11 +30,20 @@ func dataSourceSiteAssignDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"ip": &schema.Schema{
-				Description: `Device ip (eg: 10.104.240.64)
-`,
-				Type:     schema.TypeString,
+			"device": &schema.Schema{
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"ip": &schema.Schema{
+							Description: `Device ip (eg: 10.104.240.64)
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
@@ -124,6 +133,10 @@ func expandRequestSiteAssignDeviceAssignDeviceToSite(ctx context.Context, key st
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device")))) {
 		request.Device = expandRequestSiteAssignDeviceAssignDeviceToSiteDeviceArray(ctx, key+".device", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -144,6 +157,10 @@ func expandRequestSiteAssignDeviceAssignDeviceToSiteDeviceArray(ctx context.Cont
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -152,6 +169,10 @@ func expandRequestSiteAssignDeviceAssignDeviceToSiteDevice(ctx context.Context, 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ip")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ip")))) {
 		request.IP = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

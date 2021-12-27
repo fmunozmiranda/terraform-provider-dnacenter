@@ -103,6 +103,10 @@ func expandRequestWirelessPskOverridePSKOverride(ctx context.Context, key string
 	if v := expandRequestWirelessPskOverridePSKOverrideItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -123,6 +127,10 @@ func expandRequestWirelessPskOverridePSKOverrideItemArray(ctx context.Context, k
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -137,5 +145,9 @@ func expandRequestWirelessPskOverridePSKOverrideItem(ctx context.Context, key st
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".pass_phrase")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".pass_phrase")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".pass_phrase")))) {
 		request.PassPhrase = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }

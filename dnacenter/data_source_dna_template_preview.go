@@ -24,6 +24,12 @@ func dataSourceTemplatePreview() *schema.Resource {
 
 		ReadContext: dataSourceTemplatePreviewRead,
 		Schema: map[string]*schema.Schema{
+			"device_id": &schema.Schema{
+				Description: `UUID of device to get template preview
+`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -56,6 +62,24 @@ func dataSourceTemplatePreview() *schema.Resource {
 						},
 					},
 				},
+			},
+			"params": &schema.Schema{
+				Description: `Params to render preview
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+			},
+			"resource_params": &schema.Schema{
+				Description: `Resource params to render preview
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+			},
+			"template_id": &schema.Schema{
+				Description: `UUID of template to get template preview
+`,
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -117,12 +141,20 @@ func expandRequestTemplatePreviewPreviewTemplate(ctx context.Context, key string
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".template_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".template_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".template_id")))) {
 		request.TemplateID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestTemplatePreviewPreviewTemplateParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateParams
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -143,12 +175,20 @@ func expandRequestTemplatePreviewPreviewTemplateResourceParamsArray(ctx context.
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestTemplatePreviewPreviewTemplateResourceParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateResourceParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesPreviewTemplateResourceParams
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

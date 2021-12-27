@@ -25,16 +25,16 @@ updated smart & virtual account info
 
 		ReadContext: dataSourcePnpServerProfileUpdateRead,
 		Schema: map[string]*schema.Schema{
-			"address_fqdn": &schema.Schema{
+			"auto_sync_period": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"cco_user": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"address_ip_v4": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"cert": &schema.Schema{
-				Type:     schema.TypeString,
+			"expiry": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"item": &schema.Schema{
@@ -188,29 +188,115 @@ updated smart & virtual account info
 					},
 				},
 			},
-			"make_default": &schema.Schema{
-				// Type:     schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"port": &schema.Schema{
+			"last_sync": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
-			"profile_id": &schema.Schema{
+			"profile": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"address_fqdn": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"address_ip_v4": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"cert": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"make_default": &schema.Schema{
+							// Type:     schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"port": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"profile_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"proxy": &schema.Schema{
+							// Type:     schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+					},
+				},
+			},
+			"smart_account_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"proxy": &schema.Schema{
-				// Type:     schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
+			"sync_result": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"sync_list": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"device_sn_list": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"sync_type": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"sync_msg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"sync_result_str": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"sync_start_time": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"sync_status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"tenant_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"token": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"virtual_account_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -299,6 +385,10 @@ func expandRequestPnpServerProfileUpdateUpdatePnpServerProfile(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".virtual_account_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".virtual_account_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".virtual_account_id")))) {
 		request.VirtualAccountID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -328,6 +418,10 @@ func expandRequestPnpServerProfileUpdateUpdatePnpServerProfileProfile(ctx contex
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".proxy")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".proxy")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".proxy")))) {
 		request.Proxy = interfaceToBoolPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -339,6 +433,10 @@ func expandRequestPnpServerProfileUpdateUpdatePnpServerProfileSyncResult(ctx con
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sync_msg")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sync_msg")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".sync_msg")))) {
 		request.SyncMsg = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -359,6 +457,10 @@ func expandRequestPnpServerProfileUpdateUpdatePnpServerProfileSyncResultSyncList
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -370,6 +472,10 @@ func expandRequestPnpServerProfileUpdateUpdatePnpServerProfileSyncResultSyncList
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sync_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sync_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".sync_type")))) {
 		request.SyncType = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

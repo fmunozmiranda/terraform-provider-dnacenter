@@ -106,6 +106,10 @@ func expandRequestGlobalCredentialUpdateUpdateGlobalCredentials(ctx context.Cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site_uuids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site_uuids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site_uuids")))) {
 		request.SiteUUIDs = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

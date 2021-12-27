@@ -129,6 +129,10 @@ func expandRequestCommandRunnerRunCommandRunReadOnlyCommandsOnDevicesToGetTheirR
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".timeout")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".timeout")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".timeout")))) {
 		request.Timeout = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

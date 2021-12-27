@@ -24,35 +24,36 @@ sites
 
 		ReadContext: dataSourceWirelessProvisionSSIDCreateProvisionRead,
 		Schema: map[string]*schema.Schema{
-			"enable_broadcast_ssi_d": &schema.Schema{
-				Description: `Enable Broadcast SSID
+			"enable_fabric": &schema.Schema{
+				Description: `Enable SSID for Fabric
 `,
 				// Type:        schema.TypeBool,
 				Type:         schema.TypeString,
 				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
 				Optional:     true,
 			},
-			"enable_fast_lane": &schema.Schema{
-				Description: `Enable Fast Lane
-`,
-				// Type:        schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"enable_mac_filtering": &schema.Schema{
-				Description: `Enable MAC Filtering
-`,
-				// Type:        schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
-			"fast_transition": &schema.Schema{
-				Description: `Fast Transition
-`,
-				Type:     schema.TypeString,
+			"flex_connect": &schema.Schema{
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"enable_flex_connect": &schema.Schema{
+							Description: `Enable Flex Connect
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"local_to_vlan": &schema.Schema{
+							Description: `Local To Vlan (range is 1 to 4094)
+`,
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
@@ -78,38 +79,92 @@ sites
 					},
 				},
 			},
-			"name": &schema.Schema{
-				Description: `SSID Name
+			"managed_aplocations": &schema.Schema{
+				Description: `Managed AP Locations (Enter entire Site(s) hierarchy)
 `,
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
-			"passphrase": &schema.Schema{
-				Description: `Pass Phrase ( Only applicable for SSID with PERSONAL auth type )
+			"ssid_details": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"enable_broadcast_ssi_d": &schema.Schema{
+							Description: `Enable Broadcast SSID
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"radio_policy": &schema.Schema{
-				Description: `Radio Policy. Allowed values are 'Dual band operation (2.4GHz and 5GHz)', 'Dual band operation with band select', '5GHz only', '2.4GHz only'.
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"enable_fast_lane": &schema.Schema{
+							Description: `Enable Fast Lane
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"security_level": &schema.Schema{
-				Description: `Security Level(For guest SSID OPEN/WEB_AUTH, For Enterprise SSID ENTERPRISE/PERSONAL/OPEN)
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"enable_mac_filtering": &schema.Schema{
+							Description: `Enable MAC Filtering
 `,
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"traffic_type": &schema.Schema{
-				Description: `Traffic Type
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"fast_transition": &schema.Schema{
+							Description: `Fast Transition
 `,
-				Type:     schema.TypeString,
-				Optional: true,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"name": &schema.Schema{
+							Description: `SSID Name
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"passphrase": &schema.Schema{
+							Description: `Pass Phrase ( Only applicable for SSID with PERSONAL auth type )
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"radio_policy": &schema.Schema{
+							Description: `Radio Policy. Allowed values are 'Dual band operation (2.4GHz and 5GHz)', 'Dual band operation with band select', '5GHz only', '2.4GHz only'.
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"security_level": &schema.Schema{
+							Description: `Security Level(For guest SSID OPEN/WEB_AUTH, For Enterprise SSID ENTERPRISE/PERSONAL/OPEN)
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"traffic_type": &schema.Schema{
+							Description: `Traffic Type
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"web_auth_url": &schema.Schema{
+							Description: `Web Auth URL
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
-			"web_auth_url": &schema.Schema{
-				Description: `Web Auth URL
+			"ssid_type": &schema.Schema{
+				Description: `SSID Type
 `,
 				Type:     schema.TypeString,
 				Optional: true,
@@ -182,6 +237,10 @@ func expandRequestWirelessProvisionSSIDCreateProvisionCreateAndProvisionSSID(ctx
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".flex_connect")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".flex_connect")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".flex_connect")))) {
 		request.FlexConnect = expandRequestWirelessProvisionSSIDCreateProvisionCreateAndProvisionSSIDFlexConnect(ctx, key+".flex_connect.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -217,6 +276,10 @@ func expandRequestWirelessProvisionSSIDCreateProvisionCreateAndProvisionSSIDSSID
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".web_auth_url")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".web_auth_url")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".web_auth_url")))) {
 		request.WebAuthURL = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -228,6 +291,10 @@ func expandRequestWirelessProvisionSSIDCreateProvisionCreateAndProvisionSSIDFlex
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_to_vlan")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_to_vlan")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".local_to_vlan")))) {
 		request.LocalToVLAN = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

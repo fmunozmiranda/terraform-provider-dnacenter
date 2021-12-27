@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"fmt"
+	"reflect"
 
 	"log"
 
@@ -109,6 +110,10 @@ func expandRequestNetworkDeviceSyncSyncDevices(ctx context.Context, key string, 
 	if v := expandRequestNetworkDeviceSyncSyncDevicesItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -129,12 +134,20 @@ func expandRequestNetworkDeviceSyncSyncDevicesItemArray(ctx context.Context, key
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestNetworkDeviceSyncSyncDevicesItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDevicesSyncDevices {
 	var request dnacentersdkgo.RequestItemDevicesSyncDevices
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

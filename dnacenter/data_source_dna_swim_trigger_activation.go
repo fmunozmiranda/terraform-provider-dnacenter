@@ -155,6 +155,10 @@ func expandRequestSwimTriggerActivationTriggerSoftwareImageActivation(ctx contex
 	if v := expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -175,6 +179,10 @@ func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItemArray(c
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -198,6 +206,10 @@ func expandRequestSwimTriggerActivationTriggerSoftwareImageActivationItem(ctx co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".smu_image_uuid_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".smu_image_uuid_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".smu_image_uuid_list")))) {
 		request.SmuImageUUIDList = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

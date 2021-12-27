@@ -24,13 +24,6 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 
 		ReadContext: dataSourceSensorTestTemplateEditRead,
 		Schema: map[string]*schema.Schema{
-			"all_sensors": &schema.Schema{
-				Description: `All Sensors`,
-				// Type:        schema.TypeBool,
-				Type:         schema.TypeString,
-				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-				Optional:     true,
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -549,18 +542,124 @@ func dataSourceSensorTestTemplateEdit() *schema.Resource {
 					},
 				},
 			},
-			"location_id": &schema.Schema{
-				Description: `Location Id`,
-				Type:        schema.TypeString,
-				Optional:    true,
+			"location_info_list": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"all_sensors": &schema.Schema{
+							Description: `All Sensors`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"location_id": &schema.Schema{
+							Description: `Location Id`,
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+						"location_type": &schema.Schema{
+							Description: `Location Type`,
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+						"site_hierarchy": &schema.Schema{
+							Description: `Site Hierarchy`,
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+					},
+				},
 			},
-			"location_type": &schema.Schema{
-				Description: `Location Type`,
-				Type:        schema.TypeString,
-				Optional:    true,
+			"schedule": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"frequency": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"unit": &schema.Schema{
+										Description: `Unit`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"value": &schema.Schema{
+										Description: `Value`,
+										Type:        schema.TypeInt,
+										Optional:    true,
+									},
+								},
+							},
+						},
+						"schedule_range": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"day": &schema.Schema{
+										Description: `Day`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"time_range": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"frequency": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"unit": &schema.Schema{
+																Description: `Unit`,
+																Type:        schema.TypeString,
+																Optional:    true,
+															},
+															"value": &schema.Schema{
+																Description: `Value`,
+																Type:        schema.TypeInt,
+																Optional:    true,
+															},
+														},
+													},
+												},
+												"from": &schema.Schema{
+													Description: `From`,
+													Type:        schema.TypeString,
+													Optional:    true,
+												},
+												"to": &schema.Schema{
+													Description: `To`,
+													Type:        schema.TypeString,
+													Optional:    true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"test_schedule_mode": &schema.Schema{
+							Description: `Test Schedule Mode`,
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+					},
+				},
 			},
-			"site_hierarchy": &schema.Schema{
-				Description: `Site Hierarchy`,
+			"template_name": &schema.Schema{
+				Description: `Template Name`,
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
@@ -621,6 +720,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplate(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".schedule")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".schedule")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".schedule")))) {
 		request.Schedule = expandRequestSensorTestTemplateEditEditSensorTestTemplateSchedule(ctx, key+".schedule.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -641,6 +744,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateLocationInfoListAr
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -658,6 +765,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateLocationInfoList(c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".all_sensors")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".all_sensors")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".all_sensors")))) {
 		request.AllSensors = interfaceToBoolPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -672,6 +783,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateSchedule(ctx conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".schedule_range")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".schedule_range")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".schedule_range")))) {
 		request.ScheduleRange = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeArray(ctx, key+".schedule_range", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -683,6 +798,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleFrequency(
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -703,6 +822,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -714,6 +837,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_range")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_range")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_range")))) {
 		request.TimeRange = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeTimeRangeArray(ctx, key+".time_range", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -734,6 +861,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -748,6 +879,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".frequency")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".frequency")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".frequency")))) {
 		request.Frequency = expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRangeTimeRangeFrequency(ctx, key+".frequency.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -759,6 +894,10 @@ func expandRequestSensorTestTemplateEditEditSensorTestTemplateScheduleScheduleRa
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

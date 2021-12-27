@@ -29,94 +29,6 @@ func dataSourceSiteUpdate() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"area": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"name": &schema.Schema{
-							Description: `Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"parent_name": &schema.Schema{
-							Description: `Parent Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"building": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"address": &schema.Schema{
-							Description: `Address`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"latitude": &schema.Schema{
-							Description: `Latitude`,
-							Type:        schema.TypeFloat,
-							Optional:    true,
-						},
-						"longitude": &schema.Schema{
-							Description: `Longitude`,
-							Type:        schema.TypeFloat,
-							Optional:    true,
-						},
-						"name": &schema.Schema{
-							Description: `Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"parent_name": &schema.Schema{
-							Description: `Parent Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"floor": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"height": &schema.Schema{
-							Description: `Height`,
-							Type:        schema.TypeFloat,
-							Optional:    true,
-						},
-						"length": &schema.Schema{
-							Description: `Length`,
-							Type:        schema.TypeFloat,
-							Optional:    true,
-						},
-						"name": &schema.Schema{
-							Description: `Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"rf_model": &schema.Schema{
-							Description: `Rf Model. Allowed values are 'Cubes And Walled Offices', 'Drywall Office Only', 'Indoor High Ceiling', 'Outdoor Open Space'
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"width": &schema.Schema{
-							Description: `Width`,
-							Type:        schema.TypeFloat,
-							Optional:    true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -183,6 +95,108 @@ func dataSourceSiteUpdate() *schema.Resource {
 						},
 					},
 				},
+			},
+			"site": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"area": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"parent_name": &schema.Schema{
+										Description: `Parent Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
+						},
+						"building": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"address": &schema.Schema{
+										Description: `Address`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"latitude": &schema.Schema{
+										Description: `Latitude`,
+										Type:        schema.TypeFloat,
+										Optional:    true,
+									},
+									"longitude": &schema.Schema{
+										Description: `Longitude`,
+										Type:        schema.TypeFloat,
+										Optional:    true,
+									},
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"parent_name": &schema.Schema{
+										Description: `Parent Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
+						},
+						"floor": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"height": &schema.Schema{
+										Description: `Height`,
+										Type:        schema.TypeFloat,
+										Optional:    true,
+									},
+									"length": &schema.Schema{
+										Description: `Length`,
+										Type:        schema.TypeFloat,
+										Optional:    true,
+									},
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"rf_model": &schema.Schema{
+										Description: `Rf Model. Allowed values are 'Cubes And Walled Offices', 'Drywall Office Only', 'Indoor High Ceiling', 'Outdoor Open Space'
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"width": &schema.Schema{
+										Description: `Width`,
+										Type:        schema.TypeFloat,
+										Optional:    true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"type": &schema.Schema{
+				Description: `Type`,
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 		},
 	}
@@ -251,6 +265,10 @@ func expandRequestSiteUpdateUpdateSite(ctx context.Context, key string, d *schem
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site")))) {
 		request.Site = expandRequestSiteUpdateUpdateSiteSite(ctx, key+".site.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -265,6 +283,10 @@ func expandRequestSiteUpdateUpdateSiteSite(ctx context.Context, key string, d *s
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".floor")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".floor")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".floor")))) {
 		request.Floor = expandRequestSiteUpdateUpdateSiteSiteFloor(ctx, key+".floor.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -276,6 +298,10 @@ func expandRequestSiteUpdateUpdateSiteSiteArea(ctx context.Context, key string, 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_name")))) {
 		request.ParentName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -296,6 +322,10 @@ func expandRequestSiteUpdateUpdateSiteSiteBuilding(ctx context.Context, key stri
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".longitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".longitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".longitude")))) {
 		request.Longitude = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -316,6 +346,10 @@ func expandRequestSiteUpdateUpdateSiteSiteFloor(ctx context.Context, key string,
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".height")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".height")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".height")))) {
 		request.Height = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

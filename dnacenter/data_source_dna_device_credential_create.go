@@ -24,108 +24,6 @@ func dataSourceDeviceCredentialCreate() *schema.Resource {
 
 		ReadContext: dataSourceDeviceCredentialCreateRead,
 		Schema: map[string]*schema.Schema{
-			"cli_credential": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"description": &schema.Schema{
-							Description: `Name or description for CLI credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"enable_password": &schema.Schema{
-							Description: `Enable password for CLI credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"password": &schema.Schema{
-							Description: `Password for CLI credential
-`,
-							Type:      schema.TypeString,
-							Optional:  true,
-							Sensitive: true,
-						},
-						"username": &schema.Schema{
-							Description: `User name for CLI credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"https_read": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"name": &schema.Schema{
-							Description: `Name or description of http read credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"password": &schema.Schema{
-							Description: `Password for http read credential
-`,
-							Type:      schema.TypeString,
-							Optional:  true,
-							Sensitive: true,
-						},
-						"port": &schema.Schema{
-							Description: `Port for http read credential
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"username": &schema.Schema{
-							Description: `User name of the http read credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"https_write": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"name": &schema.Schema{
-							Description: `Name or description of http write credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"password": &schema.Schema{
-							Description: `Password for http write credential
-`,
-							Type:      schema.TypeString,
-							Optional:  true,
-							Sensitive: true,
-						},
-						"port": &schema.Schema{
-							Description: `Port for http write credential
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"username": &schema.Schema{
-							Description: `User name of the http write credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -150,95 +48,206 @@ func dataSourceDeviceCredentialCreate() *schema.Resource {
 					},
 				},
 			},
-			"snmp_v2c_read": &schema.Schema{
+			"settings": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
-						"description": &schema.Schema{
-							Description: `Description for snmp v2 read
-`,
-							Type:     schema.TypeString,
+						"cli_credential": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
-						},
-						"read_community": &schema.Schema{
-							Description: `Ready community for snmp v2 read credential
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"snmp_v2c_write": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
 
-						"description": &schema.Schema{
-							Description: `Description for snmp v2 write
+									"description": &schema.Schema{
+										Description: `Name or description for CLI credential
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"write_community": &schema.Schema{
-							Description: `Write community for snmp v2 write credential
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"enable_password": &schema.Schema{
+										Description: `Enable password for CLI credential
 `,
-							Type:     schema.TypeString,
-							Optional: true,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"password": &schema.Schema{
+										Description: `Password for CLI credential
+`,
+										Type:      schema.TypeString,
+										Optional:  true,
+										Sensitive: true,
+									},
+									"username": &schema.Schema{
+										Description: `User name for CLI credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-					},
-				},
-			},
-			"snmp_v3": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+						"https_read": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
 
-						"auth_password": &schema.Schema{
-							Description: `Authentication password for snmpv3 credential
+									"name": &schema.Schema{
+										Description: `Name or description of http read credential
 `,
-							Type:     schema.TypeString,
-							Optional: true,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"password": &schema.Schema{
+										Description: `Password for http read credential
+`,
+										Type:      schema.TypeString,
+										Optional:  true,
+										Sensitive: true,
+									},
+									"port": &schema.Schema{
+										Description: `Port for http read credential
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"username": &schema.Schema{
+										Description: `User name of the http read credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-						"auth_type": &schema.Schema{
-							Description: `Authentication type for snmpv3 credential
-`,
-							Type:     schema.TypeString,
+						"https_write": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"name": &schema.Schema{
+										Description: `Name or description of http write credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"password": &schema.Schema{
+										Description: `Password for http write credential
+`,
+										Type:      schema.TypeString,
+										Optional:  true,
+										Sensitive: true,
+									},
+									"port": &schema.Schema{
+										Description: `Port for http write credential
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"username": &schema.Schema{
+										Description: `User name of the http write credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-						"description": &schema.Schema{
-							Description: `Name or description for SNMPV3 credential
-`,
-							Type:     schema.TypeString,
+						"snmp_v2c_read": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"description": &schema.Schema{
+										Description: `Description for snmp v2 read
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"read_community": &schema.Schema{
+										Description: `Ready community for snmp v2 read credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-						"privacy_password": &schema.Schema{
-							Description: `Privacy password for snmpv3 credential
-`,
-							Type:     schema.TypeString,
+						"snmp_v2c_write": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"description": &schema.Schema{
+										Description: `Description for snmp v2 write
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"write_community": &schema.Schema{
+										Description: `Write community for snmp v2 write credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
-						"privacy_type": &schema.Schema{
-							Description: `Privacy type for snmpv3 credential
-`,
-							Type:     schema.TypeString,
+						"snmp_v3": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
-						},
-						"snmp_mode": &schema.Schema{
-							Description: `Mode for snmpv3 credential
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"auth_password": &schema.Schema{
+										Description: `Authentication password for snmpv3 credential
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"username": &schema.Schema{
-							Description: `User name for SNMPv3 credential
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"auth_type": &schema.Schema{
+										Description: `Authentication type for snmpv3 credential
 `,
-							Type:     schema.TypeString,
-							Optional: true,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"description": &schema.Schema{
+										Description: `Name or description for SNMPV3 credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"privacy_password": &schema.Schema{
+										Description: `Privacy password for snmpv3 credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"privacy_type": &schema.Schema{
+										Description: `Privacy type for snmpv3 credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"snmp_mode": &schema.Schema{
+										Description: `Mode for snmpv3 credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"username": &schema.Schema{
+										Description: `User name for SNMPv3 credential
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -292,6 +301,10 @@ func dataSourceDeviceCredentialCreateRead(ctx context.Context, d *schema.Resourc
 func expandRequestDeviceCredentialCreateCreateDeviceCredentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsCreateDeviceCredentials {
 	request := dnacentersdkgo.RequestNetworkSettingsCreateDeviceCredentials{}
 	request.Settings = expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettings(ctx, key, d)
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -315,6 +328,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettings(ctx cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".https_write")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".https_write")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".https_write")))) {
 		request.HTTPSWrite = expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsHTTPSWriteArray(ctx, key+".https_write", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -335,6 +352,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsCliCreden
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -352,6 +373,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsCliCreden
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".enable_password")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".enable_password")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".enable_password")))) {
 		request.EnablePassword = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -372,6 +397,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsSNMPV2CRe
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -383,6 +412,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsSNMPV2CRe
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".read_community")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".read_community")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".read_community")))) {
 		request.ReadCommunity = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -403,6 +436,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsSNMPV2CWr
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -414,6 +451,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsSNMPV2CWr
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".write_community")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".write_community")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".write_community")))) {
 		request.WriteCommunity = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -434,6 +475,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsSNMPV3Arr
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -460,6 +505,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsSNMPV3(ct
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".snmp_mode")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".snmp_mode")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".snmp_mode")))) {
 		request.SNMPMode = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -480,6 +529,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsHTTPSRead
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -497,6 +550,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsHTTPSRead
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".port")))) {
 		request.Port = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -517,6 +574,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsHTTPSWrit
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -534,6 +595,10 @@ func expandRequestDeviceCredentialCreateCreateDeviceCredentialsSettingsHTTPSWrit
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".port")))) {
 		request.Port = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

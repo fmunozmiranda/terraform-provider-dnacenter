@@ -128,6 +128,10 @@ func expandRequestGoldenImageCreateTagAsGoldenImage(ctx context.Context, key str
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device_family_identifier")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device_family_identifier")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device_family_identifier")))) {
 		request.DeviceFamilyIDentifier = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

@@ -24,288 +24,6 @@ func dataSourceNfvProvision() *schema.Resource {
 
 		ReadContext: dataSourceNfvProvisionRead,
 		Schema: map[string]*schema.Schema{
-			"device": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"custom_networks": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"connection_type": &schema.Schema{
-										Description: `Type of network connection from custom network (eg: lan)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"name": &schema.Schema{
-										Description: `Name of custom network (eg: cust-1)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"network_mode": &schema.Schema{
-										Description: `Network mode (eg Access or Trunk)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"services_to_connect": &schema.Schema{
-										Type:     schema.TypeList,
-										Optional: true,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-
-												"service": &schema.Schema{
-													Description: `Name of service to be connected to the custom network (eg: router-1)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-											},
-										},
-									},
-									"vlan": &schema.Schema{
-										Description: `Vlan id for the custom network(eg: 4000)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"custom_services": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"application_type": &schema.Schema{
-										Description: `Application type of custom service (eg: LINUX)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"image_name": &schema.Schema{
-										Description: `Image name of custom service (eg: redhat7.tar.gz.tar.gz)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"name": &schema.Schema{
-										Description: `Name of custom service (eg: LINUX-1)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"profile": &schema.Schema{
-										Description: `Profile type of service (eg: rhel7-medium)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"topology": &schema.Schema{
-										Type:     schema.TypeList,
-										Optional: true,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-
-												"assign_ip": &schema.Schema{
-													Description: `Assign ip to network (eg: true)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"name": &schema.Schema{
-													Description: `Name of connection from custom service(eg: wan-net)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"type": &schema.Schema{
-													Description: `Type of connection from custom service (eg:  wan, lan or internal)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						"custom_template": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"device_type": &schema.Schema{
-										Description: `Type of the device(eg: NFVIS)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"template": &schema.Schema{
-										Description: `Name of the template(eg NFVIS template)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"device_type": &schema.Schema{
-							Description: `Name of the device used in creating nfv profile(eg: ENCS5400)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"dia": &schema.Schema{
-							Description: `Direct internet access value should be boolean (eg: false)
-`,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"service_providers": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"connect": &schema.Schema{
-										Description: `Connection of service provider and device value should be boolean (eg: true)
-`,
-										// Type:        schema.TypeBool,
-										Type:         schema.TypeString,
-										ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-										Optional:     true,
-									},
-									"default_gateway": &schema.Schema{
-										Description: `Default gateway connect value as boolean (eg: true)
-`,
-										// Type:        schema.TypeBool,
-										Type:         schema.TypeString,
-										ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-										Optional:     true,
-									},
-									"link_type": &schema.Schema{
-										Description: `Name of connection type(eg: GigabitEthernet) 
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"service_provider": &schema.Schema{
-										Description: `Name of the service provider(eg: Airtel)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"services": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"image_name": &schema.Schema{
-										Description: `Name of image (eg: isrv-universalk9.16.06.02.tar.gz)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"mode": &schema.Schema{
-										Description: `Mode of firewall (eg: routed, transparent)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"name": &schema.Schema{
-										Description: `Name of the service (eg: isrv) 
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"profile": &schema.Schema{
-										Description: `Profile type of service (eg: ISRv-mini)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"topology": &schema.Schema{
-										Type:     schema.TypeList,
-										Optional: true,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-
-												"assign_ip": &schema.Schema{
-													Description: `Assign ip address to network (eg: true)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"name": &schema.Schema{
-													Description: `Name of connection (eg: wan-net)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"type": &schema.Schema{
-													Description: `Type of connection (eg:  wan, lan or internal)
-`,
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-											},
-										},
-									},
-									"type": &schema.Schema{
-										Description: `Service type (eg: ISRV)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"tag_name": &schema.Schema{
-							Description: `Device Tag name(eg: dev1)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"vlan": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"id": &schema.Schema{
-										Description: `Vlan id(eg.4018)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"type": &schema.Schema{
-										Description: `Vlan type(eg. Access or Trunk)
-`,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -330,11 +48,707 @@ func dataSourceNfvProvision() *schema.Resource {
 					},
 				},
 			},
-			"site_profile_name": &schema.Schema{
-				Description: `Name of the profile to create site profile profile( eg: profile-1)
-`,
-				Type:     schema.TypeString,
+			"provisioning": &schema.Schema{
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"device": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"custom_networks": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"ip_address_pool": &schema.Schema{
+													Description: `IP address pool of sub pool (eg: 175.175.140.1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of custom network (eg: cust-1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"port": &schema.Schema{
+													Description: `Port for custom network (eg: 443)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"device_serial_number": &schema.Schema{
+										Description: `Serial number of device (eg: FGL210710QY)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"ip": &schema.Schema{
+										Description: `IP address of the device (eg: 172.20.126.90)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"service_providers": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"service_provider": &schema.Schema{
+													Description: `Name of the service provider (eg: Airtel)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"wan_interface": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"bandwidth": &schema.Schema{
+																Description: `Bandwidth limit (eg: 100)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"gateway": &schema.Schema{
+																Description: `Gateway (eg: 175.175.190.1)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"interface_name": &schema.Schema{
+																Description: `Name of the interface (eg: GE0-0)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"ip_address": &schema.Schema{
+																Description: `IP address (eg: 175.175.190.205)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"subnetmask": &schema.Schema{
+																Description: `Subnet mask (eg: 255.255.255.0)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									"services": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"admin_password_hash": &schema.Schema{
+													Description: `Admin password hash
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"central_manager_ip": &schema.Schema{
+													Description: `WAAS Package needs to be installed to populate Central Manager IP automatically.
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"central_registration_key": &schema.Schema{
+													Description: `Central registration key 
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"common_key": &schema.Schema{
+													Description: `Common key 
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"disk": &schema.Schema{
+													Description: `Name of disk type (eg: internal)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"mode": &schema.Schema{
+													Description: `Mode of firewall (eg: transparent)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"system_ip": &schema.Schema{
+													Description: `System IP 
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"type": &schema.Schema{
+													Description: `Type of service (eg: ISR)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"sub_pools": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"gateway": &schema.Schema{
+													Description: `IP address for gate way (eg: 175.175.140.1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"ip_subnet": &schema.Schema{
+													Description: `IP pool cidir (eg: 175.175.140.0)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of the ip sub pool (eg; Lan-65)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"parent_pool_name": &schema.Schema{
+													Description: `Name of parent pool (global pool name)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"type": &schema.Schema{
+													Description: `Tyep of ip sub pool (eg: Lan)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"tag_name": &schema.Schema{
+										Description: `Name of device tag (eg: dev1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"template_param": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"asav": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"var1": &schema.Schema{
+																Description: `Variable for asav template (eg: "test":"Hello asav")
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+														},
+													},
+												},
+												"nfvis": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"var1": &schema.Schema{
+																Description: `Variable for nfvis template (eg: "test":"Hello nfvis")
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									"vlan": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"id": &schema.Schema{
+													Description: `Vlan id(e: .4018)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"interfaces": &schema.Schema{
+													Description: `Interface (eg: GigabitEathernet1/0)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"network": &schema.Schema{
+													Description: `Network name to connect (eg: lan-net)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"type": &schema.Schema{
+													Description: `Vlan type(eg. Access or Trunk)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"site": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"area": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"name": &schema.Schema{
+													Description: `Name of the area (eg: Area1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"parent_name": &schema.Schema{
+													Description: `Parent name of the area to be created
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"building": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"address": &schema.Schema{
+													Description: `Address of the building to be created
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"latitude": &schema.Schema{
+													Description: `Latitude coordinate of the building (eg:37.338)
+`,
+													Type:     schema.TypeFloat,
+													Optional: true,
+												},
+												"longitude": &schema.Schema{
+													Description: `Longitude coordinate of the building (eg:-121.832)
+`,
+													Type:     schema.TypeFloat,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of the building (eg: building1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"parent_name": &schema.Schema{
+													Description: `Address of the building to be created
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"floor": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"height": &schema.Schema{
+													Description: `Height of the floor (eg: 15)
+`,
+													Type:     schema.TypeFloat,
+													Optional: true,
+												},
+												"length": &schema.Schema{
+													Description: `Length of the floor (eg: 100)
+`,
+													Type:     schema.TypeFloat,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of the floor (eg:floor-1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"parent_name": &schema.Schema{
+													Description: `Parent name of the floor to be created
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"rf_model": &schema.Schema{
+													Description: `Type of floor (eg: Cubes And Walled Offices)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"width": &schema.Schema{
+													Description: `Width of the floor (eg:100)
+`,
+													Type:     schema.TypeFloat,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"site_profile_name": &schema.Schema{
+										Description: `Name of site profile to be provision with device 
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"site_profile": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"device": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"custom_networks": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"connection_type": &schema.Schema{
+													Description: `Type of network connection from custom network (eg: lan)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of custom network (eg: cust-1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"network_mode": &schema.Schema{
+													Description: `Network mode (eg Access or Trunk)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"services_to_connect": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"service": &schema.Schema{
+																Description: `Name of service to be connected to the custom network (eg: router-1)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+														},
+													},
+												},
+												"vlan": &schema.Schema{
+													Description: `Vlan id for the custom network(eg: 4000)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"custom_services": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"application_type": &schema.Schema{
+													Description: `Application type of custom service (eg: LINUX)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"image_name": &schema.Schema{
+													Description: `Image name of custom service (eg: redhat7.tar.gz.tar.gz)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of custom service (eg: LINUX-1)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"profile": &schema.Schema{
+													Description: `Profile type of service (eg: rhel7-medium)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"topology": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"assign_ip": &schema.Schema{
+																Description: `Assign ip to network (eg: true)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": &schema.Schema{
+																Description: `Name of connection from custom service(eg: wan-net)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"type": &schema.Schema{
+																Description: `Type of connection from custom service (eg:  wan, lan or internal)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									"custom_template": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"device_type": &schema.Schema{
+													Description: `Type of the device(eg: NFVIS)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"template": &schema.Schema{
+													Description: `Name of the template(eg NFVIS template)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"device_type": &schema.Schema{
+										Description: `Name of the device used in creating nfv profile(eg: ENCS5400)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"dia": &schema.Schema{
+										Description: `Direct internet access value should be boolean (eg: false)
+`,
+										// Type:        schema.TypeBool,
+										Type:         schema.TypeString,
+										ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+										Optional:     true,
+									},
+									"service_providers": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"connect": &schema.Schema{
+													Description: `Connection of service provider and device value should be boolean (eg: true)
+`,
+													// Type:        schema.TypeBool,
+													Type:         schema.TypeString,
+													ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+													Optional:     true,
+												},
+												"default_gateway": &schema.Schema{
+													Description: `Default gateway connect value as boolean (eg: true)
+`,
+													// Type:        schema.TypeBool,
+													Type:         schema.TypeString,
+													ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+													Optional:     true,
+												},
+												"link_type": &schema.Schema{
+													Description: `Name of connection type(eg: GigabitEthernet) 
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"service_provider": &schema.Schema{
+													Description: `Name of the service provider(eg: Airtel)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"services": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"image_name": &schema.Schema{
+													Description: `Name of image (eg: isrv-universalk9.16.06.02.tar.gz)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"mode": &schema.Schema{
+													Description: `Mode of firewall (eg: routed, transparent)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Name of the service (eg: isrv) 
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"profile": &schema.Schema{
+													Description: `Profile type of service (eg: ISRv-mini)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"topology": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"assign_ip": &schema.Schema{
+																Description: `Assign ip address to network (eg: true)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": &schema.Schema{
+																Description: `Name of connection (eg: wan-net)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"type": &schema.Schema{
+																Description: `Type of connection (eg:  wan, lan or internal)
+`,
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+														},
+													},
+												},
+												"type": &schema.Schema{
+													Description: `Service type (eg: ISRV)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+									"tag_name": &schema.Schema{
+										Description: `Device Tag name(eg: dev1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"vlan": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"id": &schema.Schema{
+													Description: `Vlan id(eg.4018)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"type": &schema.Schema{
+													Description: `Vlan type(eg. Access or Trunk)
+`,
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"site_profile_name": &schema.Schema{
+							Description: `Name of the profile to create site profile profile( eg: profile-1)
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -401,6 +815,10 @@ func expandRequestNfvProvisionProvisionNfv(ctx context.Context, key string, d *s
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".provisioning")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".provisioning")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".provisioning")))) {
 		request.Provisioning = expandRequestNfvProvisionProvisionNfvProvisioningArray(ctx, key+".provisioning", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -421,6 +839,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileArray(ctx context.Context, 
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -432,6 +854,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfile(ctx context.Context, key s
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device")))) {
 		request.Device = expandRequestNfvProvisionProvisionNfvSiteProfileDeviceArray(ctx, key+".device", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -452,6 +878,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceArray(ctx context.Con
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -484,6 +914,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDevice(ctx context.Context,
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".custom_template")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".custom_template")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".custom_template")))) {
 		request.CustomTemplate = expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomTemplateArray(ctx, key+".custom_template", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -504,6 +938,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceServiceProvidersArray
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -521,6 +959,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceServiceProviders(ctx 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".default_gateway")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".default_gateway")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".default_gateway")))) {
 		request.DefaultGateway = interfaceToBoolPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -541,6 +983,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceServicesArray(ctx con
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -564,6 +1010,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceServices(ctx context.
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".topology")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".topology")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".topology")))) {
 		request.Topology = expandRequestNfvProvisionProvisionNfvSiteProfileDeviceServicesTopology(ctx, key+".topology.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -578,6 +1028,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceServicesTopology(ctx 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".assign_ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".assign_ip")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".assign_ip")))) {
 		request.AssignIP = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -598,6 +1052,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomServicesArray(c
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -618,6 +1076,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomServices(ctx co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".image_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".image_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".image_name")))) {
 		request.ImageName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -632,6 +1094,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomServicesTopolog
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".assign_ip")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".assign_ip")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".assign_ip")))) {
 		request.AssignIP = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -652,6 +1118,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomNetworksArray(c
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -672,6 +1142,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomNetworks(ctx co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".vlan")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".vlan")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".vlan")))) {
 		request.VLAN = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -692,6 +1166,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomNetworksService
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -700,6 +1178,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomNetworksService
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".service")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".service")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".service")))) {
 		request.Service = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -720,6 +1202,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceVLANArray(ctx context
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -731,6 +1217,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceVLAN(ctx context.Cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -751,6 +1241,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomTemplateArray(c
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -762,6 +1256,10 @@ func expandRequestNfvProvisionProvisionNfvSiteProfileDeviceCustomTemplate(ctx co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".template")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".template")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".template")))) {
 		request.Template = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -782,6 +1280,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningArray(ctx context.Context,
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -793,6 +1295,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioning(ctx context.Context, key 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".device")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".device")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".device")))) {
 		request.Device = expandRequestNfvProvisionProvisionNfvProvisioningDeviceArray(ctx, key+".device", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -810,6 +1316,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningSite(ctx context.Context, 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".floor")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".floor")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".floor")))) {
 		request.Floor = expandRequestNfvProvisionProvisionNfvProvisioningSiteFloor(ctx, key+".floor.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -821,6 +1331,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningSiteArea(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_name")))) {
 		request.ParentName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -841,6 +1355,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningSiteBuilding(ctx context.C
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_name")))) {
 		request.ParentName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -864,6 +1382,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningSiteFloor(ctx context.Cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".height")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".height")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".height")))) {
 		request.Height = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -884,6 +1406,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceArray(ctx context.Co
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -916,6 +1442,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDevice(ctx context.Context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".template_param")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".template_param")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".template_param")))) {
 		request.TemplateParam = expandRequestNfvProvisionProvisionNfvProvisioningDeviceTemplateParam(ctx, key+".template_param.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -936,6 +1466,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceServiceProvidersArra
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -947,6 +1481,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceServiceProviders(ctx
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".wan_interface")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".wan_interface")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".wan_interface")))) {
 		request.WanInterface = expandRequestNfvProvisionProvisionNfvProvisioningDeviceServiceProvidersWanInterface(ctx, key+".wan_interface.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -967,6 +1505,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceServiceProvidersWanI
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".gateway")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".gateway")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".gateway")))) {
 		request.Gateway = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -987,6 +1529,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceServicesArray(ctx co
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1016,6 +1562,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceServices(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".disk")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".disk")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".disk")))) {
 		request.Disk = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1036,6 +1586,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceVLANArray(ctx contex
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1053,6 +1607,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceVLAN(ctx context.Con
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".network")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".network")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".network")))) {
 		request.Network = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1073,6 +1631,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceSubPoolsArray(ctx co
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1093,6 +1655,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceSubPools(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_pool_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_pool_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_pool_name")))) {
 		request.ParentPoolName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1113,6 +1679,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceCustomNetworksArray(
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1127,6 +1697,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceCustomNetworks(ctx c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ip_address_pool")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ip_address_pool")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ip_address_pool")))) {
 		request.IPAddressPool = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1138,6 +1712,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceTemplateParam(ctx co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".asav")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".asav")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".asav")))) {
 		request.Asav = expandRequestNfvProvisionProvisionNfvProvisioningDeviceTemplateParamAsav(ctx, key+".asav.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1146,6 +1724,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceTemplateParamNfvis(c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".var1")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".var1")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".var1")))) {
 		request.Var1 = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -1154,6 +1736,10 @@ func expandRequestNfvProvisionProvisionNfvProvisioningDeviceTemplateParamAsav(ct
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".var1")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".var1")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".var1")))) {
 		request.Var1 = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

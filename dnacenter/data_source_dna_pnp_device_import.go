@@ -2705,6 +2705,7 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 		},
 	}
 }
+}
 
 func dataSourcePnpDeviceImportRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*dnacentersdkgo.Client)
@@ -2753,6 +2754,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulk(ctx context.Context, key st
 	if v := expandRequestPnpDeviceImportImportDevicesInBulkItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -2773,6 +2778,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemArray(ctx context.Contex
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -2805,6 +2814,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItem(ctx context.Context, ke
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow_parameters")))) {
 		request.WorkflowParameters = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParameters(ctx, key+".workflow_parameters.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -2951,6 +2964,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfo(ctx context.C
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow_name")))) {
 		request.WorkflowName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -2962,6 +2979,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoAAACredentials
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".username")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".username")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".username")))) {
 		request.Username = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -2982,6 +3003,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoFileSystemList
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3005,6 +3030,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoFileSystemList
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".writeable")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".writeable")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".writeable")))) {
 		request.Writeable = interfaceToBoolPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3025,6 +3054,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoHTTPHeadersArr
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3036,6 +3069,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoHTTPHeaders(ct
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3056,6 +3093,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesAr
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3076,12 +3117,20 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfaces(c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".status")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".status")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".status")))) {
 		request.Status = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv4Address
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3102,12 +3151,20 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIP
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoIPInterfacesIPv6AddressList(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoIPInterfacesIPv6AddressList
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3128,6 +3185,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoLocation(ctx c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site_id")))) {
 		request.SiteID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3148,6 +3209,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoNeighborLinksA
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3180,6 +3245,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoNeighborLinks(
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".remote_version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".remote_version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".remote_version")))) {
 		request.RemoteVersion = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3200,6 +3269,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileList
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3220,6 +3293,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileList
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".secondary_endpoint")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".secondary_endpoint")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".secondary_endpoint")))) {
 		request.SecondaryEndpoint = expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpoint(ctx, key+".secondary_endpoint.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3243,18 +3320,30 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileList
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".protocol")))) {
 		request.Protocol = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv4Address
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListPrimaryEndpointIPv6Address
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3278,18 +3367,30 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileList
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".protocol")))) {
 		request.Protocol = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv4Address
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoPnpProfileListSecondaryEndpointIPv6Address
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3310,6 +3411,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPreWorkflowCli
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3321,6 +3426,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoPreWorkflowCli
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cli_output")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cli_output")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".cli_output")))) {
 		request.CliOutput = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3344,6 +3453,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfo(ctx 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".valid_license_levels")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".valid_license_levels")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".valid_license_levels")))) {
 		request.ValidLicenseLevels = interfaceToSliceString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3364,6 +3477,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfoStack
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3405,12 +3522,20 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoStackInfoStack
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".sudi_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".sudi_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".sudi_serial_number")))) {
 		request.SudiSerialNumber = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestPnpDeviceImportImportDevicesInBulkItemDeviceInfoTags(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoTags {
 	var request dnacentersdkgo.RequestItemDeviceOnboardingPnpImportDevicesInBulkDeviceInfoTags
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3431,6 +3556,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListArray(ctx 
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3448,6 +3577,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryList(ctx conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".timestamp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".timestamp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".timestamp")))) {
 		request.Timestamp = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3468,6 +3601,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTas
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
 		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTaskInfoWorkItemListArray(ctx, key+".work_item_list", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3488,6 +3625,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTas
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3499,6 +3640,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTas
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3519,6 +3664,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTas
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3542,6 +3691,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemRunSummaryListHistoryTas
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3604,6 +3757,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflow(ctx 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3624,6 +3781,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasks
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3656,6 +3817,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasks
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
 		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3676,6 +3841,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasks
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3699,6 +3868,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemResetWorkflowTasks
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3761,6 +3934,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflow(ctx conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3781,6 +3958,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksArray
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3813,6 +3994,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasks(ctx 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
 		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3833,6 +4018,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkI
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3856,6 +4045,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemSystemWorkflowTasksWorkI
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3918,6 +4111,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflow(ctx context.Con
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
 		request.Version = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3938,6 +4135,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksArray(ctx c
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3970,6 +4171,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasks(ctx contex
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".work_item_list")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".work_item_list")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".work_item_list")))) {
 		request.WorkItemList = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemListArray(ctx, key+".work_item_list", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -3990,6 +4195,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemLis
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -4013,6 +4222,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowTasksWorkItemLis
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".time_taken")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".time_taken")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".time_taken")))) {
 		request.TimeTaken = interfaceToIntPtr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -4030,6 +4243,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParameters(ctx c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".top_of_stack_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) {
 		request.TopOfStackSerialNumber = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -4050,6 +4267,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfig
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -4061,6 +4282,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfig
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_parameters")))) {
 		request.ConfigParameters = expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfigListConfigParametersArray(ctx, key+".config_parameters", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -4081,6 +4306,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfig
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -4092,6 +4321,10 @@ func expandRequestPnpDeviceImportImportDevicesInBulkItemWorkflowParametersConfig
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

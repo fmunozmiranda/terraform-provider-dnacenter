@@ -605,6 +605,10 @@ func expandRequestSensorTestTemplateDuplicateDuplicateSensorTestTemplate(ctx con
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".new_template_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".new_template_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".new_template_name")))) {
 		request.NewTemplateName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

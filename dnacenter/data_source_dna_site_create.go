@@ -23,111 +23,6 @@ func dataSourceSiteCreate() *schema.Resource {
 
 		ReadContext: dataSourceSiteCreateRead,
 		Schema: map[string]*schema.Schema{
-			"area": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"name": &schema.Schema{
-							Description: `Name of the area (eg: Area1)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"parent_name": &schema.Schema{
-							Description: `Parent name of the area to be created
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"building": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"address": &schema.Schema{
-							Description: `Address of the building to be created
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"latitude": &schema.Schema{
-							Description: `Latitude coordinate of the building (eg:37.338)
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"longitude": &schema.Schema{
-							Description: `Longitude coordinate of the building (eg:-121.832)
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"name": &schema.Schema{
-							Description: `Name of the building (eg: building1)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"parent_name": &schema.Schema{
-							Description: `Parent name of building to be created
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"floor": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"height": &schema.Schema{
-							Description: `Height of the floor (eg: 15)
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"length": &schema.Schema{
-							Description: `Length of the floor (eg: 100)
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-						"name": &schema.Schema{
-							Description: `Name of the floor (eg:floor-1)
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"parent_name": &schema.Schema{
-							Description: `Parent name of the floor to be created
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"rf_model": &schema.Schema{
-							Description: `Type of floor. Allowed values are 'Cubes And Walled Offices', 'Drywall Office Only', 'Indoor High Ceiling', 'Outdoor Open Space'.
-`,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"width": &schema.Schema{
-							Description: `Width of the floor (eg:100)
-`,
-							Type:     schema.TypeFloat,
-							Optional: true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -151,6 +46,126 @@ func dataSourceSiteCreate() *schema.Resource {
 						},
 					},
 				},
+			},
+			"site": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"area": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"name": &schema.Schema{
+										Description: `Name of the area (eg: Area1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"parent_name": &schema.Schema{
+										Description: `Parent name of the area to be created
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"building": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"address": &schema.Schema{
+										Description: `Address of the building to be created
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"latitude": &schema.Schema{
+										Description: `Latitude coordinate of the building (eg:37.338)
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"longitude": &schema.Schema{
+										Description: `Longitude coordinate of the building (eg:-121.832)
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"name": &schema.Schema{
+										Description: `Name of the building (eg: building1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"parent_name": &schema.Schema{
+										Description: `Parent name of building to be created
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"floor": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"height": &schema.Schema{
+										Description: `Height of the floor (eg: 15)
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"length": &schema.Schema{
+										Description: `Length of the floor (eg: 100)
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"name": &schema.Schema{
+										Description: `Name of the floor (eg:floor-1)
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"parent_name": &schema.Schema{
+										Description: `Parent name of the floor to be created
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"rf_model": &schema.Schema{
+										Description: `Type of floor. Allowed values are 'Cubes And Walled Offices', 'Drywall Office Only', 'Indoor High Ceiling', 'Outdoor Open Space'.
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"width": &schema.Schema{
+										Description: `Width of the floor (eg:100)
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"type": &schema.Schema{
+				Description: `Type of site to create (eg: area, building, floor)
+`,
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -217,6 +232,10 @@ func expandRequestSiteCreateCreateSite(ctx context.Context, key string, d *schem
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".site")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".site")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".site")))) {
 		request.Site = expandRequestSiteCreateCreateSiteSite(ctx, key+".site.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -231,6 +250,10 @@ func expandRequestSiteCreateCreateSiteSite(ctx context.Context, key string, d *s
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".floor")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".floor")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".floor")))) {
 		request.Floor = expandRequestSiteCreateCreateSiteSiteFloor(ctx, key+".floor.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -242,6 +265,10 @@ func expandRequestSiteCreateCreateSiteSiteArea(ctx context.Context, key string, 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_name")))) {
 		request.ParentName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -262,6 +289,10 @@ func expandRequestSiteCreateCreateSiteSiteBuilding(ctx context.Context, key stri
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".longitude")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".longitude")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".longitude")))) {
 		request.Longitude = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -285,6 +316,10 @@ func expandRequestSiteCreateCreateSiteSiteFloor(ctx context.Context, key string,
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".height")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".height")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".height")))) {
 		request.Height = interfaceToFloat64Ptr(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

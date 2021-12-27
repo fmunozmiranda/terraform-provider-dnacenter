@@ -157,6 +157,10 @@ func expandRequestSwimImportViaURLImportSoftwareImageViaURL(ctx context.Context,
 	if v := expandRequestSwimImportViaURLImportSoftwareImageViaURLItemArray(ctx, key+".payload", d); v != nil {
 		request = *v
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -177,6 +181,10 @@ func expandRequestSwimImportViaURLImportSoftwareImageViaURLItemArray(ctx context
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -197,6 +205,10 @@ func expandRequestSwimImportViaURLImportSoftwareImageViaURLItem(ctx context.Cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".vendor")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".vendor")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".vendor")))) {
 		request.Vendor = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

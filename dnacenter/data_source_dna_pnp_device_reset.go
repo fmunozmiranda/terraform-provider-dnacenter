@@ -24,39 +24,60 @@ func dataSourcePnpDeviceReset() *schema.Resource {
 
 		ReadContext: dataSourcePnpDeviceResetRead,
 		Schema: map[string]*schema.Schema{
-			"config_list": &schema.Schema{
+			"device_reset_list": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
-						"config_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"config_parameters": &schema.Schema{
+						"config_list": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 
-									"key": &schema.Schema{
+									"config_id": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 									},
-									"value": &schema.Schema{
-										Type:     schema.TypeString,
+									"config_parameters": &schema.Schema{
+										Type:     schema.TypeList,
 										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"key": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"value": &schema.Schema{
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
 									},
 								},
 							},
 						},
+						"device_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"license_level": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"license_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"top_of_stack_serial_number": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 					},
 				},
-			},
-			"device_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
 			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
@@ -87,15 +108,11 @@ func dataSourcePnpDeviceReset() *schema.Resource {
 					},
 				},
 			},
-			"license_level": &schema.Schema{
+			"project_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"license_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"top_of_stack_serial_number": &schema.Schema{
+			"workflow_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -156,6 +173,10 @@ func expandRequestPnpDeviceResetResetDevice(ctx context.Context, key string, d *
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".workflow_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".workflow_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".workflow_id")))) {
 		request.WorkflowID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -176,6 +197,10 @@ func expandRequestPnpDeviceResetResetDeviceDeviceResetListArray(ctx context.Cont
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -196,6 +221,10 @@ func expandRequestPnpDeviceResetResetDeviceDeviceResetList(ctx context.Context, 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".top_of_stack_serial_number")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".top_of_stack_serial_number")))) {
 		request.TopOfStackSerialNumber = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -216,6 +245,10 @@ func expandRequestPnpDeviceResetResetDeviceDeviceResetListConfigListArray(ctx co
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -227,6 +260,10 @@ func expandRequestPnpDeviceResetResetDeviceDeviceResetListConfigList(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".config_parameters")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".config_parameters")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".config_parameters")))) {
 		request.ConfigParameters = expandRequestPnpDeviceResetResetDeviceDeviceResetListConfigListConfigParametersArray(ctx, key+".config_parameters", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -247,6 +284,10 @@ func expandRequestPnpDeviceResetResetDeviceDeviceResetListConfigListConfigParame
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -258,6 +299,10 @@ func expandRequestPnpDeviceResetResetDeviceDeviceResetListConfigListConfigParame
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
 		request.Value = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

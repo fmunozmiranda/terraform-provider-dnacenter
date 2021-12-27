@@ -48,31 +48,40 @@ func dataSourceServiceProviderUpdate() *schema.Resource {
 					},
 				},
 			},
-			"qos": &schema.Schema{
+			"settings": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
-						"model": &schema.Schema{
-							Description: `Model`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"old_profile_name": &schema.Schema{
-							Description: `Old Profile Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"profile_name": &schema.Schema{
-							Description: `Profile Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"wan_provider": &schema.Schema{
-							Description: `Wan Provider`,
-							Type:        schema.TypeString,
-							Optional:    true,
+						"qos": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"model": &schema.Schema{
+										Description: `Model`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"old_profile_name": &schema.Schema{
+										Description: `Old Profile Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"profile_name": &schema.Schema{
+										Description: `Profile Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"wan_provider": &schema.Schema{
+										Description: `Wan Provider`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -126,6 +135,10 @@ func dataSourceServiceProviderUpdateRead(ctx context.Context, d *schema.Resource
 func expandRequestServiceProviderUpdateUpdateSpProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateSpProfile {
 	request := dnacentersdkgo.RequestNetworkSettingsUpdateSpProfile{}
 	request.Settings = expandRequestServiceProviderUpdateUpdateSpProfileSettings(ctx, key, d)
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -134,6 +147,10 @@ func expandRequestServiceProviderUpdateUpdateSpProfileSettings(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".qos")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".qos")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".qos")))) {
 		request.Qos = expandRequestServiceProviderUpdateUpdateSpProfileSettingsQosArray(ctx, key+".qos", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -154,6 +171,10 @@ func expandRequestServiceProviderUpdateUpdateSpProfileSettingsQosArray(ctx conte
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -171,6 +192,10 @@ func expandRequestServiceProviderUpdateUpdateSpProfileSettingsQos(ctx context.Co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".old_profile_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".old_profile_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".old_profile_name")))) {
 		request.OldProfileName = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

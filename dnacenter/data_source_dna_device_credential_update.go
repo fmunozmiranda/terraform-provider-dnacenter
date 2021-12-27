@@ -23,111 +23,6 @@ func dataSourceDeviceCredentialUpdate() *schema.Resource {
 
 		ReadContext: dataSourceDeviceCredentialUpdateRead,
 		Schema: map[string]*schema.Schema{
-			"cli_credential": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"description": &schema.Schema{
-							Description: `Description`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"enable_password": &schema.Schema{
-							Description: `Enable Password`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"id": &schema.Schema{
-							Description: `Id`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"password": &schema.Schema{
-							Description: `Password`,
-							Type:        schema.TypeString,
-							Optional:    true,
-							Sensitive:   true,
-						},
-						"username": &schema.Schema{
-							Description: `Username`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"https_read": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"id": &schema.Schema{
-							Description: `Id`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"name": &schema.Schema{
-							Description: `Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"password": &schema.Schema{
-							Description: `Password`,
-							Type:        schema.TypeString,
-							Optional:    true,
-							Sensitive:   true,
-						},
-						"port": &schema.Schema{
-							Description: `Port`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"username": &schema.Schema{
-							Description: `Username`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"https_write": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"id": &schema.Schema{
-							Description: `Id`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"name": &schema.Schema{
-							Description: `Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"password": &schema.Schema{
-							Description: `Password`,
-							Type:        schema.TypeString,
-							Optional:    true,
-							Sensitive:   true,
-						},
-						"port": &schema.Schema{
-							Description: `Port`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"username": &schema.Schema{
-							Description: `Username`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -152,99 +47,213 @@ func dataSourceDeviceCredentialUpdate() *schema.Resource {
 					},
 				},
 			},
-			"snmp_v2c_read": &schema.Schema{
+			"settings": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
-						"description": &schema.Schema{
-							Description: `Description`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"id": &schema.Schema{
-							Description: `Id`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"read_community": &schema.Schema{
-							Description: `Read Community`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"snmp_v2c_write": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+						"cli_credential": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
 
-						"description": &schema.Schema{
-							Description: `Description`,
-							Type:        schema.TypeString,
-							Optional:    true,
+									"description": &schema.Schema{
+										Description: `Description`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"enable_password": &schema.Schema{
+										Description: `Enable Password`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"password": &schema.Schema{
+										Description: `Password`,
+										Type:        schema.TypeString,
+										Optional:    true,
+										Sensitive:   true,
+									},
+									"username": &schema.Schema{
+										Description: `Username`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
-						"id": &schema.Schema{
-							Description: `Id`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"write_community": &schema.Schema{
-							Description: `Write Community`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"snmp_v3": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+						"https_read": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
 
-						"auth_password": &schema.Schema{
-							Description: `Auth Password`,
-							Type:        schema.TypeString,
-							Optional:    true,
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"password": &schema.Schema{
+										Description: `Password`,
+										Type:        schema.TypeString,
+										Optional:    true,
+										Sensitive:   true,
+									},
+									"port": &schema.Schema{
+										Description: `Port`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"username": &schema.Schema{
+										Description: `Username`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
-						"auth_type": &schema.Schema{
-							Description: `Auth Type`,
-							Type:        schema.TypeString,
-							Optional:    true,
+						"https_write": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"password": &schema.Schema{
+										Description: `Password`,
+										Type:        schema.TypeString,
+										Optional:    true,
+										Sensitive:   true,
+									},
+									"port": &schema.Schema{
+										Description: `Port`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"username": &schema.Schema{
+										Description: `Username`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
-						"description": &schema.Schema{
-							Description: `Description`,
-							Type:        schema.TypeString,
-							Optional:    true,
+						"snmp_v2c_read": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"description": &schema.Schema{
+										Description: `Description`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"read_community": &schema.Schema{
+										Description: `Read Community`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
-						"id": &schema.Schema{
-							Description: `Id`,
-							Type:        schema.TypeString,
-							Optional:    true,
+						"snmp_v2c_write": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"description": &schema.Schema{
+										Description: `Description`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"write_community": &schema.Schema{
+										Description: `Write Community`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
-						"privacy_password": &schema.Schema{
-							Description: `Privacy Password`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"privacy_type": &schema.Schema{
-							Description: `Privacy Type`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"snmp_mode": &schema.Schema{
-							Description: `Snmp Mode`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"username": &schema.Schema{
-							Description: `Username`,
-							Type:        schema.TypeString,
-							Optional:    true,
+						"snmp_v3": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"auth_password": &schema.Schema{
+										Description: `Auth Password`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"auth_type": &schema.Schema{
+										Description: `Auth Type`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"description": &schema.Schema{
+										Description: `Description`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"privacy_password": &schema.Schema{
+										Description: `Privacy Password`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"privacy_type": &schema.Schema{
+										Description: `Privacy Type`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"snmp_mode": &schema.Schema{
+										Description: `Snmp Mode`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"username": &schema.Schema{
+										Description: `Username`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -298,6 +307,10 @@ func dataSourceDeviceCredentialUpdateRead(ctx context.Context, d *schema.Resourc
 func expandRequestDeviceCredentialUpdateUpdateDeviceCredentials(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateDeviceCredentials {
 	request := dnacentersdkgo.RequestNetworkSettingsUpdateDeviceCredentials{}
 	request.Settings = expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettings(ctx, key, d)
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -321,6 +334,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettings(ctx cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".https_write")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".https_write")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".https_write")))) {
 		request.HTTPSWrite = expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsHTTPSWrite(ctx, key+".https_write.0", d)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -341,6 +358,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsCliCreden
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -355,6 +376,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsSNMPV2CRe
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -369,6 +394,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsSNMPV2CWr
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -398,6 +427,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsSNMPV3(ct
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -418,6 +451,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsHTTPSRead
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -438,6 +475,10 @@ func expandRequestDeviceCredentialUpdateUpdateDeviceCredentialsSettingsHTTPSWrit
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 

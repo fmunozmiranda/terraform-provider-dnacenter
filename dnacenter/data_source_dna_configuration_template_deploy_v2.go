@@ -24,6 +24,20 @@ func dataSourceConfigurationTemplateDeployV2() *schema.Resource {
 
 		ReadContext: dataSourceConfigurationTemplateDeployV2Read,
 		Schema: map[string]*schema.Schema{
+			"force_push_template": &schema.Schema{
+				// Type:     schema.TypeBool,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
+			"is_composite": &schema.Schema{
+				Description: `Composite template flag
+`,
+				// Type:        schema.TypeBool,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -40,6 +54,69 @@ func dataSourceConfigurationTemplateDeployV2() *schema.Resource {
 						},
 					},
 				},
+			},
+			"main_template_id": &schema.Schema{
+				Description: `Main template UUID of versioned template
+`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"member_template_deployment_info": &schema.Schema{
+				Description: `memberTemplateDeploymentInfo
+`,
+				Type:     schema.TypeList,
+				Optional: true,
+			},
+			"target_info": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"host_name": &schema.Schema{
+							Description: `Hostname of device is required if targetType is MANAGED_DEVICE_HOSTNAME
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Description: `UUID of target is required if targetType is MANAGED_DEVICE_UUID
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"params": &schema.Schema{
+							Description: `Template params/values to be provisioned
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"resource_params": &schema.Schema{
+							Description: `Resource params to be provisioned
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+						},
+						"type": &schema.Schema{
+							Description: `Target type of device
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"versioned_template_id": &schema.Schema{
+							Description: `Versioned templateUUID to be provisioned
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"template_id": &schema.Schema{
+				Description: `UUID of template to be provisioned
+`,
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -107,6 +184,10 @@ func expandRequestConfigurationTemplateDeployV2DeployTemplateV2(ctx context.Cont
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".template_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".template_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".template_id")))) {
 		request.TemplateID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -127,12 +208,20 @@ func expandRequestConfigurationTemplateDeployV2DeployTemplateV2MemberTemplateDep
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestConfigurationTemplateDeployV2DeployTemplateV2MemberTemplateDeploymentInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateV2MemberTemplateDeploymentInfo {
 	var request dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateV2MemberTemplateDeploymentInfo
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -153,6 +242,10 @@ func expandRequestConfigurationTemplateDeployV2DeployTemplateV2TargetInfoArray(c
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -176,12 +269,20 @@ func expandRequestConfigurationTemplateDeployV2DeployTemplateV2TargetInfo(ctx co
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".versioned_template_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".versioned_template_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".versioned_template_id")))) {
 		request.VersionedTemplateID = interfaceToString(v)
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestConfigurationTemplateDeployV2DeployTemplateV2TargetInfoParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateV2TargetInfoParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateV2TargetInfoParams
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
@@ -202,12 +303,20 @@ func expandRequestConfigurationTemplateDeployV2DeployTemplateV2TargetInfoResourc
 			request = append(request, *i)
 		}
 	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
 func expandRequestConfigurationTemplateDeployV2DeployTemplateV2TargetInfoResourceParams(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateV2TargetInfoResourceParams {
 	var request dnacentersdkgo.RequestConfigurationTemplatesDeployTemplateV2TargetInfoResourceParams
 	request = d.Get(fixKeyAccess(key))
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
