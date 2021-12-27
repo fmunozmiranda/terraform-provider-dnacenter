@@ -2705,7 +2705,7 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 		},
 	}
 }
-}
+
 
 func dataSourcePnpDeviceImportRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*dnacentersdkgo.Client)
