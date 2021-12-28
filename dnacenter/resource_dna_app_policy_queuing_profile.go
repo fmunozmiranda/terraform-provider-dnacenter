@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -178,10 +180,11 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
-	request1 := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfile(ctx, "parameters.0", d)
+	request1 := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileArray(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vID, okID := resourceItem["id"]
+	vID := resourceItem["id"]
+
 	vvID := interfaceToString(vID)
 	resp1, restyResp1, err := client.ApplicationPolicy.CreateApplicationPolicyQueuingProfile(request1)
 	if err != nil || resp1 == nil {
@@ -197,7 +200,7 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceAppPolicyQueuingProfileRead(ctx, d, m)
 }
 
 func resourceAppPolicyQueuingProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -215,7 +218,7 @@ func resourceAppPolicyQueuingProfileRead(ctx context.Context, d *schema.Resource
 		queryParams1 := dnacentersdkgo.GetApplicationPolicyQueuingProfileQueryParams{}
 
 		if okName {
-			queryParams1.Name = vName.(string)
+			queryParams1.Name = vName
 		}
 
 		response1, restyResp1, err := client.ApplicationPolicy.GetApplicationPolicyQueuingProfile(&queryParams1)
@@ -247,14 +250,18 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 	resourceMap := separateResourceID(resourceID)
 	vName, okName := resourceMap["name"]
 
-	selectedMethod := 1
-	var vvID string
+	//selectedMethod := 1
+	//var vvID string
 	var vvName string
+
+	if okName {
+		vvName = vName
+	}
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfile(ctx, "item.0", d)
+		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "item.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateApplicationPolicyQueuingProfile(request1)
 		if err != nil || response1 == nil {
@@ -276,39 +283,19 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 }
 
 func resourceAppPolicyQueuingProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+	//client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
+	//resourceID := d.Id()
+	//resourceMap := separateResourceID(resourceID)
 	//TODO
 
 	return diags
 }
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfile {
+
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileArray(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfile {
 	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfile{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".title")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".title")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".title")))) {
-		request.Title = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleArray(ctx, key+".title", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeArray(ctx, key+".type", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".items")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".items")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".items")))) {
-		request.Items = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsArray(ctx, key+".items", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".$schema")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".$schema")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".$schema")))) {
-		request.Schema = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaArray(ctx, key+".$schema", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitle {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitle{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -319,7 +306,7 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitle(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfile(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -331,8 +318,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitle(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitle {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitle{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfile {
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfile{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
 		request.Description = interfaceToString(v)
 	}
@@ -340,7 +327,7 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		request.Name = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseArray(ctx, key+".clause", d)
+		request.Clause = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseArray(ctx, key+".clause", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -349,8 +336,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClause{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClause {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClause{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -361,20 +348,17 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
 	}
 
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClause {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClause{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClause {
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClause{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
 		request.Type = interfaceToString(v)
 	}
@@ -382,10 +366,10 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
+		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
+		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -394,8 +378,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -406,7 +390,7 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -418,13 +402,13 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses {
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
 		request.InterfaceSpeed = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
+		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -433,8 +417,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -445,7 +429,7 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -457,8 +441,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
 		request.BandwidthPercentage = interfaceToIntPtr(v)
 	}
@@ -472,8 +456,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseTcDscpSettings {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseTcDscpSettings{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -484,7 +468,7 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -496,8 +480,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings{}
+func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseTcDscpSettings {
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseTcDscpSettings{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
 		request.Dscp = interfaceToString(v)
 	}
@@ -511,641 +495,8 @@ func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileType {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileType{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileType(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileType(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileType {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileType{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseArray(ctx, key+".clause", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClause{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClause {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClause{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_common_between_all_interface_speeds")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) {
-		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
-		request.InterfaceSpeed = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
-		request.BandwidthPercentage = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
-		request.Dscp = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItems {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItems{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItems(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItems(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItems {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItems{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseArray(ctx, key+".clause", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClause{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClause {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClause{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_common_between_all_interface_speeds")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) {
-		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
-		request.InterfaceSpeed = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
-		request.BandwidthPercentage = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
-		request.Dscp = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschema {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschema{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchema(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchema(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschema {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschema{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseArray(ctx, key+".clause", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClause{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClause {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClause{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_common_between_all_interface_speeds")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) {
-		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
-		request.InterfaceSpeed = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
-		request.BandwidthPercentage = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
-		request.Dscp = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfile {
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfile {
 	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfile{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".title")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".title")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".title")))) {
-		request.Title = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleArray(ctx, key+".title", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeArray(ctx, key+".type", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".items")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".items")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".items")))) {
-		request.Items = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsArray(ctx, key+".items", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".$schema")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".$schema")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".$schema")))) {
-		request.Schema = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaArray(ctx, key+".$schema", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitle {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitle{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -1156,7 +507,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitle(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfile(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -1168,8 +519,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitle(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitle {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitle{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfile {
+	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfile{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
@@ -1180,7 +531,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		request.Name = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseArray(ctx, key+".clause", d)
+		request.Clause = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseArray(ctx, key+".clause", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -1189,8 +540,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClause{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClause {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClause{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -1201,7 +552,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -1213,8 +564,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClause {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClause{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClause {
+	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClause{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
 		request.InstanceID = interfaceToIntPtr(v)
 	}
@@ -1225,10 +576,10 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
+		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
+		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -1237,8 +588,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -1249,7 +600,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -1261,8 +612,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClauses{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses {
+	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
 		request.InstanceID = interfaceToIntPtr(v)
 	}
@@ -1270,7 +621,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		request.InterfaceSpeed = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
+		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -1279,8 +630,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -1291,7 +642,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -1303,8 +654,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
+	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
 		request.InstanceID = interfaceToIntPtr(v)
 	}
@@ -1321,8 +672,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -1333,7 +684,7 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -1345,665 +696,8 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTi
 	return &request
 }
 
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTitleClauseTcDscpSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
-		request.Dscp = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileType {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileType{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileType(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileType(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileType {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileType{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
-		request.ID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseArray(ctx, key+".clause", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClause{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClause {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClause{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_common_between_all_interface_speeds")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) {
-		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClauses{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
-		request.InterfaceSpeed = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
-		request.BandwidthPercentage = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileTypeClauseTcDscpSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
-		request.Dscp = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItems {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItems{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItems(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItems(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItems {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItems{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
-		request.ID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseArray(ctx, key+".clause", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClause{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClause {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClause{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_common_between_all_interface_speeds")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) {
-		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClauses{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
-		request.InterfaceSpeed = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
-		request.BandwidthPercentage = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileItemsClauseTcDscpSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".dscp")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".dscp")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".dscp")))) {
-		request.Dscp = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschema {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschema{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchema(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchema(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschema {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschema{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
-		request.ID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".clause")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".clause")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".clause")))) {
-		request.Clause = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseArray(ctx, key+".clause", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClause {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClause{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClause(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClause(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClause {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClause{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".is_common_between_all_interface_speeds")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".is_common_between_all_interface_speeds")))) {
-		request.IsCommonBetweenAllInterfaceSpeeds = interfaceToBoolPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed_bandwidth_clauses")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed_bandwidth_clauses")))) {
-		request.InterfaceSpeedBandwidthClauses = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesArray(ctx, key+".interface_speed_bandwidth_clauses", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_dscp_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_dscp_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_dscp_settings")))) {
-		request.TcDscpSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettingsArray(ctx, key+".tc_dscp_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClauses(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClauses(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClauses{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_speed")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_speed")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_speed")))) {
-		request.InterfaceSpeed = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".tc_bandwidth_settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".tc_bandwidth_settings")))) {
-		request.TcBandwidthSettings = expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx, key+".tc_bandwidth_settings", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".bandwidth_percentage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".bandwidth_percentage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".bandwidth_percentage")))) {
-		request.BandwidthPercentage = interfaceToIntPtr(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".traffic_class")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".traffic_class")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".traffic_class")))) {
-		request.TrafficClass = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettingsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings {
-	request := []dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettings(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileSchemaClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings {
-	request := dnacentersdkgo.RequestApplicationPolicyUpdateApplicationPolicyQueuingProfileschemaClauseTcDscpSettings{}
+func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings {
+	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
 		request.InstanceID = interfaceToIntPtr(v)
 	}
