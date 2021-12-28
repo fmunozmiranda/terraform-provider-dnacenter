@@ -64,7 +64,10 @@ func dataSourceConfigurationTemplateDeployV2() *schema.Resource {
 			"member_template_deployment_info": &schema.Schema{
 				Description: `memberTemplateDeploymentInfo
 `,
-				Type:     schema.TypeList,
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 				Optional: true,
 			},
 			"target_info": &schema.Schema{
@@ -88,13 +91,19 @@ func dataSourceConfigurationTemplateDeployV2() *schema.Resource {
 						"params": &schema.Schema{
 							Description: `Template params/values to be provisioned
 `,
-							Type:     schema.TypeList,
+							Type: schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 							Optional: true,
 						},
 						"resource_params": &schema.Schema{
 							Description: `Resource params to be provisioned
 `,
-							Type:     schema.TypeList,
+							Type: schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 							Optional: true,
 						},
 						"type": &schema.Schema{

@@ -87,7 +87,10 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 									"day_zero_config_preview": &schema.Schema{
 										Description: `Day Zero Config Preview`,
 										Type:        schema.TypeList,
-										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+										Computed: true,
 									},
 									"device_info": &schema.Schema{
 										Type:     schema.TypeList,
@@ -276,12 +279,18 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 															"ipv4_address": &schema.Schema{
 																Description: `Ipv4 Address`,
 																Type:        schema.TypeList,
-																Computed:    true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
+																Computed: true,
 															},
 															"ipv6_address_list": &schema.Schema{
 																Description: `Ipv6 Address List`,
 																Type:        schema.TypeList,
-																Computed:    true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
+																Optional: true,
 															},
 															"mac_address": &schema.Schema{
 																Description: `Mac Address`,
@@ -465,12 +474,18 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																		"ipv4_address": &schema.Schema{
 																			Description: `Ipv4 Address`,
 																			Type:        schema.TypeList,
-																			Computed:    true,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
+																			Computed: true,
 																		},
 																		"ipv6_address": &schema.Schema{
 																			Description: `Ipv6 Address`,
 																			Type:        schema.TypeList,
-																			Computed:    true,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
+																			Computed: true,
 																		},
 																		"port": &schema.Schema{
 																			Description: `Port`,
@@ -509,12 +524,18 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																		"ipv4_address": &schema.Schema{
 																			Description: `Ipv4 Address`,
 																			Type:        schema.TypeList,
-																			Computed:    true,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
+																			Computed: true,
 																		},
 																		"ipv6_address": &schema.Schema{
 																			Description: `Ipv6 Address`,
 																			Type:        schema.TypeList,
-																			Computed:    true,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
+																			Computed: true,
 																		},
 																		"port": &schema.Schema{
 																			Description: `Port`,
@@ -726,7 +747,10 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 												"tags": &schema.Schema{
 													Description: `Tags`,
 													Type:        schema.TypeList,
-													Computed:    true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+													Computed: true,
 												},
 												"user_mic_numbers": &schema.Schema{
 													Description: `User Mic Numbers`,
@@ -1674,11 +1698,17 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 											Schema: map[string]*schema.Schema{
 
 												"ipv4_address": &schema.Schema{
-													Type:     schema.TypeList,
+													Type: schema.TypeList,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 													Optional: true,
 												},
 												"ipv6_address_list": &schema.Schema{
-													Type:     schema.TypeList,
+													Type: schema.TypeList,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 													Optional: true,
 												},
 												"mac_address": &schema.Schema{
@@ -1833,11 +1863,17 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																Optional: true,
 															},
 															"ipv4_address": &schema.Schema{
-																Type:     schema.TypeList,
+																Type: schema.TypeList,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 																Optional: true,
 															},
 															"ipv6_address": &schema.Schema{
-																Type:     schema.TypeList,
+																Type: schema.TypeList,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 																Optional: true,
 															},
 															"port": &schema.Schema{
@@ -1870,11 +1906,17 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 																Optional: true,
 															},
 															"ipv4_address": &schema.Schema{
-																Type:     schema.TypeList,
+																Type: schema.TypeList,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 																Optional: true,
 															},
 															"ipv6_address": &schema.Schema{
-																Type:     schema.TypeList,
+																Type: schema.TypeList,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 																Optional: true,
 															},
 															"port": &schema.Schema{
@@ -2050,7 +2092,10 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 										Optional:     true,
 									},
 									"tags": &schema.Schema{
-										Type:     schema.TypeList,
+										Type: schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 										Optional: true,
 									},
 									"user_sudi_serial_nos": &schema.Schema{
@@ -2705,7 +2750,6 @@ func dataSourcePnpDeviceImport() *schema.Resource {
 		},
 	}
 }
-
 
 func dataSourcePnpDeviceImportRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*dnacentersdkgo.Client)

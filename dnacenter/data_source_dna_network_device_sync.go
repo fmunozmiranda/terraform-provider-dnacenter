@@ -51,7 +51,10 @@ can be seen in the child task of each device
 			"payload": &schema.Schema{
 				Description: `Array of RequestDevicesSyncDevices`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
 			},
 		},
 	}

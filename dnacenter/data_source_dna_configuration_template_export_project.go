@@ -44,7 +44,10 @@ func dataSourceConfigurationTemplateExportProject() *schema.Resource {
 			"payload": &schema.Schema{
 				Description: `Array of RequestConfigurationTemplatesExportsTheProjectsForAGivenCriteria`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
 			},
 		},
 	}

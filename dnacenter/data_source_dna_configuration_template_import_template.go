@@ -310,7 +310,10 @@ func dataSourceConfigurationTemplateImportTemplate() *schema.Resource {
 															"selection_values": &schema.Schema{
 																Description: `Selection values
 `,
-																Type:     schema.TypeList,
+																Type: schema.TypeList,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 																Optional: true,
 															},
 														},
@@ -511,7 +514,10 @@ func dataSourceConfigurationTemplateImportTemplate() *schema.Resource {
 															"selection_values": &schema.Schema{
 																Description: `Selection values
 `,
-																Type:     schema.TypeList,
+																Type: schema.TypeList,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 																Optional: true,
 															},
 														},
@@ -801,7 +807,10 @@ func dataSourceConfigurationTemplateImportTemplate() *schema.Resource {
 												"selection_values": &schema.Schema{
 													Description: `Selection values
 `,
-													Type:     schema.TypeList,
+													Type: schema.TypeList,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 													Optional: true,
 												},
 											},
@@ -1020,7 +1029,10 @@ func dataSourceConfigurationTemplateImportTemplate() *schema.Resource {
 												"selection_values": &schema.Schema{
 													Description: `Selection values
 `,
-													Type:     schema.TypeList,
+													Type: schema.TypeList,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 													Optional: true,
 												},
 											},
@@ -1038,13 +1050,19 @@ func dataSourceConfigurationTemplateImportTemplate() *schema.Resource {
 									"rollback_template_errors": &schema.Schema{
 										Description: `Validation or design conflicts errors of rollback template
 `,
-										Type:     schema.TypeList,
+										Type: schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 										Optional: true,
 									},
 									"template_errors": &schema.Schema{
 										Description: `Validation or design conflicts errors
 `,
-										Type:     schema.TypeList,
+										Type: schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 										Optional: true,
 									},
 									"template_id": &schema.Schema{
