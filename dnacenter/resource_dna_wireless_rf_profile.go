@@ -1,0 +1,405 @@
+package dnacenter
+
+import (
+	"context"
+	"reflect"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+func resourceWirelessRfProfile() *schema.Resource {
+	return &schema.Resource{
+		Description: `It manages create, read and delete operations on Wireless.
+
+- Create or Update RF profile
+
+- Delete RF profile(s)
+`,
+
+		CreateContext: resourceWirelessRfProfileCreate,
+		ReadContext:   resourceWirelessRfProfileRead,
+		UpdateContext: resourceWirelessRfProfileUpdate,
+		DeleteContext: resourceWirelessRfProfileDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"last_updated": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'custom RF profile name\n'}, 'defaultRfProfile': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'isDefault rf-profile\n'}, 'enableRadioTypeA': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'tru if Enable Radio Type A else false\n'}, 'enableRadioTypeB': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'true if Enable Radio Type B else false\n'}, 'channelWidth': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'rf-profile channel width\n'}, 'enableCustom': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'true if enable custom rf-profile else false\n'}, 'enableBrownField': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'true if enable brown field for rf-profile else false\n'}, 'radioTypeAProperties': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'parentProfile': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Parent rf-profile name\n'}, 'radioChannels': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Radio Channels\n'}, 'dataRates': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Data Rates\n'}, 'mandatoryDataRates': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Mandatory Data Rates\n'}, 'powerThresholdV1': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Power Threshold V1\n'}, 'rxSopThreshold': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Rx Sop Threshold\n'}, 'minPowerLevel': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Min Power Level\n'}, 'maxPowerLevel': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Max Power Level\n'}}}}, 'radioTypeBProperties': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'parentProfile': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Parent rf-profile name\n'}, 'radioChannels': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Radio Channels\n'}, 'dataRates': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Data Rates\n'}, 'mandatoryDataRates': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Mandatory Data Rates\n'}, 'powerThresholdV1': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Power Threshold V1\n'}, 'rxSopThreshold': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Rx Sop Threshold\n'}, 'minPowerLevel': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Min Power Level\n'}, 'maxPowerLevel': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Max Power Level\n'}}}}, 'rfProfileName': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'rfProfileName path parameter. RF profile name to be deleted(required) *non-custom RF profile cannot be deleted\n'}}}}}, 'metadata': {'item': {'operation_id': ['CreateOrUpdateRFProfile'], 'new_flat_structure': [{'RequestWirelessCreateOrUpdateRFProfile': {'type': 'obj', 'data': [{'name': 'name', 'description': 'custom RF profile name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'defaultRfProfile', 'description': 'isDefault rf-profile\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'enableRadioTypeA', 'description': 'tru if Enable Radio Type A else false\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'enableRadioTypeB', 'description': 'true if Enable Radio Type B else false\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'channelWidth', 'description': 'rf-profile channel width\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'enableCustom', 'description': 'true if enable custom rf-profile else false\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'enableBrownField', 'description': 'true if enable brown field for rf-profile else false\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'radioTypeAProperties', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestWirelessCreateOrUpdateRfProfileRadioTypeAProperties'}, {'name': 'radioTypeBProperties', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestWirelessCreateOrUpdateRfProfileRadioTypeBProperties'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestWirelessCreateOrUpdateRFProfileRadioTypeAProperties': {'type': 'obj', 'data': [{'name': 'parentProfile', 'description': 'Parent rf-profile name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'radioChannels', 'description': 'Radio Channels\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'dataRates', 'description': 'Data Rates\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'mandatoryDataRates', 'description': 'Mandatory Data Rates\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'powerThresholdV1', 'description': 'Power Threshold V1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}, {'name': 'rxSopThreshold', 'description': 'Rx Sop Threshold\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'minPowerLevel', 'description': 'Min Power Level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}, {'name': 'maxPowerLevel', 'description': 'Max Power Level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestWirelessCreateOrUpdateRFProfileRadioTypeBProperties': {'type': 'obj', 'data': [{'name': 'parentProfile', 'description': 'Parent rf-profile name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'radioChannels', 'description': 'Radio Channels\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'dataRates', 'description': 'Data Rates\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'mandatoryDataRates', 'description': 'Mandatory Data Rates\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'powerThresholdV1', 'description': 'Power Threshold V1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}, {'name': 'rxSopThreshold', 'description': 'Rx Sop Threshold\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'minPowerLevel', 'description': 'Min Power Level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}, {'name': 'maxPowerLevel', 'description': 'Max Power Level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestWirelessCreateOrUpdateRFProfile'], 'access_list': [[]]}}}
+			"parameters": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"channel_width": &schema.Schema{
+							Description: `rf-profile channel width
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"default_rf_profile": &schema.Schema{
+							Description: `isDefault rf-profile
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"enable_brown_field": &schema.Schema{
+							Description: `true if enable brown field for rf-profile else false
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"enable_custom": &schema.Schema{
+							Description: `true if enable custom rf-profile else false
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"enable_radio_type_a": &schema.Schema{
+							Description: `tru if Enable Radio Type A else false
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"enable_radio_type_b": &schema.Schema{
+							Description: `true if Enable Radio Type B else false
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"name": &schema.Schema{
+							Description: `custom RF profile name
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"radio_type_a_properties": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"data_rates": &schema.Schema{
+										Description: `Data Rates
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"mandatory_data_rates": &schema.Schema{
+										Description: `Mandatory Data Rates
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"max_power_level": &schema.Schema{
+										Description: `Max Power Level
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"min_power_level": &schema.Schema{
+										Description: `Min Power Level
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"parent_profile": &schema.Schema{
+										Description: `Parent rf-profile name
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"power_threshold_v1": &schema.Schema{
+										Description: `Power Threshold V1
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"radio_channels": &schema.Schema{
+										Description: `Radio Channels
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"rx_sop_threshold": &schema.Schema{
+										Description: `Rx Sop Threshold
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"radio_type_b_properties": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"data_rates": &schema.Schema{
+										Description: `Data Rates
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"mandatory_data_rates": &schema.Schema{
+										Description: `Mandatory Data Rates
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"max_power_level": &schema.Schema{
+										Description: `Max Power Level
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"min_power_level": &schema.Schema{
+										Description: `Min Power Level
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"parent_profile": &schema.Schema{
+										Description: `Parent rf-profile name
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"power_threshold_v1": &schema.Schema{
+										Description: `Power Threshold V1
+`,
+										Type:     schema.TypeFloat,
+										Optional: true,
+									},
+									"radio_channels": &schema.Schema{
+										Description: `Radio Channels
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"rx_sop_threshold": &schema.Schema{
+										Description: `Rx Sop Threshold
+`,
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"rf_profile_name": &schema.Schema{
+							Description: `rfProfileName path parameter. RF profile name to be deleted(required) *non-custom RF profile cannot be deleted
+`,
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceItem := *getResourceItem(d.Get("parameters"))
+	request1 := expandRequestWirelessRfProfileCreateOrUpdateRfProfile(ctx, "parameters.0", d)
+	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+
+	vRfProfileName, okRfProfileName := resourceItem["rf_profile_name"]
+	vvRfProfileName := interfaceToString(vRfProfileName)
+	resp1, restyResp1, err := client.Wireless.CreateOrUpdateRfProfile(request1)
+	if err != nil || resp1 == nil {
+		if restyResp1 != nil {
+			diags = append(diags, diagErrorWithResponse(
+				"Failure when executing CreateOrUpdateRfProfile", err, restyResp1.String()))
+			return diags
+		}
+		diags = append(diags, diagError(
+			"Failure when executing CreateOrUpdateRfProfile", err))
+		return diags
+	}
+	resourceMap := make(map[string]string)
+	resourceMap["rf_profile_name"] = vvRfProfileName
+	d.SetId(joinResourceID(resourceMap))
+	return resourceRead(ctx, d, m)
+}
+
+func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vRfProfileName, okRfProfileName := resourceMap["rf_profile_name"]
+
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: RetrieveRfProfiles")
+		queryParams1 := dnacentersdkgo.RetrieveRfProfilesQueryParams{}
+
+		if okRfProfileName {
+			queryParams1.RfProfileName = vRfProfileName.(string)
+		}
+
+		response1, restyResp1, err := client.Wireless.RetrieveRfProfiles(&queryParams1)
+
+		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing RetrieveRfProfiles", err,
+				"Failure at RetrieveRfProfiles, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+
+		//TODO Code Items for DNAC
+
+	}
+	return diags
+}
+
+func resourceWirelessRfProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return resourceWirelessRfProfileRead(ctx, d, m)
+}
+
+func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	//TODO
+
+	return diags
+}
+func expandRequestWirelessRfProfileCreateOrUpdateRfProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfile {
+	request := dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfile{}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
+		request.Name = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".default_rf_profile")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".default_rf_profile")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".default_rf_profile")))) {
+		request.DefaultRfProfile = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".enable_radio_type_a")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".enable_radio_type_a")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".enable_radio_type_a")))) {
+		request.EnableRadioTypeA = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".enable_radio_type_b")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".enable_radio_type_b")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".enable_radio_type_b")))) {
+		request.EnableRadioTypeB = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".channel_width")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".channel_width")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".channel_width")))) {
+		request.ChannelWidth = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".enable_custom")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".enable_custom")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".enable_custom")))) {
+		request.EnableCustom = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".enable_brown_field")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".enable_brown_field")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".enable_brown_field")))) {
+		request.EnableBrownField = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".radio_type_a_properties")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".radio_type_a_properties")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".radio_type_a_properties")))) {
+		request.RadioTypeAProperties = expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeAProperties(ctx, key+".radio_type_a_properties.0", d)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".radio_type_b_properties")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".radio_type_b_properties")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".radio_type_b_properties")))) {
+		request.RadioTypeBProperties = expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeBProperties(ctx, key+".radio_type_b_properties.0", d)
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}
+
+func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeAProperties(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeAProperties {
+	request := dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeAProperties{}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_profile")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_profile")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_profile")))) {
+		request.ParentProfile = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".radio_channels")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".radio_channels")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".radio_channels")))) {
+		request.RadioChannels = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".data_rates")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".data_rates")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".data_rates")))) {
+		request.DataRates = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mandatory_data_rates")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mandatory_data_rates")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mandatory_data_rates")))) {
+		request.MandatoryDataRates = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".power_threshold_v1")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".power_threshold_v1")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".power_threshold_v1")))) {
+		request.PowerThresholdV1 = interfaceToFloat64Ptr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rx_sop_threshold")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rx_sop_threshold")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rx_sop_threshold")))) {
+		request.RxSopThreshold = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".min_power_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".min_power_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".min_power_level")))) {
+		request.MinPowerLevel = interfaceToFloat64Ptr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".max_power_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".max_power_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".max_power_level")))) {
+		request.MaxPowerLevel = interfaceToFloat64Ptr(v)
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}
+
+func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeBProperties(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeBProperties {
+	request := dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeBProperties{}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".parent_profile")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".parent_profile")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".parent_profile")))) {
+		request.ParentProfile = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".radio_channels")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".radio_channels")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".radio_channels")))) {
+		request.RadioChannels = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".data_rates")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".data_rates")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".data_rates")))) {
+		request.DataRates = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mandatory_data_rates")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mandatory_data_rates")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mandatory_data_rates")))) {
+		request.MandatoryDataRates = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".power_threshold_v1")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".power_threshold_v1")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".power_threshold_v1")))) {
+		request.PowerThresholdV1 = interfaceToFloat64Ptr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".rx_sop_threshold")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".rx_sop_threshold")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".rx_sop_threshold")))) {
+		request.RxSopThreshold = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".min_power_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".min_power_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".min_power_level")))) {
+		request.MinPowerLevel = interfaceToFloat64Ptr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".max_power_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".max_power_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".max_power_level")))) {
+		request.MaxPowerLevel = interfaceToFloat64Ptr(v)
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}

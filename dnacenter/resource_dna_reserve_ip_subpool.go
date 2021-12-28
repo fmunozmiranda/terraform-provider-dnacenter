@@ -1,0 +1,448 @@
+package dnacenter
+
+import (
+	"context"
+	"reflect"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+func resourceReserveIPSubpool() *schema.Resource {
+	return &schema.Resource{
+		Description: `It manages create, read, update and delete operations on Network Settings.
+
+- API to delete the reserved ip subpool
+
+- API to reserve an ip subpool from the global pool
+
+- API to update ip subpool from the global pool
+`,
+
+		CreateContext: resourceReserveIPSubpoolCreate,
+		ReadContext:   resourceReserveIPSubpoolRead,
+		UpdateContext: resourceReserveIPSubpoolUpdate,
+		DeleteContext: resourceReserveIPSubpoolDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"last_updated": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'ipv6DnsServers': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'IPv6 format dns server input example: 2001:db8::1234\n'}, 'ipv6DhcpServers': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'IPv6 format dhcp server as input example : 2001:db8::1234\n'}, 'ipv4GateWay': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Gateway ip address details, example: 175.175.0.1\n'}, 'ipv4Prefix': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'IPv4 prefix value is true, the ip4 prefix length input field is enabled , if it is false ipv4 total Host input is enable\n'}, 'ipv4Subnet': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'IPv4 Subnet address, example: 175.175.0.0\n'}, 'ipv4DhcpServers': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'IPv4 input for dhcp server ip example: 1.1.1.1\n'}, 'slaacSupport': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'Slaac Support'}, 'ipv6TotalHost': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'IPv6 total host is required when ipv6prefix value is false.\n'}, 'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Name of the reserve ip sub pool\n'}, 'ipv6Prefix': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'Ipv6 prefix value is true, the ip6 prefix length input field is enabled , if it is false ipv6 total Host input is enable\n'}, 'ipv6GlobalPool': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'IPv6 Global pool address with cidr this is required when Ipv6AddressSpace value is true, example: 2001:db8:85a3::/64\n'}, 'ipv6PrefixLength': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'IPv6 prefix length is required when the ipv6prefix value is true\n'}, 'ipv4TotalHost': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'IPv4 total host is required when ipv4prefix value is false.\n'}, 'ipv6AddressSpace': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'If the value is false only ipv4 input are required, otherwise both ipv6 and ipv4 are required\n'}, 'ipv6Subnet': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'IPv6 Subnet address, example :2001:db8:85a3:0:100::\n'}, 'ipv4GlobalPool': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'IP v4 Global pool address with cidr, example: 175.175.0.0/16\n'}, 'type': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Type of the reserve ip sub pool\n'}, 'ipv4PrefixLength': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'The ipv4 prefix length is required when ipv4prefix value is true.\n'}, 'ipv6GateWay': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Gateway ip address details, example: 2001:db8:85a3:0:100::1\n'}, 'ipv4DnsServers': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'IPv4 input for dns server ip example: 4.4.4.4\n'}, 'siteId': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'siteId path parameter. Site id of site to update sub pool.\n'}, 'id': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'id path parameter. Id of reserve ip subpool to be deleted.\n'}}}}}, 'metadata': {'item': {'operation_id': [['ReserveIPSubpool', 'UpdateReserveIPSubpool']], 'new_flat_structure': [[{'RequestNetworkSettingsReserveIPSubpool': {'type': 'obj', 'data': [{'name': 'name', 'description': 'Name of the reserve ip sub pool\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'type', 'description': 'Type of the reserve ip sub pool\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6AddressSpace', 'description': 'If the value is false only ipv4 input are required, otherwise both ipv6 and ipv4 are required\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'ipv4GlobalPool', 'description': 'IP v4 Global pool address with cidr, example: 175.175.0.0/16\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv4Prefix', 'description': 'IPv4 prefix value is true, the ip4 prefix length input field is enabled , if it is false ipv4 total Host input is enable\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'ipv4PrefixLength', 'description': 'The ipv4 prefix length is required when ipv4prefix value is true.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'ipv4Subnet', 'description': 'IPv4 Subnet address, example: 175.175.0.0\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv4GateWay', 'description': 'Gateway ip address details, example: 175.175.0.1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv4DhcpServers', 'description': 'IPv4 input for dhcp server ip example: 1.1.1.1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv4DnsServers', 'description': 'IPv4 input for dns server ip example: 4.4.4.4\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv6GlobalPool', 'description': 'IPv6 Global pool address with cidr this is required when Ipv6AddressSpace value is true, example: 2001:db8:85a3::/64\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6Prefix', 'description': 'Ipv6 prefix value is true, the ip6 prefix length input field is enabled , if it is false ipv6 total Host input is enable\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'ipv6PrefixLength', 'description': 'IPv6 prefix length is required when the ipv6prefix value is true\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'ipv6Subnet', 'description': 'IPv6 Subnet address, example :2001:db8:85a3:0:100::\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6GateWay', 'description': 'Gateway ip address details, example: 2001:db8:85a3:0:100::1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6DhcpServers', 'description': 'IPv6 format dhcp server as input example : 2001:db8::1234\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv6DnsServers', 'description': 'IPv6 format dns server input example: 2001:db8::1234\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv4TotalHost', 'description': 'IPv4 total host is required when ipv4prefix value is false.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'ipv6TotalHost', 'description': 'IPv6 total host is required when ipv6prefix value is false.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'slaacSupport', 'description': 'Slaac Support', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestNetworkSettingsUpdateReserveIPSubpool': {'type': 'obj', 'data': [{'name': 'name', 'description': 'Name of the reserve ip sub pool\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6AddressSpace', 'description': 'If the value is false only ipv4 input are required, otherwise both ipv6 and ipv4 are required\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'ipv4DhcpServers', 'description': 'IPv4 input for dhcp server ip example: 1.1.1.1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv4DnsServers', 'description': 'IPv4 input for dns server ip  example: 4.4.4.4\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv6GlobalPool', 'description': 'IP v6 Global pool address with cidr this is required when Ipv6AddressSpace value is true, example: 2001:db8:85a3::/64\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6Prefix', 'description': 'IPv6 prefix value is true, the ip6 prefix length input field is enabled , if it is false  ipv6 total Host input is enable\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'ipv6PrefixLength', 'description': 'IPv6 prefix length is required when the ipv6prefix value is true\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'ipv6Subnet', 'description': 'IPv6 Subnet address, example :2001:db8:85a3:0:100::\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6GateWay', 'description': 'Gateway ip address details, example: 2001:db8:85a3:0:100::1\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipv6DhcpServers', 'description': 'IPv6 format dhcp server as input example : 2001:db8::1234\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv6DnsServers', 'description': 'IPv6 format dns server input example: 2001:db8::1234\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'ipv6TotalHost', 'description': 'IPv6 total host is required when ipv6prefix value is false.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'slaacSupport', 'description': 'Slaac Support', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'ipv4GateWay', 'description': 'Ipv4 Gate Way', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestNetworkSettingsReserveIPSubpool', 'RequestNetworkSettingsUpdateReserveIPSubpool']], 'access_list': [[[], []]]}}}
+			"parameters": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"id": &schema.Schema{
+							Description: `id path parameter. Id of reserve ip subpool to be deleted.
+`,
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"ipv4_dhcp_servers": &schema.Schema{
+							Description: `IPv4 input for dhcp server ip example: 1.1.1.1
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"ipv4_dns_servers": &schema.Schema{
+							Description: `IPv4 input for dns server ip example: 4.4.4.4
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"ipv4_gate_way": &schema.Schema{
+							Description: `Gateway ip address details, example: 175.175.0.1
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ipv4_global_pool": &schema.Schema{
+							Description: `IP v4 Global pool address with cidr, example: 175.175.0.0/16
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ipv4_prefix": &schema.Schema{
+							Description: `IPv4 prefix value is true, the ip4 prefix length input field is enabled , if it is false ipv4 total Host input is enable
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"ipv4_prefix_length": &schema.Schema{
+							Description: `The ipv4 prefix length is required when ipv4prefix value is true.
+`,
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"ipv4_subnet": &schema.Schema{
+							Description: `IPv4 Subnet address, example: 175.175.0.0
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ipv4_total_host": &schema.Schema{
+							Description: `IPv4 total host is required when ipv4prefix value is false.
+`,
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"ipv6_address_space": &schema.Schema{
+							Description: `If the value is false only ipv4 input are required, otherwise both ipv6 and ipv4 are required
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"ipv6_dhcp_servers": &schema.Schema{
+							Description: `IPv6 format dhcp server as input example : 2001:db8::1234
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"ipv6_dns_servers": &schema.Schema{
+							Description: `IPv6 format dns server input example: 2001:db8::1234
+`,
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"ipv6_gate_way": &schema.Schema{
+							Description: `Gateway ip address details, example: 2001:db8:85a3:0:100::1
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ipv6_global_pool": &schema.Schema{
+							Description: `IPv6 Global pool address with cidr this is required when Ipv6AddressSpace value is true, example: 2001:db8:85a3::/64
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ipv6_prefix": &schema.Schema{
+							Description: `Ipv6 prefix value is true, the ip6 prefix length input field is enabled , if it is false ipv6 total Host input is enable
+`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"ipv6_prefix_length": &schema.Schema{
+							Description: `IPv6 prefix length is required when the ipv6prefix value is true
+`,
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"ipv6_subnet": &schema.Schema{
+							Description: `IPv6 Subnet address, example :2001:db8:85a3:0:100::
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"ipv6_total_host": &schema.Schema{
+							Description: `IPv6 total host is required when ipv6prefix value is false.
+`,
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"name": &schema.Schema{
+							Description: `Name of the reserve ip sub pool
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"site_id": &schema.Schema{
+							Description: `siteId path parameter. Site id of site to update sub pool.
+`,
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slaac_support": &schema.Schema{
+							Description: `Slaac Support`,
+							// Type:        schema.TypeBool,
+							Type:         schema.TypeString,
+							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+							Optional:     true,
+						},
+						"type": &schema.Schema{
+							Description: `Type of the reserve ip sub pool
+`,
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func resourceReserveIPSubpoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceItem := *getResourceItem(d.Get("parameters"))
+	request1 := expandRequestReserveIPSubpoolReserveIPSubpool(ctx, "parameters.0", d)
+	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+
+	vSiteID, okSiteID := resourceItem["site_id"]
+	vvSiteID := interfaceToString(vSiteID)
+	vID, okID := resourceItem["id"]
+	vvID := interfaceToString(vID)
+	resp1, restyResp1, err := client.NetworkSettings.ReserveIPSubpool(request1)
+	if err != nil || resp1 == nil {
+		if restyResp1 != nil {
+			diags = append(diags, diagErrorWithResponse(
+				"Failure when executing ReserveIPSubpool", err, restyResp1.String()))
+			return diags
+		}
+		diags = append(diags, diagError(
+			"Failure when executing ReserveIPSubpool", err))
+		return diags
+	}
+	resourceMap := make(map[string]string)
+	resourceMap["site_id"] = vvSiteID
+	resourceMap["id"] = vvID
+	d.SetId(joinResourceID(resourceMap))
+	return resourceRead(ctx, d, m)
+}
+
+func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vSiteID, okSiteID := resourceMap["site_id"]
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+
+	selectedMethod := 1
+	if selectedMethod == 1 {
+		log.Printf("[DEBUG] Selected method 1: GetReserveIPSubpool")
+		queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams{}
+
+		if okSiteID {
+			queryParams1.SiteID = vSiteID.(string)
+		}
+		if okOffset {
+			queryParams1.Offset = vOffset.(string)
+		}
+		if okLimit {
+			queryParams1.Limit = vLimit.(string)
+		}
+
+		response1, restyResp1, err := client.NetworkSettings.GetReserveIPSubpool(&queryParams1)
+
+		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetReserveIPSubpool", err,
+				"Failure at GetReserveIPSubpool, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+
+		//TODO Code Items for DNAC
+
+	}
+	return diags
+}
+
+func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vSiteID, okSiteID := resourceMap["site_id"]
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// NOTE: Consider adding getAllItems and search function to get missing params
+	// if selectedMethod == 1 { }
+	if d.HasChange("item") {
+		log.Printf("[DEBUG] ID used for update operation %s", vvID)
+		request1 := expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx, "item.0", d)
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vvSiteID, request1)
+		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
+				diags = append(diags, diagErrorWithAltAndResponse(
+					"Failure when executing UpdateReserveIPSubpool", err, restyResp1.String(),
+					"Failure at UpdateReserveIPSubpool, unexpected response", ""))
+				return diags
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing UpdateReserveIPSubpool", err,
+				"Failure at UpdateReserveIPSubpool, unexpected response", ""))
+			return diags
+		}
+	}
+
+	return resourceReserveIPSubpoolRead(ctx, d, m)
+}
+
+func resourceReserveIPSubpoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	//TODO
+
+	return diags
+}
+func expandRequestReserveIPSubpoolReserveIPSubpool(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsReserveIPSubpool {
+	request := dnacentersdkgo.RequestNetworkSettingsReserveIPSubpool{}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
+		request.Name = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
+		request.Type = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address_space")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address_space")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_address_space")))) {
+		request.IPv6AddressSpace = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_global_pool")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_global_pool")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_global_pool")))) {
+		request.IPv4GlobalPool = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_prefix")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_prefix")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_prefix")))) {
+		request.IPv4Prefix = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_prefix_length")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_prefix_length")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_prefix_length")))) {
+		request.IPv4PrefixLength = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_subnet")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_subnet")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_subnet")))) {
+		request.IPv4Subnet = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_gate_way")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_gate_way")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_gate_way")))) {
+		request.IPv4GateWay = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_dhcp_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_dhcp_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_dhcp_servers")))) {
+		request.IPv4DhcpServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_dns_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_dns_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_dns_servers")))) {
+		request.IPv4DNSServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_global_pool")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_global_pool")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_global_pool")))) {
+		request.IPv6GlobalPool = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_prefix")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_prefix")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_prefix")))) {
+		request.IPv6Prefix = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_prefix_length")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_prefix_length")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_prefix_length")))) {
+		request.IPv6PrefixLength = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_subnet")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_subnet")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_subnet")))) {
+		request.IPv6Subnet = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_gate_way")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_gate_way")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_gate_way")))) {
+		request.IPv6GateWay = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_dhcp_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_dhcp_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_dhcp_servers")))) {
+		request.IPv6DhcpServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_dns_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_dns_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_dns_servers")))) {
+		request.IPv6DNSServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_total_host")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_total_host")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_total_host")))) {
+		request.IPv4TotalHost = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_total_host")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_total_host")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_total_host")))) {
+		request.IPv6TotalHost = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".slaac_support")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".slaac_support")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".slaac_support")))) {
+		request.SLAacSupport = interfaceToBoolPtr(v)
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}
+
+func expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateReserveIPSubpool {
+	request := dnacentersdkgo.RequestNetworkSettingsUpdateReserveIPSubpool{}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
+		request.Name = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_address_space")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_address_space")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_address_space")))) {
+		request.IPv6AddressSpace = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_dhcp_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_dhcp_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_dhcp_servers")))) {
+		request.IPv4DhcpServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_dns_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_dns_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_dns_servers")))) {
+		request.IPv4DNSServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_global_pool")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_global_pool")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_global_pool")))) {
+		request.IPv6GlobalPool = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_prefix")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_prefix")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_prefix")))) {
+		request.IPv6Prefix = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_prefix_length")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_prefix_length")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_prefix_length")))) {
+		request.IPv6PrefixLength = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_subnet")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_subnet")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_subnet")))) {
+		request.IPv6Subnet = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_gate_way")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_gate_way")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_gate_way")))) {
+		request.IPv6GateWay = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_dhcp_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_dhcp_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_dhcp_servers")))) {
+		request.IPv6DhcpServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_dns_servers")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_dns_servers")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_dns_servers")))) {
+		request.IPv6DNSServers = interfaceToSliceString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv6_total_host")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv6_total_host")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv6_total_host")))) {
+		request.IPv6TotalHost = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".slaac_support")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".slaac_support")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".slaac_support")))) {
+		request.SLAacSupport = interfaceToBoolPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ipv4_gate_way")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ipv4_gate_way")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ipv4_gate_way")))) {
+		request.IPv4GateWay = interfaceToString(v)
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}
