@@ -158,9 +158,9 @@ func resourceSdaVirtualNetworkIPPoolRead(ctx context.Context, d *schema.Resource
 		log.Printf("[DEBUG] Selected method 1: GetIPPoolFromSdaVirtualNetwork")
 		queryParams1 := dnacentersdkgo.GetIPPoolFromSdaVirtualNetworkQueryParams{}
 
-		queryParams1.IPPoolName = vIPPoolName.(string)
+		queryParams1.IPPoolName = vIPPoolName
 
-		queryParams1.VirtualNetworkName = vVirtualNetworkName.(string)
+		queryParams1.VirtualNetworkName = vVirtualNetworkName
 
 		response1, restyResp1, err := client.Sda.GetIPPoolFromSdaVirtualNetwork(&queryParams1)
 

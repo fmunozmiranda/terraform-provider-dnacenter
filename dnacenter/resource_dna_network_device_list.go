@@ -341,10 +341,10 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 			queryParams1.Moduleoperationstatecode = interfaceToSliceString(vModuleoperationstatecode)
 		}
 		if okID {
-			queryParams1.ID = vID.(string)
+			queryParams1.ID = vID
 		}
 		if okDeviceSupportLevel {
-			queryParams1.DeviceSupportLevel = vDeviceSupportLevel.(string)
+			queryParams1.DeviceSupportLevel = vDeviceSupportLevel
 		}
 
 		response1, restyResp1, err := client.Devices.GetDeviceList(&queryParams1)

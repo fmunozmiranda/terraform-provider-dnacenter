@@ -177,19 +177,19 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 		queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 
 		if okEventIDs {
-			queryParams1.EventIDs = vEventIDs.(string)
+			queryParams1.EventIDs = vEventIDs
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(float64)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(float64)
+			queryParams1.Limit = vLimit
 		}
 		if okSortBy {
-			queryParams1.SortBy = vSortBy.(string)
+			queryParams1.SortBy = vSortBy
 		}
 		if okOrder {
-			queryParams1.Order = vOrder.(string)
+			queryParams1.Order = vOrder
 		}
 
 		response1, restyResp1, err := client.EventManagement.GetEventSubscriptions(&queryParams1)

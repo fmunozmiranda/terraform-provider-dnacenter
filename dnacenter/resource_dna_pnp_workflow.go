@@ -451,16 +451,16 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
 
 		if okLimit {
-			queryParams1.Limit = vLimit.(int)
+			queryParams1.Limit = vLimit
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(int)
+			queryParams1.Offset = vOffset
 		}
 		if okSort {
 			queryParams1.Sort = interfaceToSliceString(vSort)
 		}
 		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder.(string)
+			queryParams1.SortOrder = vSortOrder
 		}
 		if okType {
 			queryParams1.Type = interfaceToSliceString(vType)
@@ -488,7 +488,7 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetWorkflowByID")
-		vvID := vID.(string)
+		vvID := vID
 
 		response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
 

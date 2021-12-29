@@ -263,37 +263,37 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 		queryParams1 := dnacentersdkgo.GetTagQueryParams{}
 
 		if okName {
-			queryParams1.Name = vName.(string)
+			queryParams1.Name = vName
 		}
 		if okAdditionalInfonameSpace {
-			queryParams1.AdditionalInfonameSpace = vAdditionalInfonameSpace.(string)
+			queryParams1.AdditionalInfonameSpace = vAdditionalInfonameSpace
 		}
 		if okAdditionalInfoattributes {
-			queryParams1.AdditionalInfoattributes = vAdditionalInfoattributes.(string)
+			queryParams1.AdditionalInfoattributes = vAdditionalInfoattributes
 		}
 		if okLevel {
-			queryParams1.Level = vLevel.(string)
+			queryParams1.Level = vLevel
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(string)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(string)
+			queryParams1.Limit = vLimit
 		}
 		if okSize {
-			queryParams1.Size = vSize.(string)
+			queryParams1.Size = vSize
 		}
 		if okField {
-			queryParams1.Field = vField.(string)
+			queryParams1.Field = vField
 		}
 		if okSortBy {
-			queryParams1.SortBy = vSortBy.(string)
+			queryParams1.SortBy = vSortBy
 		}
 		if okOrder {
-			queryParams1.Order = vOrder.(string)
+			queryParams1.Order = vOrder
 		}
 		if okSystemTag {
-			queryParams1.SystemTag = vSystemTag.(string)
+			queryParams1.SystemTag = vSystemTag
 		}
 
 		response1, restyResp1, err := client.Tag.GetTag(&queryParams1)
@@ -315,7 +315,7 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetTagByID")
-		vvID := vID.(string)
+		vvID := vID
 
 		response2, restyResp2, err := client.Tag.GetTagByID(vvID)
 

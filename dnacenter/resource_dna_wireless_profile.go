@@ -184,7 +184,7 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 		queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
 
 		if okProfileName {
-			queryParams1.ProfileName = vProfileName.(string)
+			queryParams1.ProfileName = vProfileName
 		}
 
 		response1, restyResp1, err := client.Wireless.GetWirelessProfile(&queryParams1)

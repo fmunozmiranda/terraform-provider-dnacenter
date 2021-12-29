@@ -251,13 +251,13 @@ func resourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m int
 		queryParams1 := dnacentersdkgo.GetApplicationsQueryParams{}
 
 		if okOffset {
-			queryParams1.Offset = vOffset.(float64)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(float64)
+			queryParams1.Limit = vLimit
 		}
 		if okName {
-			queryParams1.Name = vName.(string)
+			queryParams1.Name = vName
 		}
 
 		response1, restyResp1, err := client.ApplicationPolicy.GetApplications(&queryParams1)

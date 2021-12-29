@@ -100,9 +100,9 @@ func resourceSdaVirtualNetworkRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Selected method 1: GetVnFromSdaFabric")
 		queryParams1 := dnacentersdkgo.GetVnFromSdaFabricQueryParams{}
 
-		queryParams1.VirtualNetworkName = vVirtualNetworkName.(string)
+		queryParams1.VirtualNetworkName = vVirtualNetworkName
 
-		queryParams1.SiteNameHierarchy = vSiteNameHierarchy.(string)
+		queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 
 		response1, restyResp1, err := client.Sda.GetVnFromSdaFabric(&queryParams1)
 

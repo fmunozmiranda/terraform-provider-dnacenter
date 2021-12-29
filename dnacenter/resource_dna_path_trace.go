@@ -3319,49 +3319,49 @@ func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interf
 		queryParams1 := dnacentersdkgo.RetrivesAllPreviousPathtracesSummaryQueryParams{}
 
 		if okPeriodicRefresh {
-			queryParams1.PeriodicRefresh = vPeriodicRefresh.(bool)
+			queryParams1.PeriodicRefresh = vPeriodicRefresh
 		}
 		if okSourceIP {
-			queryParams1.SourceIP = vSourceIP.(string)
+			queryParams1.SourceIP = vSourceIP
 		}
 		if okDestIP {
-			queryParams1.DestIP = vDestIP.(string)
+			queryParams1.DestIP = vDestIP
 		}
 		if okSourcePort {
-			queryParams1.SourcePort = vSourcePort.(string)
+			queryParams1.SourcePort = vSourcePort
 		}
 		if okDestPort {
-			queryParams1.DestPort = vDestPort.(string)
+			queryParams1.DestPort = vDestPort
 		}
 		if okGtCreateTime {
-			queryParams1.GtCreateTime = vGtCreateTime.(string)
+			queryParams1.GtCreateTime = vGtCreateTime
 		}
 		if okLtCreateTime {
-			queryParams1.LtCreateTime = vLtCreateTime.(string)
+			queryParams1.LtCreateTime = vLtCreateTime
 		}
 		if okProtocol {
-			queryParams1.Protocol = vProtocol.(string)
+			queryParams1.Protocol = vProtocol
 		}
 		if okStatus {
-			queryParams1.Status = vStatus.(string)
+			queryParams1.Status = vStatus
 		}
 		if okTaskID {
-			queryParams1.TaskID = vTaskID.(string)
+			queryParams1.TaskID = vTaskID
 		}
 		if okLastUpdateTime {
-			queryParams1.LastUpdateTime = vLastUpdateTime.(string)
+			queryParams1.LastUpdateTime = vLastUpdateTime
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(string)
+			queryParams1.Limit = vLimit
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(string)
+			queryParams1.Offset = vOffset
 		}
 		if okOrder {
-			queryParams1.Order = vOrder.(string)
+			queryParams1.Order = vOrder
 		}
 		if okSortBy {
-			queryParams1.SortBy = vSortBy.(string)
+			queryParams1.SortBy = vSortBy
 		}
 
 		response1, restyResp1, err := client.PathTrace.RetrivesAllPreviousPathtracesSummary(&queryParams1)
@@ -3383,7 +3383,7 @@ func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: RetrievesPreviousPathtrace")
-		vvFlowAnalysisID := vFlowAnalysisID.(string)
+		vvFlowAnalysisID := vFlowAnalysisID
 
 		response2, restyResp2, err := client.PathTrace.RetrievesPreviousPathtrace(vvFlowAnalysisID)
 

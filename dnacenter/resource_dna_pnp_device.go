@@ -2777,16 +2777,16 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
 
 		if okLimit {
-			queryParams1.Limit = vLimit.(int)
+			queryParams1.Limit = vLimit
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(int)
+			queryParams1.Offset = vOffset
 		}
 		if okSort {
 			queryParams1.Sort = interfaceToSliceString(vSort)
 		}
 		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder.(string)
+			queryParams1.SortOrder = vSortOrder
 		}
 		if okSerialNumber {
 			queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
@@ -2828,16 +2828,16 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 			queryParams1.VirtualAccountID = interfaceToSliceString(vVirtualAccountID)
 		}
 		if okLastContact {
-			queryParams1.LastContact = vLastContact.(bool)
+			queryParams1.LastContact = vLastContact
 		}
 		if okMacAddress {
-			queryParams1.MacAddress = vMacAddress.(string)
+			queryParams1.MacAddress = vMacAddress
 		}
 		if okHostname {
-			queryParams1.Hostname = vHostname.(string)
+			queryParams1.Hostname = vHostname
 		}
 		if okSiteName {
-			queryParams1.SiteName = vSiteName.(string)
+			queryParams1.SiteName = vSiteName
 		}
 
 		response1, restyResp1, err := client.DeviceOnboardingPnp.GetDeviceList2(&queryParams1)
@@ -2857,7 +2857,7 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetDeviceByID")
-		vvID := vID.(string)
+		vvID := vID
 
 		response2, restyResp2, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
 

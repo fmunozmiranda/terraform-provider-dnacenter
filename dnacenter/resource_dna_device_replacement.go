@@ -155,19 +155,19 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 		queryParams1 := dnacentersdkgo.ReturnListOfReplacementDevicesWithReplacementDetailsQueryParams{}
 
 		if okFaultyDeviceName {
-			queryParams1.FaultyDeviceName = vFaultyDeviceName.(string)
+			queryParams1.FaultyDeviceName = vFaultyDeviceName
 		}
 		if okFaultyDevicePlatform {
-			queryParams1.FaultyDevicePlatform = vFaultyDevicePlatform.(string)
+			queryParams1.FaultyDevicePlatform = vFaultyDevicePlatform
 		}
 		if okReplacementDevicePlatform {
-			queryParams1.ReplacementDevicePlatform = vReplacementDevicePlatform.(string)
+			queryParams1.ReplacementDevicePlatform = vReplacementDevicePlatform
 		}
 		if okFaultyDeviceSerialNumber {
-			queryParams1.FaultyDeviceSerialNumber = vFaultyDeviceSerialNumber.(string)
+			queryParams1.FaultyDeviceSerialNumber = vFaultyDeviceSerialNumber
 		}
 		if okReplacementDeviceSerialNumber {
-			queryParams1.ReplacementDeviceSerialNumber = vReplacementDeviceSerialNumber.(string)
+			queryParams1.ReplacementDeviceSerialNumber = vReplacementDeviceSerialNumber
 		}
 		if okReplacementStatus {
 			queryParams1.ReplacementStatus = interfaceToSliceString(vReplacementStatus)
@@ -176,16 +176,16 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 			queryParams1.Family = interfaceToSliceString(vFamily)
 		}
 		if okSortBy {
-			queryParams1.SortBy = vSortBy.(string)
+			queryParams1.SortBy = vSortBy
 		}
 		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder.(string)
+			queryParams1.SortOrder = vSortOrder
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(int)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(int)
+			queryParams1.Limit = vLimit
 		}
 
 		response1, restyResp1, err := client.DeviceReplacement.ReturnListOfReplacementDevicesWithReplacementDetails(&queryParams1)

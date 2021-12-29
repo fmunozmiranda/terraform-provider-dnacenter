@@ -93,7 +93,7 @@ func resourceSdaFabricRead(ctx context.Context, d *schema.ResourceData, m interf
 		log.Printf("[DEBUG] Selected method 1: GetSdaFabricInfo")
 		queryParams1 := dnacentersdkgo.GetSdaFabricInfoQueryParams{}
 
-		queryParams1.FabricName = vFabricName.(string)
+		queryParams1.FabricName = vFabricName
 
 		response1, restyResp1, err := client.Sda.GetSdaFabricInfo(&queryParams1)
 

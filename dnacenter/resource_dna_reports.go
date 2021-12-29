@@ -534,10 +534,10 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 		queryParams1 := dnacentersdkgo.GetListOfScheduledReportsQueryParams{}
 
 		if okViewGroupID {
-			queryParams1.ViewGroupID = vViewGroupID.(string)
+			queryParams1.ViewGroupID = vViewGroupID
 		}
 		if okViewID {
-			queryParams1.ViewID = vViewID.(string)
+			queryParams1.ViewID = vViewID
 		}
 
 		response1, restyResp1, err := client.Reports.GetListOfScheduledReports(&queryParams1)
@@ -559,7 +559,7 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetAScheduledReport")
-		vvReportID := vReportID.(string)
+		vvReportID := vReportID
 
 		response2, restyResp2, err := client.Reports.GetAScheduledReport(vvReportID)
 

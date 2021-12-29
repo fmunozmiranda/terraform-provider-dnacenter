@@ -718,7 +718,7 @@ func resourceDiscoveryRead(ctx context.Context, d *schema.ResourceData, m interf
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetDiscoveryByID")
-		vvID := vID.(string)
+		vvID := vID
 
 		response1, restyResp1, err := client.Discovery.GetDiscoveryByID(vvID)
 

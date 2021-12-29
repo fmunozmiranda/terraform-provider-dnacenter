@@ -118,22 +118,22 @@ func resourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interf
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetTagMembersByID")
-		vvID := vID.(string)
+		vvID := vID
 		queryParams1 := dnacentersdkgo.GetTagMembersByIDQueryParams{}
 
-		queryParams1.MemberType = vMemberType.(string)
+		queryParams1.MemberType = vMemberType
 
 		if okOffset {
-			queryParams1.Offset = vOffset.(string)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(string)
+			queryParams1.Limit = vLimit
 		}
 		if okMemberAssociationType {
-			queryParams1.MemberAssociationType = vMemberAssociationType.(string)
+			queryParams1.MemberAssociationType = vMemberAssociationType
 		}
 		if okLevel {
-			queryParams1.Level = vLevel.(string)
+			queryParams1.Level = vLevel
 		}
 
 		response1, restyResp1, err := client.Tag.GetTagMembersByID(vvID, &queryParams1)

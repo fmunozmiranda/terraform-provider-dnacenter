@@ -2131,25 +2131,25 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 		queryParams1 := dnacentersdkgo.GetsTheTemplatesAvailableQueryParams{}
 
 		if okProjectID {
-			queryParams1.ProjectID = vProjectID.(string)
+			queryParams1.ProjectID = vProjectID
 		}
 		if okSoftwareType {
-			queryParams1.SoftwareType = vSoftwareType.(string)
+			queryParams1.SoftwareType = vSoftwareType
 		}
 		if okSoftwareVersion {
-			queryParams1.SoftwareVersion = vSoftwareVersion.(string)
+			queryParams1.SoftwareVersion = vSoftwareVersion
 		}
 		if okProductFamily {
-			queryParams1.ProductFamily = vProductFamily.(string)
+			queryParams1.ProductFamily = vProductFamily
 		}
 		if okProductSeries {
-			queryParams1.ProductSeries = vProductSeries.(string)
+			queryParams1.ProductSeries = vProductSeries
 		}
 		if okProductType {
-			queryParams1.ProductType = vProductType.(string)
+			queryParams1.ProductType = vProductType
 		}
 		if okFilterConflictingTemplates {
-			queryParams1.FilterConflictingTemplates = vFilterConflictingTemplates.(bool)
+			queryParams1.FilterConflictingTemplates = vFilterConflictingTemplates
 		}
 		if okTags {
 			queryParams1.Tags = interfaceToSliceString(vTags)
@@ -2158,10 +2158,10 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 			queryParams1.ProjectNames = interfaceToSliceString(vProjectNames)
 		}
 		if okUnCommitted {
-			queryParams1.UnCommitted = vUnCommitted.(bool)
+			queryParams1.UnCommitted = vUnCommitted
 		}
 		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder.(string)
+			queryParams1.SortOrder = vSortOrder
 		}
 
 		response1, restyResp1, err := client.ConfigurationTemplates.GetsTheTemplatesAvailable(&queryParams1)
@@ -2183,11 +2183,11 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetsDetailsOfAGivenTemplate")
-		vvTemplateID := vTemplateID.(string)
+		vvTemplateID := vTemplateID
 		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
 
 		if okLatestVersion {
-			queryParams2.LatestVersion = vLatestVersion.(bool)
+			queryParams2.LatestVersion = vLatestVersion
 		}
 
 		response2, restyResp2, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)

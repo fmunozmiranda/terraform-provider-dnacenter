@@ -241,7 +241,7 @@ func resourceNetworkDeviceRead(ctx context.Context, d *schema.ResourceData, m in
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceByID")
-		vvID := vID.(string)
+		vvID := vID
 
 		response1, restyResp1, err := client.Devices.GetDeviceByID(vvID)
 

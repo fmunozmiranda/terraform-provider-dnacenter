@@ -176,7 +176,7 @@ func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData,
 		queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams{}
 
 		if okNetworkDeviceID {
-			queryParams1.NetworkDeviceID = vNetworkDeviceID.(string)
+			queryParams1.NetworkDeviceID = vNetworkDeviceID
 		}
 
 		response1, restyResp1, err := client.ApplicationPolicy.GetQosDeviceInterfaceInfo(&queryParams1)

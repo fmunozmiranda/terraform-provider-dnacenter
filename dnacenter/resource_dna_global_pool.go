@@ -165,10 +165,10 @@ func resourceGlobalPoolRead(ctx context.Context, d *schema.ResourceData, m inter
 		queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
 
 		if okOffset {
-			queryParams1.Offset = vOffset.(string)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(string)
+			queryParams1.Limit = vLimit
 		}
 
 		response1, restyResp1, err := client.NetworkSettings.GetGlobalPool(&queryParams1)

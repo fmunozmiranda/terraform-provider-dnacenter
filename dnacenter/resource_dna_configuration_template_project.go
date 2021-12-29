@@ -2290,10 +2290,10 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 		queryParams1 := dnacentersdkgo.GetsAListOfProjectsQueryParams{}
 
 		if okName {
-			queryParams1.Name = vName.(string)
+			queryParams1.Name = vName
 		}
 		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder.(string)
+			queryParams1.SortOrder = vSortOrder
 		}
 
 		response1, restyResp1, err := client.ConfigurationTemplates.GetsAListOfProjects(&queryParams1)
@@ -2315,7 +2315,7 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetsTheDetailsOfAGivenProject")
-		vvProjectID := vProjectID.(string)
+		vvProjectID := vProjectID
 
 		response2, restyResp2, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvProjectID)
 

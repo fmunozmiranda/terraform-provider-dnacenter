@@ -117,7 +117,7 @@ func resourceSdaVirtualNetworkV2Read(ctx context.Context, d *schema.ResourceData
 		log.Printf("[DEBUG] Selected method 1: GetVirtualNetworkWithScalableGroups")
 		queryParams1 := dnacentersdkgo.GetVirtualNetworkWithScalableGroupsQueryParams{}
 
-		queryParams1.VirtualNetworkName = vVirtualNetworkName.(string)
+		queryParams1.VirtualNetworkName = vVirtualNetworkName
 
 		response1, restyResp1, err := client.Sda.GetVirtualNetworkWithScalableGroups(&queryParams1)
 

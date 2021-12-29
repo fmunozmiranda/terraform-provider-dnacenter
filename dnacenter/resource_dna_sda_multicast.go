@@ -152,7 +152,7 @@ func resourceSdaMulticastRead(ctx context.Context, d *schema.ResourceData, m int
 		log.Printf("[DEBUG] Selected method 1: GetMulticastDetailsFromSdaFabric")
 		queryParams1 := dnacentersdkgo.GetMulticastDetailsFromSdaFabricQueryParams{}
 
-		queryParams1.SiteNameHierarchy = vSiteNameHierarchy.(string)
+		queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 
 		response1, restyResp1, err := client.Sda.GetMulticastDetailsFromSdaFabric(&queryParams1)
 

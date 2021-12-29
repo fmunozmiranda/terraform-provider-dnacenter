@@ -348,17 +348,17 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetNfvProfile")
-		vvID := vID.(string)
+		vvID := vID
 		queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams{}
 
 		if okOffset {
-			queryParams1.Offset = vOffset.(string)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(string)
+			queryParams1.Limit = vLimit
 		}
 		if okName {
-			queryParams1.Name = vName.(string)
+			queryParams1.Name = vName
 		}
 
 		response1, restyResp1, err := client.SiteDesign.GetNfvProfile(vvID, &queryParams1)

@@ -113,7 +113,7 @@ func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData,
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: ListSpecifiedFloormaps")
-		vvFloorID := vFloorID.(string)
+		vvFloorID := vFloorID
 
 		response1, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
 

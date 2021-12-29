@@ -101,7 +101,7 @@ func resourceSdaProvisionDeviceRead(ctx context.Context, d *schema.ResourceData,
 		log.Printf("[DEBUG] Selected method 1: GetProvisionedWiredDevice")
 		queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams{}
 
-		queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress.(string)
+		queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
 
 		response1, restyResp1, err := client.Sda.GetProvisionedWiredDevice(&queryParams1)
 

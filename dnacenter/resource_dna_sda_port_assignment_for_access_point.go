@@ -124,9 +124,9 @@ func resourceSdaPortAssignmentForAccessPointRead(ctx context.Context, d *schema.
 		log.Printf("[DEBUG] Selected method 1: GetPortAssignmentForAccessPointInSdaFabric")
 		queryParams1 := dnacentersdkgo.GetPortAssignmentForAccessPointInSdaFabricQueryParams{}
 
-		queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress.(string)
+		queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
 
-		queryParams1.InterfaceName = vInterfaceName.(string)
+		queryParams1.InterfaceName = vInterfaceName
 
 		response1, restyResp1, err := client.Sda.GetPortAssignmentForAccessPointInSdaFabric(&queryParams1)
 

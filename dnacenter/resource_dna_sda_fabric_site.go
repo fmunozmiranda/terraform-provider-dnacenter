@@ -99,7 +99,7 @@ func resourceSdaFabricSiteRead(ctx context.Context, d *schema.ResourceData, m in
 		log.Printf("[DEBUG] Selected method 1: GetSiteFromSdaFabric")
 		queryParams1 := dnacentersdkgo.GetSiteFromSdaFabricQueryParams{}
 
-		queryParams1.SiteNameHierarchy = vSiteNameHierarchy.(string)
+		queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 
 		response1, restyResp1, err := client.Sda.GetSiteFromSdaFabric(&queryParams1)
 

@@ -128,10 +128,10 @@ func resourceSdaFabricAuthenticationProfileRead(ctx context.Context, d *schema.R
 		log.Printf("[DEBUG] Selected method 1: GetDefaultAuthenticationProfileFromSdaFabric")
 		queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams{}
 
-		queryParams1.SiteNameHierarchy = vSiteNameHierarchy.(string)
+		queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 
 		if okAuthenticateTemplateName {
-			queryParams1.AuthenticateTemplateName = vAuthenticateTemplateName.(string)
+			queryParams1.AuthenticateTemplateName = vAuthenticateTemplateName
 		}
 
 		response1, restyResp1, err := client.Sda.GetDefaultAuthenticationProfileFromSdaFabric(&queryParams1)

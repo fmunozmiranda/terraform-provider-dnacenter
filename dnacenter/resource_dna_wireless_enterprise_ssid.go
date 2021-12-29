@@ -223,7 +223,7 @@ func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceD
 		queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams{}
 
 		if okSSIDName {
-			queryParams1.SSIDName = vSSIDName.(string)
+			queryParams1.SSIDName = vSSIDName
 		}
 
 		response1, restyResp1, err := client.Wireless.GetEnterpriseSSID(&queryParams1)

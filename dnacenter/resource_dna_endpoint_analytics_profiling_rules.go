@@ -477,22 +477,22 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 		queryParams1 := dnacentersdkgo.GetListOfProfilingRulesQueryParams{}
 
 		if okRuleType {
-			queryParams1.RuleType = vRuleType.(string)
+			queryParams1.RuleType = vRuleType
 		}
 		if okIncludeDeleted {
-			queryParams1.IncludeDeleted = vIncludeDeleted.(bool)
+			queryParams1.IncludeDeleted = vIncludeDeleted
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(float64)
+			queryParams1.Limit = vLimit
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(float64)
+			queryParams1.Offset = vOffset
 		}
 		if okSortBy {
-			queryParams1.SortBy = vSortBy.(string)
+			queryParams1.SortBy = vSortBy
 		}
 		if okOrder {
-			queryParams1.Order = vOrder.(string)
+			queryParams1.Order = vOrder
 		}
 
 		response1, restyResp1, err := client.Policy.GetListOfProfilingRules(&queryParams1)
@@ -514,7 +514,7 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetDetailsOfASingleProfilingRule")
-		vvRuleID := vRuleID.(string)
+		vvRuleID := vRuleID
 
 		response2, restyResp2, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
 

@@ -103,7 +103,7 @@ func resourceWirelessDynamicInterfaceRead(ctx context.Context, d *schema.Resourc
 		queryParams1 := dnacentersdkgo.GetDynamicInterfaceQueryParams{}
 
 		if okInterfaceName {
-			queryParams1.InterfaceName = vInterfaceName.(string)
+			queryParams1.InterfaceName = vInterfaceName
 		}
 
 		response1, restyResp1, err := client.Wireless.GetDynamicInterface(&queryParams1)

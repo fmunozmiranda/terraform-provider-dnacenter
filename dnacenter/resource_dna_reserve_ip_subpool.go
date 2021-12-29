@@ -249,13 +249,13 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 		queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams{}
 
 		if okSiteID {
-			queryParams1.SiteID = vSiteID.(string)
+			queryParams1.SiteID = vSiteID
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset.(string)
+			queryParams1.Offset = vOffset
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit.(string)
+			queryParams1.Limit = vLimit
 		}
 
 		response1, restyResp1, err := client.NetworkSettings.GetReserveIPSubpool(&queryParams1)

@@ -176,7 +176,7 @@ func resourceSdaFabricBorderDeviceRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Selected method 1: GetsBorderDeviceDetailFromSdaFabric")
 		queryParams1 := dnacentersdkgo.GetsBorderDeviceDetailFromSdaFabricQueryParams{}
 
-		queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress.(string)
+		queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
 
 		response1, restyResp1, err := client.Sda.GetsBorderDeviceDetailFromSdaFabric(&queryParams1)
 

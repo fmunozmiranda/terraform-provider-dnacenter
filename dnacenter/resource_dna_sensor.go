@@ -208,7 +208,7 @@ func resourceSensorRead(ctx context.Context, d *schema.ResourceData, m interface
 		queryParams1 := dnacentersdkgo.SensorsQueryParams{}
 
 		if okSiteID {
-			queryParams1.SiteID = vSiteID.(string)
+			queryParams1.SiteID = vSiteID
 		}
 
 		response1, restyResp1, err := client.Sensors.Sensors(&queryParams1)

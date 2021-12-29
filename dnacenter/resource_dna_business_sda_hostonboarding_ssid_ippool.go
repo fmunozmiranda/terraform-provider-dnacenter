@@ -115,9 +115,9 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *sch
 		log.Printf("[DEBUG] Selected method 1: GetSSIDToIPPoolMapping")
 		queryParams1 := dnacentersdkgo.GetSSIDToIPPoolMappingQueryParams{}
 
-		queryParams1.VLANName = vVLANName.(string)
+		queryParams1.VLANName = vVLANName
 
-		queryParams1.SiteNameHierarchy = vSiteNameHierarchy.(string)
+		queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 
 		response1, restyResp1, err := client.FabricWireless.GetSSIDToIPPoolMapping(&queryParams1)
 
