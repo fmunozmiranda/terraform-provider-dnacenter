@@ -182,10 +182,10 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 			queryParams1.SortOrder = vSortOrder
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset
+			queryParams1.Offset = *stringToIntPtr(vOffset)
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit
+			queryParams1.Limit = *stringToIntPtr(vLimit)
 		}
 
 		response1, restyResp1, err := client.DeviceReplacement.ReturnListOfReplacementDevicesWithReplacementDetails(&queryParams1)

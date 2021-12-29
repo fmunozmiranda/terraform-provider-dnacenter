@@ -76,7 +76,7 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceApplicationSetsRead(ctx, d, m)
 }
 
 func resourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -96,10 +96,10 @@ func resourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, m 
 		queryParams1 := dnacentersdkgo.GetApplicationSetsQueryParams{}
 
 		if okOffset {
-			queryParams1.Offset = vOffset
+			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit
+			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
 		}
 		if okName {
 			queryParams1.Name = vName

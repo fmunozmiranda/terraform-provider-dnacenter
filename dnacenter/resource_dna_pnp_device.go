@@ -2777,10 +2777,10 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
 
 		if okLimit {
-			queryParams1.Limit = vLimit
+			queryParams1.Limit = *stringToIntPtr(vLimit)
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset
+			queryParams1.Offset = *stringToIntPtr(vOffset)
 		}
 		if okSort {
 			queryParams1.Sort = interfaceToSliceString(vSort)
@@ -2828,7 +2828,7 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 			queryParams1.VirtualAccountID = interfaceToSliceString(vVirtualAccountID)
 		}
 		if okLastContact {
-			queryParams1.LastContact = vLastContact
+			queryParams1.LastContact = *stringToBooleanPtr(vLastContact)
 		}
 		if okMacAddress {
 			queryParams1.MacAddress = vMacAddress

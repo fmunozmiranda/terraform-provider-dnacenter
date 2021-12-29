@@ -180,10 +180,10 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 			queryParams1.EventIDs = vEventIDs
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset
+			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit
+			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
 		}
 		if okSortBy {
 			queryParams1.SortBy = vSortBy

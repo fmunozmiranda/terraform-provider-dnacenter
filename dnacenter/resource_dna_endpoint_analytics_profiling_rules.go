@@ -480,13 +480,13 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 			queryParams1.RuleType = vRuleType
 		}
 		if okIncludeDeleted {
-			queryParams1.IncludeDeleted = vIncludeDeleted
+			queryParams1.IncludeDeleted = *stringToBooleanPtr(vIncludeDeleted)
 		}
 		if okLimit {
-			queryParams1.Limit = vLimit
+			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset
+			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
 		}
 		if okSortBy {
 			queryParams1.SortBy = vSortBy

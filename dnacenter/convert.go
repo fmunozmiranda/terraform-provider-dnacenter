@@ -121,3 +121,24 @@ func responseInterfaceToString(v interface{}) string {
 	}
 	return fmt.Sprint(string(b))
 }
+
+func stringToFloat64Ptr(v string) *float64 {
+	if s, err := strconv.ParseFloat(v, 64); err == nil {
+		return &s
+	}
+	return nil
+}
+
+func stringToIntPtr(v string) *int {
+	if s, err := strconv.Atoi(v); err == nil {
+		return &s
+	}
+	return nil
+}
+
+func stringToBooleanPtr(v string) *bool {
+	if s, err := strconv.ParseBool(v); err == nil {
+		return &s
+	}
+	return nil
+}

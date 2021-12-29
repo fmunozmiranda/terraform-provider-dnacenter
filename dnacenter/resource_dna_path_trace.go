@@ -3319,7 +3319,7 @@ func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interf
 		queryParams1 := dnacentersdkgo.RetrivesAllPreviousPathtracesSummaryQueryParams{}
 
 		if okPeriodicRefresh {
-			queryParams1.PeriodicRefresh = vPeriodicRefresh
+			queryParams1.PeriodicRefresh = *stringToBooleanPtr(vPeriodicRefresh)
 		}
 		if okSourceIP {
 			queryParams1.SourceIP = vSourceIP

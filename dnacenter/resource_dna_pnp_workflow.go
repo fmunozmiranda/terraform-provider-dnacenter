@@ -451,10 +451,10 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
 
 		if okLimit {
-			queryParams1.Limit = vLimit
+			queryParams1.Limit = *stringToIntPtr(vLimit)
 		}
 		if okOffset {
-			queryParams1.Offset = vOffset
+			queryParams1.Offset = *stringToIntPtr(vOffset)
 		}
 		if okSort {
 			queryParams1.Sort = interfaceToSliceString(vSort)

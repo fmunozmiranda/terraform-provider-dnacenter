@@ -2149,7 +2149,7 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 			queryParams1.ProductType = vProductType
 		}
 		if okFilterConflictingTemplates {
-			queryParams1.FilterConflictingTemplates = vFilterConflictingTemplates
+			queryParams1.FilterConflictingTemplates = *stringToBooleanPtr(vFilterConflictingTemplates)
 		}
 		if okTags {
 			queryParams1.Tags = interfaceToSliceString(vTags)
@@ -2158,7 +2158,7 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 			queryParams1.ProjectNames = interfaceToSliceString(vProjectNames)
 		}
 		if okUnCommitted {
-			queryParams1.UnCommitted = vUnCommitted
+			queryParams1.UnCommitted = *stringToBooleanPtr(vUnCommitted)
 		}
 		if okSortOrder {
 			queryParams1.SortOrder = vSortOrder
@@ -2187,7 +2187,7 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
 
 		if okLatestVersion {
-			queryParams2.LatestVersion = vLatestVersion
+			queryParams2.LatestVersion = *stringToBooleanPtr(vLatestVersion)
 		}
 
 		response2, restyResp2, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)
