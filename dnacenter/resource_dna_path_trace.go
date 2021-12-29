@@ -3265,17 +3265,7 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return resourceRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.PathTrace.RetrivesAllPreviousPathtracesSummary(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsPathTraceRetrivesAllPreviousPathtracesSummary(m, response2, nil)
-			item2, err := searchPathTraceRetrivesAllPreviousPathtracesSummary(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["flow_analysis_id"] = vvFlowAnalysisID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceRead(ctx, d, m)
-			}
-		}
+		//TODO
 	}
 	resp1, restyResp1, err := client.PathTrace.InitiateANewPathtrace(request1)
 	if err != nil || resp1 == nil {

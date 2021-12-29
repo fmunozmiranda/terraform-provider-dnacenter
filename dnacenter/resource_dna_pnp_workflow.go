@@ -406,17 +406,7 @@ func resourcePnpWorkflowCreate(ctx context.Context, d *schema.ResourceData, m in
 			return resourceRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.DeviceOnboardingPnp.GetWorkflows(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsDeviceOnboardingPnpGetWorkflows(m, response2, nil)
-			item2, err := searchDeviceOnboardingPnpGetWorkflows(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["id"] = vvID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceRead(ctx, d, m)
-			}
-		}
+		//TODO
 	}
 	resp1, restyResp1, err := client.DeviceOnboardingPnp.AddAWorkflow(request1)
 	if err != nil || resp1 == nil {

@@ -2249,17 +2249,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			return resourceRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.ConfigurationTemplates.GetsAListOfProjects(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsConfigurationTemplatesGetsAListOfProjects(m, response2, nil)
-			item2, err := searchConfigurationTemplatesGetsAListOfProjects(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["project_id"] = vvProjectID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceRead(ctx, d, m)
-			}
-		}
+		//TODO
 	}
 	resp1, restyResp1, err := client.ConfigurationTemplates.CreateProject(request1)
 	if err != nil || resp1 == nil {

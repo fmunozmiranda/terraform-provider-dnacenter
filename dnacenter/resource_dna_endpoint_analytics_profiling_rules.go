@@ -432,17 +432,7 @@ func resourceEndpointAnalyticsProfilingRulesCreate(ctx context.Context, d *schem
 			return resourceRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.Policy.GetListOfProfilingRules(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsPolicyGetListOfProfilingRules(m, response2, nil)
-			item2, err := searchPolicyGetListOfProfilingRules(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["rule_id"] = vvRuleID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceRead(ctx, d, m)
-			}
-		}
+		//TODO
 	}
 	resp1, restyResp1, err := client.Policy.CreateAProfilingRule(request1)
 	if err != nil || resp1 == nil {

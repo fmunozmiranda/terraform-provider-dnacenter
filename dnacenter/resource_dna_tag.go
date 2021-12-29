@@ -213,17 +213,7 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 			return resourceRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.Tag.GetTag(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsTagGetTag(m, response2, nil)
-			item2, err := searchTagGetTag(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["id"] = vvID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceRead(ctx, d, m)
-			}
-		}
+		//TODO
 	}
 	resp1, restyResp1, err := client.Tag.CreateTag(request1)
 	if err != nil || resp1 == nil {

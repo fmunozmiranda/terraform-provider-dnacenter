@@ -2717,17 +2717,7 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return resourceRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.DeviceOnboardingPnp.GetDeviceList2(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsDeviceOnboardingPnpGetDeviceList2(m, response2, nil)
-			item2, err := searchDeviceOnboardingPnpGetDeviceList2(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["id"] = vvID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceRead(ctx, d, m)
-			}
-		}
+		//TODO
 	}
 	resp1, restyResp1, err := client.DeviceOnboardingPnp.AddDevice(request1)
 	if err != nil || resp1 == nil {
