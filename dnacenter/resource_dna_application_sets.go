@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceApplicationSets() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Description': 'Array of RequestApplicationPolicyCreateApplicationSet', 'Elem': {'Schema': {'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Name'}}}}}, 'metadata': {'item': {'operation_id': ['CreateApplicationSet'], 'new_flat_structure': [{'RequestApplicationPolicyCreateApplicationSet': {'type': 'array', 'data': [{'name': '', 'type': '[]RequestItemApplicationPolicyCreateApplicationSet', 'description': 'Array of RequestApplicationPolicyCreateApplicationSet'}], 'epType': 'json', 'isRef': True, 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyCreateApplicationSet': {'type': 'obj', 'data': [{'name': 'name', 'description': 'Name', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestApplicationPolicyCreateApplicationSet'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplicationSet`,
 				Type:        schema.TypeList,
@@ -129,6 +130,7 @@ func resourceApplicationSetsUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
@@ -141,17 +143,8 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 }
 func expandRequestApplicationSetsCreateApplicationSet(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationSet {
 	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationSet{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".title")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".title")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".title")))) {
-		request.Title = expandRequestApplicationSetsCreateApplicationSetTitleArray(ctx, key+".title", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = expandRequestApplicationSetsCreateApplicationSetTypeArray(ctx, key+".type", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".items")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".items")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".items")))) {
-		request.Items = expandRequestApplicationSetsCreateApplicationSetItemsArray(ctx, key+".items", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".$schema")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".$schema")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".$schema")))) {
-		request.Schema = expandRequestApplicationSetsCreateApplicationSetSchemaArray(ctx, key+".$schema", d)
+	if v := expandRequestApplicationSetsCreateApplicationSetItemArray(ctx, key+".", d); v != nil {
+		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -160,8 +153,8 @@ func expandRequestApplicationSetsCreateApplicationSet(ctx context.Context, key s
 	return &request
 }
 
-func expandRequestApplicationSetsCreateApplicationSetTitleArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetTitle {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetTitle{}
+func expandRequestApplicationSetsCreateApplicationSetItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationSet {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationSet{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -172,7 +165,7 @@ func expandRequestApplicationSetsCreateApplicationSetTitleArray(ctx context.Cont
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestApplicationSetsCreateApplicationSetTitle(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestApplicationSetsCreateApplicationSetItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -184,8 +177,8 @@ func expandRequestApplicationSetsCreateApplicationSetTitleArray(ctx context.Cont
 	return &request
 }
 
-func expandRequestApplicationSetsCreateApplicationSetTitle(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetTitle {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetTitle{}
+func expandRequestApplicationSetsCreateApplicationSetItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationSet {
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationSet{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
@@ -196,110 +189,4 @@ func expandRequestApplicationSetsCreateApplicationSetTitle(ctx context.Context, 
 	return &request
 }
 
-func expandRequestApplicationSetsCreateApplicationSetTypeArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetType {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetType{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestApplicationSetsCreateApplicationSetType(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestApplicationSetsCreateApplicationSetType(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetType {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetType{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestApplicationSetsCreateApplicationSetItemsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetItems {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetItems{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestApplicationSetsCreateApplicationSetItems(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestApplicationSetsCreateApplicationSetItems(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetItems {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetItems{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestApplicationSetsCreateApplicationSetSchemaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetschema {
-	request := []dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetschema{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestApplicationSetsCreateApplicationSetSchema(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestApplicationSetsCreateApplicationSetSchema(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetschema {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationSetschema{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
+//TODO

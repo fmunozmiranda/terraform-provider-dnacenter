@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceWirelessDynamicInterface() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'interfaceName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'dynamic-interface name\n'}, 'vlanId': {'Optional': 'true', 'Type': 'schema.TypeFloat', 'Description': 'Vlan Id\n'}}}}}, 'metadata': {'item': {'operation_id': ['CreateUpdateDynamicInterface'], 'new_flat_structure': [{'RequestWirelessCreateUpdateDynamicInterface': {'type': 'obj', 'data': [{'name': 'interfaceName', 'description': 'dynamic-interface name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'vlanId', 'description': 'Vlan Id\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'float64'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestWirelessCreateUpdateDynamicInterface'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -130,6 +131,7 @@ func resourceWirelessDynamicInterfaceUpdate(ctx context.Context, d *schema.Resou
 }
 
 func resourceWirelessDynamicInterfaceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
@@ -154,3 +156,5 @@ func expandRequestWirelessDynamicInterfaceCreateUpdateDynamicInterface(ctx conte
 
 	return &request
 }
+
+//TODO

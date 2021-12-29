@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaFabricSite() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'fabricName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Fabric Name (should be existing fabric name)\n'}, 'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy for provision device location.\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddSiteInSDAFabric'], 'new_flat_structure': [{'RequestSdaAddSiteInSDAFabric': {'type': 'obj', 'data': [{'name': 'fabricName', 'description': 'Fabric Name (should be existing fabric name)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy for provision device location.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddSiteInSDAFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -114,6 +115,8 @@ func resourceSdaFabricSiteRead(ctx context.Context, d *schema.ResourceData, m in
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -123,6 +126,7 @@ func resourceSdaFabricSiteUpdate(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourceSdaFabricSiteDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaPortAssignmentForAccessPoint() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy should be a valid fabric site name hierarchy. e.g Global/USA/San Jose\n'}, 'deviceManagementIpAddress': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Management Ip Address of the edge device \n'}, 'interfaceName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Interface Name of the edge device \n'}, 'dataIpAddressPoolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Ip Pool Name, that is assigned to INFRA_VN  \n'}, 'authenticateTemplateName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Authenticate TemplateName associated to siteNameHierarchy.\n'}, 'interfaceDescription': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Details or note of interface assignment\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddPortAssignmentForAccessPointInSDAFabric'], 'new_flat_structure': [{'RequestSdaAddPortAssignmentForAccessPointInSDAFabric': {'type': 'obj', 'data': [{'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy should be a valid fabric site name hierarchy. e.g Global/USA/San Jose\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'deviceManagementIpAddress', 'description': 'Management Ip Address of the edge device \n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'interfaceName', 'description': 'Interface Name of the edge device \n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'dataIpAddressPoolName', 'description': 'Ip Pool Name, that is assigned to INFRA_VN  \n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'authenticateTemplateName', 'description': 'Authenticate TemplateName associated to siteNameHierarchy.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'interfaceDescription', 'description': 'Details or note of interface assignment\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddPortAssignmentForAccessPointInSDAFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -141,6 +142,8 @@ func resourceSdaPortAssignmentForAccessPointRead(ctx context.Context, d *schema.
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -150,6 +153,7 @@ func resourceSdaPortAssignmentForAccessPointUpdate(ctx context.Context, d *schem
 }
 
 func resourceSdaPortAssignmentForAccessPointDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

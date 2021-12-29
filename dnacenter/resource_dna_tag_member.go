@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceTagMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'id': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'id path parameter. Tag ID\n'}, 'memberId': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'memberId path parameter. TagMember id to be removed from tag\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddMembersToTheTag'], 'new_flat_structure': [{'RequestTagAddMembersToTheTag': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestTagAddMembersToTheTag'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -160,6 +161,7 @@ func resourceTagMemberUpdate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceTagMemberDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
@@ -179,3 +181,5 @@ func expandRequestTagMemberAddMembersToTheTag(ctx context.Context, key string, d
 
 	return &request
 }
+
+//TODO

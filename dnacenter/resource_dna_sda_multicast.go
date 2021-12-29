@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaMulticast() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Full path of sda fabric siteNameHierarchy\n'}, 'multicastMethod': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Multicast Methods\n'}, 'muticastType': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Muticast Type\n'}, 'multicastVnInfo': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'virtualNetworkName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Virtual Network Name, that is associated to fabricSiteNameHierarchy\n'}, 'ipPoolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Ip Pool Name, that is reserved to fabricSiteNameHierarchy\n'}, 'externalRpIpAddress': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'External Rp Ip Address, required for muticastType=asm_with_external_rp\n'}, 'ssmInfo': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Description': 'Source-specific multicast information, required if muticastType=ssm\n', 'Elem': {'Schema': {}}}, 'ssmGroupRange': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Valid SSM group range ip address(e.g., 230.0.0.0)\n'}, 'ssmWildcardMask': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Valid SSM Wildcard Mask ip address(e.g.,0.255.255.255)\n'}}}}}}}}, 'metadata': {'item': {'operation_id': ['AddMulticastInSDAFabric'], 'new_flat_structure': [{'RequestSdaAddMulticastInSDAFabric': {'type': 'obj', 'data': [{'name': 'siteNameHierarchy', 'description': 'Full path of sda fabric siteNameHierarchy\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'multicastMethod', 'description': 'Multicast Methods\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'muticastType', 'description': 'Muticast Type\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'multicastVnInfo', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestSdaAddMulticastInSdaFabricMulticastVnInfo'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSdaAddMulticastInSDAFabricMulticastVnInfo': {'type': 'obj', 'data': [{'name': 'virtualNetworkName', 'description': 'Virtual Network Name, that is associated to fabricSiteNameHierarchy\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipPoolName', 'description': 'Ip Pool Name, that is reserved to fabricSiteNameHierarchy\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'externalRpIpAddress', 'description': 'External Rp Ip Address, required for muticastType=asm_with_external_rp\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ssmInfo', 'description': 'Source-specific multicast information, required if muticastType=ssm\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestSdaAddMulticastInSdaFabricMulticastVnInfoSsmInfo'}, {'name': 'ssmGroupRange', 'description': 'Valid SSM group range ip address(e.g., 230.0.0.0)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ssmWildcardMask', 'description': 'Valid SSM Wildcard Mask ip address(e.g.,0.255.255.255)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSdaAddMulticastInSDAFabricMulticastVnInfoSsmInfo': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddMulticastInSDAFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -167,6 +168,8 @@ func resourceSdaMulticastRead(ctx context.Context, d *schema.ResourceData, m int
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -176,6 +179,7 @@ func resourceSdaMulticastUpdate(ctx context.Context, d *schema.ResourceData, m i
 }
 
 func resourceSdaMulticastDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

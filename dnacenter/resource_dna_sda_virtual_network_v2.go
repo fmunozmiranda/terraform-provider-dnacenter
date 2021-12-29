@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -35,7 +37,6 @@ func resourceSdaVirtualNetworkV2() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'virtualNetworkName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Virtual Network Name to be assigned  global level\n'}, 'isGuestVirtualNetwork': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'To create guest virtual network\n'}, 'scalableGroupNames': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'Scalable Group to be associated to virtual network\n'}, 'virtualNetworkType': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Virtual Network Type'}}}}}, 'metadata': {'item': {'operation_id': [['AddVirtualNetworkWithScalableGroups', 'UpdateVirtualNetworkWithScalableGroups']], 'new_flat_structure': [[{'RequestSdaAddVirtualNetworkWithScalableGroups': {'type': 'obj', 'data': [{'name': 'virtualNetworkName', 'description': 'Virtual Network Name to be assigned  global level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'isGuestVirtualNetwork', 'description': 'To create guest virtual network\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'scalableGroupNames', 'description': 'Scalable Group to be associated to virtual network\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'virtualNetworkType', 'description': 'Virtual Network Type', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestSdaUpdateVirtualNetworkWithScalableGroups': {'type': 'obj', 'data': [{'name': 'virtualNetworkName', 'description': 'Virtual Network Name to be assigned global level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'virtualNetworkType', 'description': 'Virtual Network Type', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'isGuestVirtualNetwork', 'description': 'To create guest virtual network\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'scalableGroupNames', 'description': 'Scalable Group to be associated to virtual network\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestSdaAddVirtualNetworkWithScalableGroups', 'RequestSdaUpdateVirtualNetworkWithScalableGroups']], 'access_list': [[[], []]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -132,6 +133,8 @@ func resourceSdaVirtualNetworkV2Read(ctx context.Context, d *schema.ResourceData
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -174,6 +177,7 @@ func resourceSdaVirtualNetworkV2Update(ctx context.Context, d *schema.ResourceDa
 }
 
 func resourceSdaVirtualNetworkV2Delete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

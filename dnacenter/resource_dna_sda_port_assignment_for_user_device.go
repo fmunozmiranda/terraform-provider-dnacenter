@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaPortAssignmentForUserDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy should be a valid fabric site name hierarchy. e.g Global/USA/San Jose\n'}, 'deviceManagementIpAddress': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Management Ip Address of the edge device\n'}, 'interfaceName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Interface Name of the edge device\n'}, 'dataIpAddressPoolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': "Ip Pool Name, that is assigned to virtual network with traffic type as DATA(can't be empty if voiceIpAddressPoolName is empty)\n"}, 'voiceIpAddressPoolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': "Ip Pool Name, that is assigned to virtual network with traffic type as VOICE(can't be empty if dataIpAddressPoolName is emty)\n"}, 'authenticateTemplateName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': "Authenticate TemplateName associated to siteNameHierarchy. Allowed values are 'Open Authentication', 'Closed Authentication', 'Low Impact', 'No Authentication', ''.\n"}, 'scalableGroupName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'valid name of a scalable group associated with virtual network(Scalable groups are only supported on No Auth profile because the other profiles assign SGTs from ISE)\n'}, 'interfaceDescription': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Details or note of interface assignment\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddPortAssignmentForUserDeviceInSDAFabric'], 'new_flat_structure': [{'RequestSdaAddPortAssignmentForUserDeviceInSDAFabric': {'type': 'obj', 'data': [{'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy should be a valid fabric site name hierarchy. e.g Global/USA/San Jose\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'deviceManagementIpAddress', 'description': 'Management Ip Address of the edge device\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'interfaceName', 'description': 'Interface Name of the edge device\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'dataIpAddressPoolName', 'description': "Ip Pool Name, that is assigned to virtual network with traffic type as DATA(can't be empty if voiceIpAddressPoolName is empty)\n", 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'voiceIpAddressPoolName', 'description': "Ip Pool Name, that is assigned to virtual network with traffic type as VOICE(can't be empty if dataIpAddressPoolName is emty)\n", 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'authenticateTemplateName', 'description': "Authenticate TemplateName associated to siteNameHierarchy. Allowed values are 'Open Authentication', 'Closed Authentication', 'Low Impact', 'No Authentication', ''.\n", 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'scalableGroupName', 'description': 'valid name of a scalable group associated with virtual network(Scalable groups are only supported on No Auth profile because the other profiles assign SGTs from ISE)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'interfaceDescription', 'description': 'Details or note of interface assignment\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddPortAssignmentForUserDeviceInSDAFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -153,6 +154,8 @@ func resourceSdaPortAssignmentForUserDeviceRead(ctx context.Context, d *schema.R
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -162,6 +165,7 @@ func resourceSdaPortAssignmentForUserDeviceUpdate(ctx context.Context, d *schema
 }
 
 func resourceSdaPortAssignmentForUserDeviceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

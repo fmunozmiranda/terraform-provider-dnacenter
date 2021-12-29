@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaFabric() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'fabricName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Fabric Name (from DNAC2.2.3 onwards following default fabric name  Default_LAN_Fabric)\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddFabric'], 'new_flat_structure': [{'RequestSdaAddFabric': {'type': 'obj', 'data': [{'name': 'fabricName', 'description': 'Fabric Name (from DNAC2.2.3 onwards following default fabric name  Default_LAN_Fabric)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -108,6 +109,8 @@ func resourceSdaFabricRead(ctx context.Context, d *schema.ResourceData, m interf
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -117,6 +120,7 @@ func resourceSdaFabricUpdate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

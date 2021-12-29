@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceBusinessSdaHostonboardingSSIDIPpool() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'vlanName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'VLAN Name\n'}, 'scalableGroupName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Scalable Group Name\n'}, 'ssidNames': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'List of SSIDs\n'}, 'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy\n'}}}}}, 'metadata': {'item': {'operation_id': [['AddSSIDToIPPoolMapping', 'UpdateSSIDToIPPoolMapping']], 'new_flat_structure': [[{'RequestFabricWirelessAddSSIDToIPPoolMapping': {'type': 'obj', 'data': [{'name': 'vlanName', 'description': 'VLAN Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'scalableGroupName', 'description': 'Scalable Group Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ssidNames', 'description': 'List of SSIDs\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestFabricWirelessUpdateSSIDToIPPoolMapping': {'type': 'obj', 'data': [{'name': 'vlanName', 'description': 'VLAN Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'scalableGroupName', 'description': 'Scalable Group Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ssidNames', 'description': 'List of SSIDs\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestFabricWirelessAddSSIDToIPPoolMapping', 'RequestFabricWirelessUpdateSSIDToIPPoolMapping']], 'access_list': [[[], []]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -131,6 +132,8 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *sch
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+
+		//TODO
 
 	}
 	return diags

@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSensor() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'ssids': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'ssid': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Ssid'}, 'profileName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Profile Name'}, 'authType': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Auth Type'}, 'thirdParty': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'selected': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'Selected'}}}}, 'psk': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Psk'}, 'tests': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Name'}, 'config': {'Optional': 'true', 'Type': 'schema.TypeList', 'Description': 'Config', 'Elem': {'Schema': {}}}}}}, 'categories': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'Categories'}, 'qosPolicy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Qos Policy'}}}}, 'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Name'}, 'connection': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Connection'}, 'apCoverage': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'bands': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Bands'}, 'numberOfApsToTest': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Number Of Aps To Test'}, 'rssiThreshold': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Rssi Threshold'}}}}, 'modelVersion': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'Model Version'}}}}}, 'metadata': {'item': {'operation_id': ['CreateSensorTestTemplate'], 'new_flat_structure': [{'RequestSensorsCreateSensorTestTemplate': {'type': 'obj', 'data': [{'name': 'ssids', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestSensorsCreateSensorTestTemplateSsids'}, {'name': 'name', 'description': 'Name', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'connection', 'description': 'Connection', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'apCoverage', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestSensorsCreateSensorTestTemplateApCoverage'}, {'name': 'modelVersion', 'description': 'Model Version', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSensorsCreateSensorTestTemplateSsids': {'type': 'obj', 'data': [{'name': 'ssid', 'description': 'Ssid', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'profileName', 'description': 'Profile Name', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'authType', 'description': 'Auth Type', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'thirdParty', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestSensorsCreateSensorTestTemplateSsidsThirdParty'}, {'name': 'psk', 'description': 'Psk', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'tests', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestSensorsCreateSensorTestTemplateSsidsTests'}, {'name': 'categories', 'description': 'Categories', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'qosPolicy', 'description': 'Qos Policy', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSensorsCreateSensorTestTemplateSsidsThirdParty': {'type': 'obj', 'data': [{'name': 'selected', 'description': 'Selected', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSensorsCreateSensorTestTemplateSsidsTests': {'type': 'obj', 'data': [{'name': 'name', 'description': 'Name', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'config', 'description': 'Config', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestSensorsCreateSensorTestTemplateSsidsTestsConfig'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSensorsCreateSensorTestTemplateSsidsTestsConfig': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSensorsCreateSensorTestTemplateApCoverage': {'type': 'obj', 'data': [{'name': 'bands', 'description': 'Bands', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'numberOfApsToTest', 'description': 'Number Of Aps To Test', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'rssiThreshold', 'description': 'Rssi Threshold', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSensorsCreateSensorTestTemplate'], 'access_list': [['ssids', 'name', 'connection', 'apCoverage', 'modelVersion']]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -235,6 +236,7 @@ func resourceSensorUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceSensorDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
@@ -452,3 +454,5 @@ func expandRequestSensorCreateSensorTestTemplateApCoverage(ctx context.Context, 
 
 	return &request
 }
+
+//TODO

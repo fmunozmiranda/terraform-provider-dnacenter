@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceEventSubscriptionSyslog() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Description': 'Array of RequestEventManagementCreateSyslogEventSubscription', 'Elem': {'Schema': {'subscriptionId': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Subscription Id (Unique UUID)\n'}, 'version': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Version\n'}, 'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Name\n'}, 'description': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Description\n'}, 'subscriptionEndpoints': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'instanceId': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': '(From Get Syslog Subscription Details --> pick instanceId)\n'}, 'subscriptionDetails': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'connectorType': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Connector Type (Must be SYSLOG)\n'}}}}}}}, 'filter': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'eventIds': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'Event Ids (Comma separated event ids)\n'}}}}}}}}, 'metadata': {'item': {'operation_id': [['CreateSyslogEventSubscription', 'UpdateSyslogEventSubscription']], 'new_flat_structure': [[{'RequestEventManagementCreateSyslogEventSubscription': {'type': 'array', 'data': [{'name': '', 'type': '[]RequestItemEventManagementCreateSyslogEventSubscription', 'description': 'Array of RequestEventManagementCreateSyslogEventSubscription'}], 'epType': 'json', 'isRef': True, 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementCreateSyslogEventSubscription': {'type': 'obj', 'data': [{'name': 'subscriptionId', 'description': 'Subscription Id (Unique UUID)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'version', 'description': 'Version\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'name', 'description': 'Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'description', 'description': 'Description\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'subscriptionEndpoints', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpoints'}, {'name': 'filter', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestItemEventManagementCreateSyslogEventSubscriptionFilter'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpoints': {'type': 'obj', 'data': [{'name': 'instanceId', 'description': '(From Get Syslog Subscription Details --> pick instanceId)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'subscriptionDetails', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails': {'type': 'obj', 'data': [{'name': 'connectorType', 'description': 'Connector Type (Must be SYSLOG)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementCreateSyslogEventSubscriptionFilter': {'type': 'obj', 'data': [{'name': 'eventIds', 'description': 'Event Ids (Comma separated event ids)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestEventManagementUpdateSyslogEventSubscription': {'type': 'array', 'data': [{'name': '', 'type': '[]RequestItemEventManagementUpdateSyslogEventSubscription', 'description': 'Array of RequestEventManagementUpdateSyslogEventSubscription'}], 'epType': 'json', 'isRef': True, 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementUpdateSyslogEventSubscription': {'type': 'obj', 'data': [{'name': 'subscriptionId', 'description': 'Subscription Id (Unique UUID)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'version', 'description': 'Version\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'name', 'description': 'Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'description', 'description': 'Description\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'subscriptionEndpoints', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpoints'}, {'name': 'filter', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestItemEventManagementUpdateSyslogEventSubscriptionFilter'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpoints': {'type': 'obj', 'data': [{'name': 'instanceId', 'description': '(From Get Syslog Subscription Details --> pick instanceId)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'subscriptionDetails', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails': {'type': 'obj', 'data': [{'name': 'connectorType', 'description': 'Connector Type (Must be SYSLOG)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemEventManagementUpdateSyslogEventSubscriptionFilter': {'type': 'obj', 'data': [{'name': 'eventIds', 'description': 'Event Ids (Comma separated event ids)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestEventManagementCreateSyslogEventSubscription', 'RequestEventManagementUpdateSyslogEventSubscription']], 'access_list': [[[], []]]}}}
 			"parameters": &schema.Schema{
 				Description: `Array of RequestEventManagementCreateSyslogEventSubscription`,
 				Type:        schema.TypeList,
@@ -250,17 +251,8 @@ func resourceEventSubscriptionSyslogDelete(ctx context.Context, d *schema.Resour
 }
 func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscription(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscription {
 	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscription{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".title")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".title")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".title")))) {
-		request.Title = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleArray(ctx, key+".title", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeArray(ctx, key+".type", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".items")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".items")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".items")))) {
-		request.Items = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsArray(ctx, key+".items", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".$schema")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".$schema")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".$schema")))) {
-		request.Schema = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaArray(ctx, key+".$schema", d)
+	if v := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemArray(ctx, key+".", d); v != nil {
+		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -269,8 +261,8 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscription(ctx conte
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitle {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitle{}
+func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscription {
+	request := []dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscription{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -281,7 +273,7 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleArray
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitle(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -293,8 +285,8 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleArray
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitle(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitle {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitle{}
+func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscription {
+	request := dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscription{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
 		request.SubscriptionID = interfaceToString(v)
 	}
@@ -308,10 +300,10 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitle(ctx 
 		request.Description = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
+		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleFilter(ctx, key+".filter.0", d)
+		request.Filter = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemFilter(ctx, key+".filter.0", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -320,8 +312,8 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitle(ctx 
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleSubscriptionEndpoints{}
+func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpoints {
+	request := []dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpoints{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -332,7 +324,7 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubsc
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -344,13 +336,13 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubsc
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleSubscriptionEndpoints{}
+func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpoints {
+	request := dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpoints{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
 		request.InstanceID = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
+		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -359,8 +351,8 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubsc
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails{}
+func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails {
+	request := dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
 		request.ConnectorType = interfaceToString(v)
 	}
@@ -371,350 +363,8 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleSubsc
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTitleFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleFilter {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTitleFilter{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
-		request.EventIDs = interfaceToSliceString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionType {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionType{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionType(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionType(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionType {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionType{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
-		request.SubscriptionID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
-		request.Version = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeFilter(ctx, key+".filter.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeSubscriptionEndpoints{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeSubscriptionEndpoints{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
-		request.ConnectorType = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionTypeFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeFilter {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionTypeFilter{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
-		request.EventIDs = interfaceToSliceString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItems {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItems{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItems(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItems(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItems {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItems{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
-		request.SubscriptionID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
-		request.Version = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsFilter(ctx, key+".filter.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsSubscriptionEndpoints{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsSubscriptionEndpoints{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
-		request.ConnectorType = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemsFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsFilter {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionItemsFilter{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
-		request.EventIDs = interfaceToSliceString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschema {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschema{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchema(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchema(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschema {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschema{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
-		request.SubscriptionID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
-		request.Version = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaFilter(ctx, key+".filter.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaSubscriptionEndpoints{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaSubscriptionEndpoints{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaSubscriptionEndpointsSubscriptionDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
-		request.ConnectorType = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaFilter {
-	request := dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscriptionschemaFilter{}
+func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionItemFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionFilter {
+	request := dnacentersdkgo.RequestItemEventManagementCreateSyslogEventSubscriptionFilter{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
 		request.EventIDs = interfaceToSliceString(v)
 	}
@@ -727,17 +377,8 @@ func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscriptionSchemaFilt
 
 func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscription(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscription {
 	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscription{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".title")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".title")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".title")))) {
-		request.Title = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleArray(ctx, key+".title", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".type")))) {
-		request.Type = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeArray(ctx, key+".type", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".items")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".items")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".items")))) {
-		request.Items = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsArray(ctx, key+".items", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".$schema")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".$schema")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".$schema")))) {
-		request.Schema = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaArray(ctx, key+".$schema", d)
+	if v := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemArray(ctx, key+".", d); v != nil {
+		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -746,8 +387,8 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscription(ctx conte
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitle {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitle{}
+func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscription {
+	request := []dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscription{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -758,7 +399,7 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleArray
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitle(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -770,8 +411,8 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleArray
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitle(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitle {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitle{}
+func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscription {
+	request := dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscription{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
 		request.SubscriptionID = interfaceToString(v)
 	}
@@ -785,10 +426,10 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitle(ctx 
 		request.Description = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
+		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleFilter(ctx, key+".filter.0", d)
+		request.Filter = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemFilter(ctx, key+".filter.0", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -797,8 +438,8 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitle(ctx 
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleSubscriptionEndpoints{}
+func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpoints {
+	request := []dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpoints{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
@@ -809,7 +450,7 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubsc
 		return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
 		if i != nil {
 			request = append(request, *i)
 		}
@@ -821,13 +462,13 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubsc
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleSubscriptionEndpoints{}
+func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpoints {
+	request := dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpoints{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
 		request.InstanceID = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
+		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -836,8 +477,8 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubsc
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleSubscriptionEndpointsSubscriptionDetails{}
+func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails {
+	request := dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionSubscriptionEndpointsSubscriptionDetails{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
 		request.ConnectorType = interfaceToString(v)
 	}
@@ -848,8 +489,8 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleSubsc
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleFilter {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTitleFilter{}
+func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionFilter {
+	request := dnacentersdkgo.RequestItemEventManagementUpdateSyslogEventSubscriptionFilter{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
 		request.EventIDs = interfaceToSliceString(v)
 	}
@@ -860,344 +501,4 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTitleFilte
 	return &request
 }
 
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionType {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionType{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionType(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionType(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionType {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionType{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
-		request.SubscriptionID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
-		request.Version = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeFilter(ctx, key+".filter.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeSubscriptionEndpoints{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeSubscriptionEndpoints{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeSubscriptionEndpointsSubscriptionDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
-		request.ConnectorType = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionTypeFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeFilter {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionTypeFilter{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
-		request.EventIDs = interfaceToSliceString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItems {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItems{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItems(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItems(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItems {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItems{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
-		request.SubscriptionID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
-		request.Version = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsFilter(ctx, key+".filter.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsSubscriptionEndpoints{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsSubscriptionEndpoints{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsSubscriptionEndpointsSubscriptionDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
-		request.ConnectorType = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemsFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsFilter {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionItemsFilter{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
-		request.EventIDs = interfaceToSliceString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschema {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschema{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchema(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchema(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschema {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschema{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_id")))) {
-		request.SubscriptionID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".version")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".version")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".version")))) {
-		request.Version = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
-		request.Name = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".description")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".description")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".description")))) {
-		request.Description = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_endpoints")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_endpoints")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_endpoints")))) {
-		request.SubscriptionEndpoints = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaSubscriptionEndpointsArray(ctx, key+".subscription_endpoints", d)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".filter")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".filter")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".filter")))) {
-		request.Filter = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaFilter(ctx, key+".filter.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaSubscriptionEndpointsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaSubscriptionEndpoints {
-	request := []dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaSubscriptionEndpoints{}
-	key = fixKeyAccess(key)
-	o := d.Get(key)
-	if o == nil {
-		return nil
-	}
-	objs := o.([]interface{})
-	if len(objs) == 0 {
-		return nil
-	}
-	for item_no, _ := range objs {
-		i := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaSubscriptionEndpoints(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaSubscriptionEndpoints(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaSubscriptionEndpoints {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaSubscriptionEndpoints{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".instance_id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".instance_id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".instance_id")))) {
-		request.InstanceID = interfaceToString(v)
-	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".subscription_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".subscription_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".subscription_details")))) {
-		request.SubscriptionDetails = expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaSubscriptionEndpointsSubscriptionDetails(ctx, key+".subscription_details.0", d)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaSubscriptionEndpointsSubscriptionDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaSubscriptionEndpointsSubscriptionDetails {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaSubscriptionEndpointsSubscriptionDetails{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connector_type")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connector_type")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connector_type")))) {
-		request.ConnectorType = interfaceToString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
-
-func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionSchemaFilter(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaFilter {
-	request := dnacentersdkgo.RequestEventManagementUpdateSyslogEventSubscriptionschemaFilter{}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".event_ids")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".event_ids")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".event_ids")))) {
-		request.EventIDs = interfaceToSliceString(v)
-	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
-	return &request
-}
+//TODO

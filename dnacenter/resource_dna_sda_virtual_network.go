@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaVirtualNetwork() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'virtualNetworkName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Virtual Network Name, that is created in Global level\n'}, 'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy should be a valid fabric site name hierarchy.( e.g. Global/USA/San Jose)\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddVNInSDAFabric'], 'new_flat_structure': [{'RequestSdaAddVNInSDAFabric': {'type': 'obj', 'data': [{'name': 'virtualNetworkName', 'description': 'Virtual Network Name, that is created in Global level\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy should be a valid fabric site name hierarchy.( e.g. Global/USA/San Jose)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddVNInSDAFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -117,6 +118,8 @@ func resourceSdaVirtualNetworkRead(ctx context.Context, d *schema.ResourceData, 
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -126,6 +129,7 @@ func resourceSdaVirtualNetworkUpdate(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

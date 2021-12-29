@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -35,7 +37,6 @@ func resourceGlobalPool() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'settings': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Elem': {'Schema': {'ippool': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'dhcpServerIps': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'Dhcp Server Ips'}, 'ipPoolCidr': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Ip Pool Cidr'}, 'IpAddressSpace': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Ip Address Space. Allowed values are IPv6 or IPv4.'}, 'dnsServerIps': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Type': 'schema.TypeString'}, 'Description': 'Dns Server Ips'}, 'type': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Type'}, 'gateway': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Gateway'}, 'ipPoolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Ip Pool Name'}, 'id': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Id'}}}}}}}, 'id': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'id path parameter. global pool id\n'}}}}}, 'metadata': {'item': {'operation_id': [['CreateGlobalPool', 'UpdateGlobalPool']], 'new_flat_structure': [[{'RequestNetworkSettingsCreateGlobalPool': {'type': 'obj', 'data': [{'name': 'settings', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestNetworkSettingsCreateGlobalPoolSettings'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestNetworkSettingsCreateGlobalPoolSettings': {'type': 'obj', 'data': [{'name': 'ippool', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestNetworkSettingsCreateGlobalPoolSettingsIppool'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestNetworkSettingsCreateGlobalPoolSettingsIppool': {'type': 'obj', 'data': [{'name': 'ipPoolName', 'description': 'Ip Pool Name', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'type', 'description': 'Type', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'ipPoolCidr', 'description': 'Ip Pool Cidr', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'gateway', 'description': 'Gateway', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'dhcpServerIps', 'description': 'Dhcp Server Ips', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'dnsServerIps', 'description': 'Dns Server Ips', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'IpAddressSpace', 'description': 'Ip Address Space. Allowed values are IPv6 or IPv4.', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestNetworkSettingsUpdateGlobalPool': {'type': 'obj', 'data': [{'name': 'settings', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestNetworkSettingsUpdateGlobalPoolSettings'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestNetworkSettingsUpdateGlobalPoolSettings': {'type': 'obj', 'data': [{'name': 'ippool', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestNetworkSettingsUpdateGlobalPoolSettingsIppool'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestNetworkSettingsUpdateGlobalPoolSettingsIppool': {'type': 'obj', 'data': [{'name': 'ipPoolName', 'description': 'Ip Pool Name', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'gateway', 'description': 'Gateway', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'dhcpServerIps', 'description': 'Dhcp Server Ips', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'dnsServerIps', 'description': 'Dns Server Ips', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]string'}, {'name': 'id', 'description': 'Id', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestNetworkSettingsCreateGlobalPool', 'RequestNetworkSettingsUpdateGlobalPool']], 'access_list': [[['settings'], ['settings']]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -229,6 +230,7 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 }
 
 func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
@@ -384,3 +386,5 @@ func expandRequestGlobalPoolUpdateGlobalPoolSettingsIPpool(ctx context.Context, 
 
 	return &request
 }
+
+//TODO

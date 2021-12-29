@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,7 +35,6 @@ func resourceSdaFabricBorderDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'deviceManagementIpAddress': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Management Ip Address of the Device which is provisioned successfully\n'}, 'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy for device location(site should be fabric site)\n'}, 'externalDomainRoutingProtocolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'External Domain Routing Protocol  Name. (Example: BGP)\n'}, 'externalConnectivityIpPoolName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'IP pool to use to automate IP routing between the border node and remote peer.\n'}, 'internalAutonomouSystemNumber': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Internal Autonomouns System Number used by border node to communicate with remote peer (e.g.,1-65535)\n'}, 'borderSessionType': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Border Session Type\n'}, 'connectedToInternet': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'Connected to Internet\n'}, 'externalConnectivitySettings': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Description': 'External Connectivity Settings information of L3 Handoff\n', 'Elem': {'Schema': {}}}, 'interfaceName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Interface Name\n'}, 'externalAutonomouSystemNumber': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'External Autonomous System Number  will be used to automate IP routing between Border Node and remote peer (e.g.,1-65535)\n'}, 'l3Handoff': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Description': 'L3 Handoff information\n', 'Elem': {'Schema': {}}}, 'virtualNetwork': {'Optional': 'true', 'Type': 'schema.TypeList', 'MaxItems': 1, 'Description': 'Virtual Network information of L3 Hand off\n', 'Elem': {'Schema': {}}}, 'virtualNetworkName': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Virtual Network Name assigned to site\n'}, 'vlanId': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Vlan Id (e.g.,2-4096 except for reserved VLANs (1002-1005, 2046, 4095))\n'}}}}}, 'metadata': {'item': {'operation_id': ['AddsBorderDeviceInSDAFabric'], 'new_flat_structure': [{'RequestSdaAddsBorderDeviceInSDAFabric': {'type': 'obj', 'data': [{'name': 'deviceManagementIpAddress', 'description': 'Management Ip Address of the Device which is provisioned successfully\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy for device location(site should be fabric site)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'externalDomainRoutingProtocolName', 'description': 'External Domain Routing Protocol  Name. (Example: BGP)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'externalConnectivityIpPoolName', 'description': 'IP pool to use to automate IP routing between the border node and remote peer.\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'internalAutonomouSystemNumber', 'description': 'Internal Autonomouns System Number used by border node to communicate with remote peer (e.g.,1-65535)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'borderSessionType', 'description': 'Border Session Type\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'connectedToInternet', 'description': 'Connected to Internet\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'externalConnectivitySettings', 'description': 'External Connectivity Settings information of L3 Handoff\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestSdaAddsBorderDeviceInSdaFabricExternalConnectivitySettings'}, {'name': 'interfaceName', 'description': 'Interface Name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'externalAutonomouSystemNumber', 'description': 'External Autonomous System Number  will be used to automate IP routing between Border Node and remote peer (e.g.,1-65535)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'l3Handoff', 'description': 'L3 Handoff information\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestSdaAddsBorderDeviceInSdaFabricL3Handoff'}, {'name': 'virtualNetwork', 'description': 'Virtual Network information of L3 Hand off\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'RequestSdaAddsBorderDeviceInSdaFabricVirtualNetwork'}, {'name': 'virtualNetworkName', 'description': 'Virtual Network Name assigned to site\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'vlanId', 'description': 'Vlan Id (e.g.,2-4096 except for reserved VLANs (1002-1005, 2046, 4095))\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSdaAddsBorderDeviceInSDAFabricExternalConnectivitySettings': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSdaAddsBorderDeviceInSDAFabricL3Handoff': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestSdaAddsBorderDeviceInSDAFabricVirtualNetwork': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], 'flatten_structure_key': ['RequestSdaAddsBorderDeviceInSDAFabric'], 'access_list': [[]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -191,6 +192,8 @@ func resourceSdaFabricBorderDeviceRead(ctx context.Context, d *schema.ResourceDa
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -200,6 +203,7 @@ func resourceSdaFabricBorderDeviceUpdate(ctx context.Context, d *schema.Resource
 }
 
 func resourceSdaFabricBorderDeviceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

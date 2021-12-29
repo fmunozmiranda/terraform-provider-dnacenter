@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -35,7 +37,6 @@ func resourceSdaProvisionDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'deviceManagementIpAddress': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Management Ip Address of the device to be provisioned\n'}, 'siteNameHierarchy': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Site Name Hierarchy for device location(only building / floor level)\n'}}}}}, 'metadata': {'item': {'operation_id': [['ProvisionWiredDevice', 'ReProvisionWiredDevice']], 'new_flat_structure': [[{'RequestSdaProvisionWiredDevice': {'type': 'obj', 'data': [{'name': 'deviceManagementIpAddress', 'description': 'Management Ip Address of the device to be provisioned\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy for device location(only building / floor level)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestSdaReProvisionWiredDevice': {'type': 'obj', 'data': [{'name': 'deviceManagementIpAddress', 'description': 'Management Ip Address of the device to be re-provisioned\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'siteNameHierarchy', 'description': 'Site Name Hierarchy for device location(only building / floor level)\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestSdaProvisionWiredDevice', 'RequestSdaReProvisionWiredDevice']], 'access_list': [[[], []]]}}}
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -116,6 +117,8 @@ func resourceSdaProvisionDeviceRead(ctx context.Context, d *schema.ResourceData,
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		//TODO
+
 	}
 	return diags
 }
@@ -158,6 +161,7 @@ func resourceSdaProvisionDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceSdaProvisionDeviceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics

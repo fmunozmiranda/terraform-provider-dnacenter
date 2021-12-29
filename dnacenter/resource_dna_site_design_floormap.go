@@ -2,10 +2,12 @@ package dnacenter
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 	"log"
+
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -35,7 +37,6 @@ func resourceSiteDesignFloormap() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'floorId': {'Required': 'true', 'Type': 'schema.TypeString', 'Description': 'floorId path parameter. Group ID of the floor to be modified\n'}}}}, 'item': {'Type': 'schema.TypeString', 'Computed': 'true'}}, 'metadata': {'item': {'operation_id': [['CreateFloormap', 'UpdateFloormap'], 'ListSpecifiedFloormaps'], 'new_flat_structure': [[{'RequestSiteDesignCreateFloormap': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestSiteDesignUpdateFloormap': {'type': 'obj', 'data': [], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}], {}], 'flatten_structure_key': [['RequestSiteDesignCreateFloormap', 'RequestSiteDesignUpdateFloormap'], ''], 'access_list': [[[], []], []]}}}
 			"item": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -174,6 +175,7 @@ func resourceSiteDesignFloormapUpdate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceSiteDesignFloormapDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
