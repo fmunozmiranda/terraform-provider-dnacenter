@@ -403,7 +403,7 @@ func resourcePnpWorkflowCreate(ctx context.Context, d *schema.ResourceData, m in
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourcePnpWorkflowRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -422,7 +422,7 @@ func resourcePnpWorkflowCreate(ctx context.Context, d *schema.ResourceData, m in
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourcePnpWorkflowRead(ctx, d, m)
 }
 
 func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

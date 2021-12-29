@@ -106,7 +106,7 @@ func resourceSdaPortAssignmentForAccessPointCreate(ctx context.Context, d *schem
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaPortAssignmentForAccessPointRead(ctx, d, m)
 }
 
 func resourceSdaPortAssignmentForAccessPointRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

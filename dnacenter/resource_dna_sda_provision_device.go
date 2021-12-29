@@ -84,7 +84,7 @@ func resourceSdaProvisionDeviceCreate(ctx context.Context, d *schema.ResourceDat
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaProvisionDeviceRead(ctx, d, m)
 }
 
 func resourceSdaProvisionDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

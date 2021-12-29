@@ -229,7 +229,7 @@ func resourceReserveIPSubpoolCreate(ctx context.Context, d *schema.ResourceData,
 	resourceMap["site_id"] = vvSiteID
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceReserveIPSubpoolRead(ctx, d, m)
 }
 
 func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

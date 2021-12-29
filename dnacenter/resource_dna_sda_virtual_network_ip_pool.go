@@ -140,7 +140,7 @@ func resourceSdaVirtualNetworkIPPoolCreate(ctx context.Context, d *schema.Resour
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaVirtualNetworkIPPoolRead(ctx, d, m)
 }
 
 func resourceSdaVirtualNetworkIPPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

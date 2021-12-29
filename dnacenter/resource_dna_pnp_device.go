@@ -2714,7 +2714,7 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourcePnpDeviceRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -2733,7 +2733,7 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourcePnpDeviceRead(ctx, d, m)
 }
 
 func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

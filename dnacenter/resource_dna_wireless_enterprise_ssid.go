@@ -205,7 +205,7 @@ func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.Resourc
 	resourceMap := make(map[string]string)
 	resourceMap["ssid_name"] = vvSSIDName
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceWirelessEnterpriseSSIDRead(ctx, d, m)
 }
 
 func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

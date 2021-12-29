@@ -135,7 +135,7 @@ func resourceSdaMulticastCreate(ctx context.Context, d *schema.ResourceData, m i
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaMulticastRead(ctx, d, m)
 }
 
 func resourceSdaMulticastRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

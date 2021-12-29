@@ -80,7 +80,7 @@ func resourceTagMemberCreate(ctx context.Context, d *schema.ResourceData, m inte
 			resourceMap["id"] = vvID
 			resourceMap["member_id"] = vvMemberID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceTagMemberRead(ctx, d, m)
 		}
 	}
 	resp1, restyResp1, err := client.Tag.AddMembersToTheTag(request1)
@@ -98,7 +98,7 @@ func resourceTagMemberCreate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap["id"] = vvID
 	resourceMap["member_id"] = vvMemberID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceTagMemberRead(ctx, d, m)
 }
 
 func resourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

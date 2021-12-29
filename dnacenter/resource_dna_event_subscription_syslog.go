@@ -145,7 +145,7 @@ func resourceEventSubscriptionSyslogCreate(ctx context.Context, d *schema.Resour
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceEventSubscriptionSyslogRead(ctx, d, m)
 }
 
 func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

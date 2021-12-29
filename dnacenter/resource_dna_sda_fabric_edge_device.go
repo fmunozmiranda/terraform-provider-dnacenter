@@ -82,7 +82,7 @@ func resourceSdaFabricEdgeDeviceCreate(ctx context.Context, d *schema.ResourceDa
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaFabricEdgeDeviceRead(ctx, d, m)
 }
 
 func resourceSdaFabricEdgeDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

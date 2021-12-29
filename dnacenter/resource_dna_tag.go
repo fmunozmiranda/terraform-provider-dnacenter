@@ -210,7 +210,7 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceTagRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -229,7 +229,7 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceTagRead(ctx, d, m)
 }
 
 func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

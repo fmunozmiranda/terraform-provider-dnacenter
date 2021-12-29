@@ -118,7 +118,7 @@ func resourceSdaPortAssignmentForUserDeviceCreate(ctx context.Context, d *schema
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaPortAssignmentForUserDeviceRead(ctx, d, m)
 }
 
 func resourceSdaPortAssignmentForUserDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

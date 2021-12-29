@@ -100,7 +100,7 @@ func resourceSdaVirtualNetworkV2Create(ctx context.Context, d *schema.ResourceDa
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaVirtualNetworkV2Read(ctx, d, m)
 }
 
 func resourceSdaVirtualNetworkV2Read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

@@ -190,7 +190,7 @@ func resourceSensorCreate(ctx context.Context, d *schema.ResourceData, m interfa
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSensorRead(ctx, d, m)
 }
 
 func resourceSensorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

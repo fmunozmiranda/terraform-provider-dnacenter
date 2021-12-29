@@ -89,7 +89,7 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSNMPPropertiesRead(ctx, d, m)
 }
 
 func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

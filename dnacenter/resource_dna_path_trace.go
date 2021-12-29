@@ -3262,7 +3262,7 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			resourceMap := make(map[string]string)
 			resourceMap["flow_analysis_id"] = vvFlowAnalysisID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourcePathTraceRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -3281,7 +3281,7 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := make(map[string]string)
 	resourceMap["flow_analysis_id"] = vvFlowAnalysisID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourcePathTraceRead(ctx, d, m)
 }
 
 func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

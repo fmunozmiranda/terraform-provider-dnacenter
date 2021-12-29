@@ -313,7 +313,7 @@ func resourceNfvProfileCreate(ctx context.Context, d *schema.ResourceData, m int
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceNfvProfileRead(ctx, d, m)
 		}
 	}
 	resp1, restyResp1, err := client.SiteDesign.CreateNfvProfile(request1)
@@ -330,7 +330,7 @@ func resourceNfvProfileCreate(ctx context.Context, d *schema.ResourceData, m int
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceNfvProfileRead(ctx, d, m)
 }
 
 func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

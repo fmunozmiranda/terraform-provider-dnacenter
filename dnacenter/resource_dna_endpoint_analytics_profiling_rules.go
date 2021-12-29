@@ -429,7 +429,7 @@ func resourceEndpointAnalyticsProfilingRulesCreate(ctx context.Context, d *schem
 			resourceMap := make(map[string]string)
 			resourceMap["rule_id"] = vvRuleID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceEndpointAnalyticsProfilingRulesRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -448,7 +448,7 @@ func resourceEndpointAnalyticsProfilingRulesCreate(ctx context.Context, d *schem
 	resourceMap := make(map[string]string)
 	resourceMap["rule_id"] = vvRuleID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceEndpointAnalyticsProfilingRulesRead(ctx, d, m)
 }
 
 func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

@@ -158,7 +158,7 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceQosDeviceInterfaceRead(ctx, d, m)
 }
 
 func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

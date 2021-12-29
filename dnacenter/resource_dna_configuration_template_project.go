@@ -2246,7 +2246,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			resourceMap := make(map[string]string)
 			resourceMap["project_id"] = vvProjectID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceConfigurationTemplateProjectRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -2265,7 +2265,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 	resourceMap := make(map[string]string)
 	resourceMap["project_id"] = vvProjectID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceConfigurationTemplateProjectRead(ctx, d, m)
 }
 
 func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

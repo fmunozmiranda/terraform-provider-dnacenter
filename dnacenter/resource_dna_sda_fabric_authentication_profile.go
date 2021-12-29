@@ -110,7 +110,7 @@ func resourceSdaFabricAuthenticationProfileCreate(ctx context.Context, d *schema
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaFabricAuthenticationProfileRead(ctx, d, m)
 }
 
 func resourceSdaFabricAuthenticationProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

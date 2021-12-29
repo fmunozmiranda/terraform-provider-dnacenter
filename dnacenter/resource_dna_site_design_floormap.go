@@ -77,7 +77,7 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 			resourceMap := make(map[string]string)
 			resourceMap["floor_id"] = vvFloorID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceSiteDesignFloormapRead(ctx, d, m)
 		}
 	}
 	restyResp1, err := client.SiteDesign.CreateFloormap(request1)
@@ -98,7 +98,7 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 	resourceMap := make(map[string]string)
 	resourceMap["floor_id"] = vvFloorID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSiteDesignFloormapRead(ctx, d, m)
 }
 
 func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

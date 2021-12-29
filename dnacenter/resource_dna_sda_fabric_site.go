@@ -82,7 +82,7 @@ func resourceSdaFabricSiteCreate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaFabricSiteRead(ctx, d, m)
 }
 
 func resourceSdaFabricSiteRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

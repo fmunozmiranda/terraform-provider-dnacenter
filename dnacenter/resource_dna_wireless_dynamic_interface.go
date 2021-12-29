@@ -85,7 +85,7 @@ func resourceWirelessDynamicInterfaceCreate(ctx context.Context, d *schema.Resou
 	resourceMap := make(map[string]string)
 	resourceMap["interface_name"] = vvInterfaceName
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceWirelessDynamicInterfaceRead(ctx, d, m)
 }
 
 func resourceWirelessDynamicInterfaceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

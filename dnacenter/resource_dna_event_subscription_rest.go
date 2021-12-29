@@ -145,7 +145,7 @@ func resourceEventSubscriptionRestCreate(ctx context.Context, d *schema.Resource
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceEventSubscriptionRestRead(ctx, d, m)
 }
 
 func resourceEventSubscriptionRestRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

@@ -166,7 +166,7 @@ func resourceEventSubscriptionEmailCreate(ctx context.Context, d *schema.Resourc
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceEventSubscriptionEmailRead(ctx, d, m)
 }
 
 func resourceEventSubscriptionEmailRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

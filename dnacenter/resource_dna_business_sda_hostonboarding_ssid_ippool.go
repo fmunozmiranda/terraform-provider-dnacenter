@@ -97,7 +97,7 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx, d, m)
 }
 
 func resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

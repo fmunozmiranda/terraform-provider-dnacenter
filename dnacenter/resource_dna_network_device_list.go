@@ -202,7 +202,7 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceNetworkDeviceListRead(ctx, d, m)
 }
 
 func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

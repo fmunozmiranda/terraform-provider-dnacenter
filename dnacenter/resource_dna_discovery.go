@@ -686,7 +686,7 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceDiscoveryRead(ctx, d, m)
 		}
 	}
 	resp1, restyResp1, err := client.Discovery.StartDiscovery(request1)
@@ -703,7 +703,7 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceDiscoveryRead(ctx, d, m)
 }
 
 func resourceDiscoveryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

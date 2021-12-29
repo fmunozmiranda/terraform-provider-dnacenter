@@ -166,7 +166,7 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 	resourceMap := make(map[string]string)
 	resourceMap["wireless_profile_name"] = vvWirelessProfileName
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceWirelessProfileRead(ctx, d, m)
 }
 
 func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

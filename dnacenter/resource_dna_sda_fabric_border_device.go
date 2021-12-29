@@ -159,7 +159,7 @@ func resourceSdaFabricBorderDeviceCreate(ctx context.Context, d *schema.Resource
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceSdaFabricBorderDeviceRead(ctx, d, m)
 }
 
 func resourceSdaFabricBorderDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

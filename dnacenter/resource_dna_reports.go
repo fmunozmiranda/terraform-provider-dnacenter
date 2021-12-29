@@ -490,7 +490,7 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 			resourceMap := make(map[string]string)
 			resourceMap["report_id"] = vvReportID
 			d.SetId(joinResourceID(resourceMap))
-			return resourceRead(ctx, d, m)
+			return resourceReportsRead(ctx, d, m)
 		}
 	} else {
 		//TODO
@@ -509,7 +509,7 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 	resourceMap := make(map[string]string)
 	resourceMap["report_id"] = vvReportID
 	d.SetId(joinResourceID(resourceMap))
-	return resourceRead(ctx, d, m)
+	return resourceReportsRead(ctx, d, m)
 }
 
 func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
