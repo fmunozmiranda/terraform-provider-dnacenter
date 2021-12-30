@@ -192,7 +192,14 @@ func resourceSdaFabricBorderDeviceRead(ctx context.Context, d *schema.ResourceDa
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO
+		vItem1 := flattenSdaGetsBorderDeviceDetailFromSdaFabricItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetsBorderDeviceDetailFromSdaFabric response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -210,7 +217,44 @@ func resourceSdaFabricBorderDeviceDelete(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.Sda.GetsBorderDeviceDetailFromSdaFabric(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsSdaGetsBorderDeviceDetailFromSdaFabric(m, getResp1, nil)
+		item1, err := searchSdaGetsBorderDeviceDetailFromSdaFabric(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.Sda.DeletesBorderDeviceFromSdaFabric()
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeletesBorderDeviceFromSdaFabric", err, restyResp1.String(),
+				"Failure at DeletesBorderDeviceFromSdaFabric, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeletesBorderDeviceFromSdaFabric", err,
+			"Failure at DeletesBorderDeviceFromSdaFabric, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

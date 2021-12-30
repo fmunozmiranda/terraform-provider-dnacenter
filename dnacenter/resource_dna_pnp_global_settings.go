@@ -314,7 +314,14 @@ func resourcePnpGlobalSettingsRead(ctx context.Context, d *schema.ResourceData, 
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO
+		vItem1 := flattenDeviceOnboardingPnpGetPnpGlobalSettingsItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetPnpGlobalSettings response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags

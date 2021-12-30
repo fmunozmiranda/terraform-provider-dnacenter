@@ -133,7 +133,14 @@ func resourceSdaVirtualNetworkV2Read(ctx context.Context, d *schema.ResourceData
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO
+		vItem1 := flattenSdaGetVirtualNetworkWithScalableGroupsItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetVirtualNetworkWithScalableGroups response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -184,7 +191,44 @@ func resourceSdaVirtualNetworkV2Delete(ctx context.Context, d *schema.ResourceDa
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vVirtualNetworkName, okVirtualNetworkName := resourceMap["virtual_network_name"]
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.Sda.GetVirtualNetworkWithScalableGroups(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsSdaGetVirtualNetworkWithScalableGroups(m, getResp1, nil)
+		item1, err := searchSdaGetVirtualNetworkWithScalableGroups(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.Sda.DeleteVirtualNetworkWithScalableGroups()
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteVirtualNetworkWithScalableGroups", err, restyResp1.String(),
+				"Failure at DeleteVirtualNetworkWithScalableGroups, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteVirtualNetworkWithScalableGroups", err,
+			"Failure at DeleteVirtualNetworkWithScalableGroups, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

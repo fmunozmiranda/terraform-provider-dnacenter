@@ -141,7 +141,47 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 
   resourceID := d.Id()
   resourceMap := separateResourceID(resourceID)
-    //TODO
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+	vName, okName := resourceMap["name"]
+
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+	
+		getResp1, _, err := client.ApplicationPolicy.GetApplicationSets(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsApplicationPolicyGetApplicationSets(m, getResp1, nil)
+		item1, err := searchApplicationPolicyGetApplicationSets(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.ApplicationPolicy.DeleteApplicationSet()
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteApplicationSet", err, restyResp1.String(),
+				"Failure at DeleteApplicationSet, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteApplicationSet", err,
+			"Failure at DeleteApplicationSet, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
   return diags
 }
@@ -198,10 +238,10 @@ func expandRequestApplicationSetsCreateApplicationSetItem(ctx context.Context, k
 
 
 
-func searchApplicationPolicyGetApplicationSets(m interface{}, items []dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponse, name string, id string) (*dnacentersdkgo.ResponseApplicationPolicy, error) {
+func searchApplicationPolicyGetApplicationSets(m interface{}, items []dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponse, name string, id string) (, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseApplicationPolicy 
+	var foundItem 
 	for _, item := range items {
 		if id != "" && item.ID == id {
 			// Call get by _ method and set value to foundItem and return

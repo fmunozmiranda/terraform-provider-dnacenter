@@ -2717,7 +2717,17 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return resourcePnpDeviceRead(ctx, d, m)
 		}
 	} else {
-		//TODO
+		response2, _, err := client.DeviceOnboardingPnp.GetDeviceList2(nil)
+		if response2 != nil && err == nil {
+			items2 := getAllItemsDeviceOnboardingPnpGetDeviceList2(m, response2, nil)
+			item2, err := searchDeviceOnboardingPnpGetDeviceList2(m, items2, vvName, vvID)
+			if err == nil && item2 != nil {
+				resourceMap := make(map[string]string)
+				resourceMap["id"] = vvID
+				d.SetId(joinResourceID(resourceMap))
+				return resourcePnpDeviceRead(ctx, d, m)
+			}
+		}
 	}
 	resp1, restyResp1, err := client.DeviceOnboardingPnp.AddDevice(request1)
 	if err != nil || resp1 == nil {
@@ -2873,7 +2883,22 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO//TODO
+		vItemName2 := flattenDeviceOnboardingPnpGetDeviceByIDItemName(response2)
+		if err := d.Set("item", vItemName2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDeviceByID response",
+				err))
+			return diags
+		}
+		return diags
+		vItemID2 := flattenDeviceOnboardingPnpGetDeviceByIDItemID(response2)
+		if err := d.Set("item", vItemID2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDeviceByID response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -2953,7 +2978,83 @@ func resourcePnpDeviceDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vLimit, okLimit := resourceMap["limit"]
+	vOffset, okOffset := resourceMap["offset"]
+	vSort, okSort := resourceMap["sort"]
+	vSortOrder, okSortOrder := resourceMap["sort_order"]
+	vSerialNumber, okSerialNumber := resourceMap["serial_number"]
+	vState, okState := resourceMap["state"]
+	vOnbState, okOnbState := resourceMap["onb_state"]
+	vCmState, okCmState := resourceMap["cm_state"]
+	vName, okName := resourceMap["name"]
+	vPid, okPid := resourceMap["pid"]
+	vSource, okSource := resourceMap["source"]
+	vProjectID, okProjectID := resourceMap["project_id"]
+	vWorkflowID, okWorkflowID := resourceMap["workflow_id"]
+	vProjectName, okProjectName := resourceMap["project_name"]
+	vWorkflowName, okWorkflowName := resourceMap["workflow_name"]
+	vSmartAccountID, okSmartAccountID := resourceMap["smart_account_id"]
+	vVirtualAccountID, okVirtualAccountID := resourceMap["virtual_account_id"]
+	vLastContact, okLastContact := resourceMap["last_contact"]
+	vMacAddress, okMacAddress := resourceMap["mac_address"]
+	vHostname, okHostname := resourceMap["hostname"]
+	vSiteName, okSiteName := resourceMap["site_name"]
+	vID, okID := resourceMap["id"]
+
+	method1 := []bool{okLimit, okOffset, okSort, okSortOrder, okSerialNumber, okState, okOnbState, okCmState, okName, okPid, okSource, okProjectID, okWorkflowID, okProjectName, okWorkflowName, okSmartAccountID, okVirtualAccountID, okLastContact, okMacAddress, okHostname, okSiteName}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okID}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.DeviceOnboardingPnp.GetDeviceList2(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsDeviceOnboardingPnpGetDeviceList2(m, getResp1, nil)
+		item1, err := searchDeviceOnboardingPnpGetDeviceList2(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.DeviceOnboardingPnp.DeleteDeviceByIDFromPnp(vvID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteDeviceByIDFromPnp", err, restyResp1.String(),
+				"Failure at DeleteDeviceByIDFromPnp, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteDeviceByIDFromPnp", err,
+			"Failure at DeleteDeviceByIDFromPnp, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

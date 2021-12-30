@@ -182,7 +182,29 @@ func resourceSiteDesignFloormapDelete(ctx context.Context, d *schema.ResourceDat
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vFloorID, okFloorID := resourceMap["floor_id"]
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	restyResp1, err := client.SiteDesign.DeleteFloormap(vvFloorID)
+	if err != nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteFloormap", err, restyResp1.String(),
+				"Failure at DeleteFloormap, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteFloormap", err,
+			"Failure at DeleteFloormap, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

@@ -249,7 +249,50 @@ func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceDat
 
   resourceID := d.Id()
   resourceMap := separateResourceID(resourceID)
-    //TODO
+	vNetworkDeviceID, okNetworkDeviceID := resourceMap["network_device_id"]
+
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+	
+		getResp1, _, err := client.ApplicationPolicy.GetQosDeviceInterfaceInfo(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsApplicationPolicyGetQosDeviceInterfaceInfo(m, getResp1, nil)
+		item1, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	response1, restyResp1, err := client.ApplicationPolicy.DeleteQosDeviceInterfaceInfo(vvID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteQosDeviceInterfaceInfo", err, restyResp1.String(),
+				"Failure at DeleteQosDeviceInterfaceInfo, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteQosDeviceInterfaceInfo", err,
+			"Failure at DeleteQosDeviceInterfaceInfo, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
   return diags
 }

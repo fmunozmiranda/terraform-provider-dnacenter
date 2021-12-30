@@ -493,7 +493,17 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 			return resourceReportsRead(ctx, d, m)
 		}
 	} else {
-		//TODO
+		response2, _, err := client.Reports.GetListOfScheduledReports(nil)
+		if response2 != nil && err == nil {
+			items2 := getAllItemsReportsGetListOfScheduledReports(m, response2, nil)
+			item2, err := searchReportsGetListOfScheduledReports(m, items2, vvName, vvID)
+			if err == nil && item2 != nil {
+				resourceMap := make(map[string]string)
+				resourceMap["report_id"] = vvReportID
+				d.SetId(joinResourceID(resourceMap))
+				return resourceReportsRead(ctx, d, m)
+			}
+		}
 	}
 	resp1, restyResp1, err := client.Reports.CreateOrScheduleAReport(request1)
 	if err != nil || resp1 == nil {
@@ -575,7 +585,14 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO
+		vItem2 := flattenReportsGetAScheduledReportItem(response2)
+		if err := d.Set("item", vItem2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetAScheduledReport response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -593,7 +610,64 @@ func resourceReportsDelete(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vViewGroupID, okViewGroupID := resourceMap["view_group_id"]
+	vViewID, okViewID := resourceMap["view_id"]
+	vReportID, okReportID := resourceMap["report_id"]
+
+	method1 := []bool{okViewGroupID, okViewID}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okReportID}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.Reports.GetListOfScheduledReports(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsReportsGetListOfScheduledReports(m, getResp1, nil)
+		item1, err := searchReportsGetListOfScheduledReports(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.Reports.GetAScheduledReport(vvReportID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.Reports.DeleteAScheduledReport(vvReportID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteAScheduledReport", err, restyResp1.String(),
+				"Failure at DeleteAScheduledReport, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteAScheduledReport", err,
+			"Failure at DeleteAScheduledReport, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

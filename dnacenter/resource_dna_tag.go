@@ -213,7 +213,17 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 			return resourceTagRead(ctx, d, m)
 		}
 	} else {
-		//TODO
+		response2, _, err := client.Tag.GetTag(nil)
+		if response2 != nil && err == nil {
+			items2 := getAllItemsTagGetTag(m, response2, nil)
+			item2, err := searchTagGetTag(m, items2, vvName, vvID)
+			if err == nil && item2 != nil {
+				resourceMap := make(map[string]string)
+				resourceMap["id"] = vvID
+				d.SetId(joinResourceID(resourceMap))
+				return resourceTagRead(ctx, d, m)
+			}
+		}
 	}
 	resp1, restyResp1, err := client.Tag.CreateTag(request1)
 	if err != nil || resp1 == nil {
@@ -331,7 +341,14 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO
+		vItem2 := flattenTagGetTagByIDItem(response2.Response)
+		if err := d.Set("item", vItem2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetTagByID response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -412,7 +429,73 @@ func resourceTagDelete(ctx context.Context, d *schema.ResourceData, m interface{
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vName, okName := resourceMap["name"]
+	vAdditionalInfonameSpace, okAdditionalInfonameSpace := resourceMap["additional_info_name_space"]
+	vAdditionalInfoattributes, okAdditionalInfoattributes := resourceMap["additional_info_attributes"]
+	vLevel, okLevel := resourceMap["level"]
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+	vSize, okSize := resourceMap["size"]
+	vField, okField := resourceMap["field"]
+	vSortBy, okSortBy := resourceMap["sort_by"]
+	vOrder, okOrder := resourceMap["order"]
+	vSystemTag, okSystemTag := resourceMap["system_tag"]
+	vID, okID := resourceMap["id"]
+
+	method1 := []bool{okName, okAdditionalInfonameSpace, okAdditionalInfoattributes, okLevel, okOffset, okLimit, okSize, okField, okSortBy, okOrder, okSystemTag}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okID}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.Tag.GetTag(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsTagGetTag(m, getResp1, nil)
+		item1, err := searchTagGetTag(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.Tag.GetTagByID(vvID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.Tag.DeleteTag(vvID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteTag", err, restyResp1.String(),
+				"Failure at DeleteTag, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteTag", err,
+			"Failure at DeleteTag, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

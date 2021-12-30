@@ -142,7 +142,50 @@ func resourceWirelessDynamicInterfaceDelete(ctx context.Context, d *schema.Resou
 
   resourceID := d.Id()
   resourceMap := separateResourceID(resourceID)
-    //TODO
+	vInterfaceName, okInterfaceName := resourceMap["interface_name"]
+
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+	
+		getResp1, _, err := client.Wireless.GetDynamicInterface(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsWirelessGetDynamicInterface(m, getResp1, nil)
+		item1, err := searchWirelessGetDynamicInterface(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vName != item1.Name {
+			vvName = item1.Name
+		} else {
+			vvName = vName
+		}
+	}
+	restyResp1, err := client.Wireless.DeleteDynamicInterface(vvInterfaceName)
+	if err != nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteDynamicInterface", err, restyResp1.String(),
+				"Failure at DeleteDynamicInterface, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteDynamicInterface", err,
+			"Failure at DeleteDynamicInterface, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
   return diags
 }

@@ -133,7 +133,14 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *sch
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO
+		vItem1 := flattenFabricWirelessGetSSIDToIPPoolMappingItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetSSIDToIPPoolMapping response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags

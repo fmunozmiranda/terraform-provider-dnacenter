@@ -2249,7 +2249,17 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			return resourceConfigurationTemplateProjectRead(ctx, d, m)
 		}
 	} else {
-		//TODO
+		response2, _, err := client.ConfigurationTemplates.GetsAListOfProjects(nil)
+		if response2 != nil && err == nil {
+			items2 := getAllItemsConfigurationTemplatesGetsAListOfProjects(m, response2, nil)
+			item2, err := searchConfigurationTemplatesGetsAListOfProjects(m, items2, vvName, vvID)
+			if err == nil && item2 != nil {
+				resourceMap := make(map[string]string)
+				resourceMap["project_id"] = vvProjectID
+				d.SetId(joinResourceID(resourceMap))
+				return resourceConfigurationTemplateProjectRead(ctx, d, m)
+			}
+		}
 	}
 	resp1, restyResp1, err := client.ConfigurationTemplates.CreateProject(request1)
 	if err != nil || resp1 == nil {
@@ -2331,7 +2341,14 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO
+		vItem2 := flattenConfigurationTemplatesGetsTheDetailsOfAGivenProjectItem(response2)
+		if err := d.Set("item", vItem2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetsTheDetailsOfAGivenProject response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -2403,7 +2420,64 @@ func resourceConfigurationTemplateProjectDelete(ctx context.Context, d *schema.R
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vName, okName := resourceMap["name"]
+	vSortOrder, okSortOrder := resourceMap["sort_order"]
+	vProjectID, okProjectID := resourceMap["project_id"]
+
+	method1 := []bool{okName, okSortOrder}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okProjectID}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.ConfigurationTemplates.GetsAListOfProjects(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsConfigurationTemplatesGetsAListOfProjects(m, getResp1, nil)
+		item1, err := searchConfigurationTemplatesGetsAListOfProjects(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvProjectID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.ConfigurationTemplates.DeletesTheProject(vvProjectID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeletesTheProject", err, restyResp1.String(),
+				"Failure at DeletesTheProject, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeletesTheProject", err,
+			"Failure at DeletesTheProject, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

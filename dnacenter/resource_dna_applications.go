@@ -332,7 +332,47 @@ func resourceApplicationsDelete(ctx context.Context, d *schema.ResourceData, m i
 
   resourceID := d.Id()
   resourceMap := separateResourceID(resourceID)
-    //TODO
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+	vName, okName := resourceMap["name"]
+
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+	
+		getResp1, _, err := client.ApplicationPolicy.GetApplications(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsApplicationPolicyGetApplications(m, getResp1, nil)
+		item1, err := searchApplicationPolicyGetApplications(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.ApplicationPolicy.DeleteApplication()
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteApplication", err, restyResp1.String(),
+				"Failure at DeleteApplication, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteApplication", err,
+			"Failure at DeleteApplication, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
   return diags
 }

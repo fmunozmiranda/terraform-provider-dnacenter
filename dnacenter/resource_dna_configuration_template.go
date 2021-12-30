@@ -2204,7 +2204,14 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO
+		vItem2 := flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItem(response2)
+		if err := d.Set("item", vItem2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetsDetailsOfAGivenTemplate response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -2286,7 +2293,74 @@ func resourceConfigurationTemplateDelete(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vProjectID, okProjectID := resourceMap["project_id"]
+	vSoftwareType, okSoftwareType := resourceMap["software_type"]
+	vSoftwareVersion, okSoftwareVersion := resourceMap["software_version"]
+	vProductFamily, okProductFamily := resourceMap["product_family"]
+	vProductSeries, okProductSeries := resourceMap["product_series"]
+	vProductType, okProductType := resourceMap["product_type"]
+	vFilterConflictingTemplates, okFilterConflictingTemplates := resourceMap["filter_conflicting_templates"]
+	vTags, okTags := resourceMap["tags"]
+	vProjectNames, okProjectNames := resourceMap["project_names"]
+	vUnCommitted, okUnCommitted := resourceMap["un_committed"]
+	vSortOrder, okSortOrder := resourceMap["sort_order"]
+	vTemplateID, okTemplateID := resourceMap["template_id"]
+	vLatestVersion, okLatestVersion := resourceMap["latest_version"]
+
+	method1 := []bool{okProjectID, okSoftwareType, okSoftwareVersion, okProductFamily, okProductSeries, okProductType, okFilterConflictingTemplates, okTags, okProjectNames, okUnCommitted, okSortOrder}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okTemplateID, okLatestVersion}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.ConfigurationTemplates.GetsTheTemplatesAvailable(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsConfigurationTemplatesGetsTheTemplatesAvailable(m, getResp1, nil)
+		item1, err := searchConfigurationTemplatesGetsTheTemplatesAvailable(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.ConfigurationTemplates.DeletesTheTemplate(vvTemplateID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeletesTheTemplate", err, restyResp1.String(),
+				"Failure at DeletesTheTemplate, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeletesTheTemplate", err,
+			"Failure at DeletesTheTemplate, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

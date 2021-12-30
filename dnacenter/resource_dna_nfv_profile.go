@@ -435,7 +435,41 @@ func resourceNfvProfileDelete(ctx context.Context, d *schema.ResourceData, m int
 
   resourceID := d.Id()
   resourceMap := separateResourceID(resourceID)
-    //TODO
+	vID, okID := resourceMap["id"]
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+	vName, okName := resourceMap["name"]
+
+
+	selectedMethod := 1
+	var vvID string
+	var vvName string
+	if selectedMethod == 1 {
+		vvID = vID
+		getResp, _, err := client.SiteDesign.GetNfvProfile(vvID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.SiteDesign.DeleteNfvProfile(vvID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteNfvProfile", err, restyResp1.String(),
+				"Failure at DeleteNfvProfile, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteNfvProfile", err,
+			"Failure at DeleteNfvProfile, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
   return diags
 }

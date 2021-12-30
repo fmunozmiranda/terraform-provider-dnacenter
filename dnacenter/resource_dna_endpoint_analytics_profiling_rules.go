@@ -432,7 +432,17 @@ func resourceEndpointAnalyticsProfilingRulesCreate(ctx context.Context, d *schem
 			return resourceEndpointAnalyticsProfilingRulesRead(ctx, d, m)
 		}
 	} else {
-		//TODO
+		response2, _, err := client.Policy.GetListOfProfilingRules(nil)
+		if response2 != nil && err == nil {
+			items2 := getAllItemsPolicyGetListOfProfilingRules(m, response2, nil)
+			item2, err := searchPolicyGetListOfProfilingRules(m, items2, vvName, vvID)
+			if err == nil && item2 != nil {
+				resourceMap := make(map[string]string)
+				resourceMap["rule_id"] = vvRuleID
+				d.SetId(joinResourceID(resourceMap))
+				return resourceEndpointAnalyticsProfilingRulesRead(ctx, d, m)
+			}
+		}
 	}
 	resp1, restyResp1, err := client.Policy.CreateAProfilingRule(request1)
 	if err != nil || resp1 == nil {
@@ -530,7 +540,14 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO
+		vItem2 := flattenPolicyGetDetailsOfASingleProfilingRuleItem(response2)
+		if err := d.Set("item", vItem2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDetailsOfASingleProfilingRule response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -595,7 +612,68 @@ func resourceEndpointAnalyticsProfilingRulesDelete(ctx context.Context, d *schem
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vRuleType, okRuleType := resourceMap["rule_type"]
+	vIncludeDeleted, okIncludeDeleted := resourceMap["include_deleted"]
+	vLimit, okLimit := resourceMap["limit"]
+	vOffset, okOffset := resourceMap["offset"]
+	vSortBy, okSortBy := resourceMap["sort_by"]
+	vOrder, okOrder := resourceMap["order"]
+	vRuleID, okRuleID := resourceMap["rule_id"]
+
+	method1 := []bool{okRuleType, okIncludeDeleted, okLimit, okOffset, okSortBy, okOrder}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okRuleID}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.Policy.GetListOfProfilingRules(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsPolicyGetListOfProfilingRules(m, getResp1, nil)
+		item1, err := searchPolicyGetListOfProfilingRules(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	restyResp1, err := client.Policy.DeleteAnExistingProfilingRule(vvRuleID)
+	if err != nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteAnExistingProfilingRule", err, restyResp1.String(),
+				"Failure at DeleteAnExistingProfilingRule, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteAnExistingProfilingRule", err,
+			"Failure at DeleteAnExistingProfilingRule, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }

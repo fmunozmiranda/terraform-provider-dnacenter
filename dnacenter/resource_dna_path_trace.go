@@ -3265,7 +3265,17 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return resourcePathTraceRead(ctx, d, m)
 		}
 	} else {
-		//TODO
+		response2, _, err := client.PathTrace.RetrivesAllPreviousPathtracesSummary(nil)
+		if response2 != nil && err == nil {
+			items2 := getAllItemsPathTraceRetrivesAllPreviousPathtracesSummary(m, response2, nil)
+			item2, err := searchPathTraceRetrivesAllPreviousPathtracesSummary(m, items2, vvName, vvID)
+			if err == nil && item2 != nil {
+				resourceMap := make(map[string]string)
+				resourceMap["flow_analysis_id"] = vvFlowAnalysisID
+				d.SetId(joinResourceID(resourceMap))
+				return resourcePathTraceRead(ctx, d, m)
+			}
+		}
 	}
 	resp1, restyResp1, err := client.PathTrace.InitiateANewPathtrace(request1)
 	if err != nil || resp1 == nil {
@@ -3399,7 +3409,14 @@ func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interf
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		//TODO
+		vItem2 := flattenPathTraceRetrievesPreviousPathtraceItem(response2.Response)
+		if err := d.Set("item", vItem2); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting RetrievesPreviousPathtrace response",
+				err))
+			return diags
+		}
+		return diags
 
 	}
 	return diags
@@ -3417,7 +3434,77 @@ func resourcePathTraceDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	//TODO
+	vPeriodicRefresh, okPeriodicRefresh := resourceMap["periodic_refresh"]
+	vSourceIP, okSourceIP := resourceMap["source_ip"]
+	vDestIP, okDestIP := resourceMap["dest_ip"]
+	vSourcePort, okSourcePort := resourceMap["source_port"]
+	vDestPort, okDestPort := resourceMap["dest_port"]
+	vGtCreateTime, okGtCreateTime := resourceMap["gt_create_time"]
+	vLtCreateTime, okLtCreateTime := resourceMap["lt_create_time"]
+	vProtocol, okProtocol := resourceMap["protocol"]
+	vStatus, okStatus := resourceMap["status"]
+	vTaskID, okTaskID := resourceMap["task_id"]
+	vLastUpdateTime, okLastUpdateTime := resourceMap["last_update_time"]
+	vLimit, okLimit := resourceMap["limit"]
+	vOffset, okOffset := resourceMap["offset"]
+	vOrder, okOrder := resourceMap["order"]
+	vSortBy, okSortBy := resourceMap["sort_by"]
+	vFlowAnalysisID, okFlowAnalysisID := resourceMap["flow_analysis_id"]
+
+	method1 := []bool{okPeriodicRefresh, okSourceIP, okDestIP, okSourcePort, okDestPort, okGtCreateTime, okLtCreateTime, okProtocol, okStatus, okTaskID, okLastUpdateTime, okLimit, okOffset, okOrder, okSortBy}
+	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method2 := []bool{okFlowAnalysisID}
+	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+
+	selectedMethod := pickMethod([][]bool{method1, method2})
+	var vvID string
+	var vvName string
+	// REVIEW: Add getAllItems and search function to get missing params
+	if selectedMethod == 1 {
+
+		getResp1, _, err := client.PathTrace.RetrivesAllPreviousPathtracesSummary(nil)
+		if err != nil || getResp1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		items1 := getAllItemsPathTraceRetrivesAllPreviousPathtracesSummary(m, getResp1, nil)
+		item1, err := searchPathTraceRetrivesAllPreviousPathtracesSummary(m, items1, vName, vID)
+		if err != nil || item1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		if vID != item1.ID {
+			vvID = item1.ID
+		} else {
+			vvID = vID
+		}
+	}
+	if selectedMethod == 2 {
+		vvID = vID
+		getResp, _, err := client.PathTrace.RetrievesPreviousPathtrace(vvFlowAnalysisID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	response1, restyResp1, err := client.PathTrace.DeletesPathtraceByID(vvFlowAnalysisID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeletesPathtraceByID", err, restyResp1.String(),
+				"Failure at DeletesPathtraceByID, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeletesPathtraceByID", err,
+			"Failure at DeletesPathtraceByID, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }
