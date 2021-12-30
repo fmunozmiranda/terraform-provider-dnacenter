@@ -1,81 +1,82 @@
 package dnacenter
 
 import (
-	"context"
-	"fmt"
-	"reflect"
+  "context"
+  "fmt"
+  "reflect"
 
-	"log"
+  "log"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+  dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceSNMPProperties() *schema.Resource {
-	return &schema.Resource{
-		Description: `It manages create and read operations on Discovery.
+  return &schema.Resource{
+    Description: `It manages create and read operations on Discovery.
 
 - Adds SNMP properties
 `,
 
-		CreateContext: resourceSNMPPropertiesCreate,
-		ReadContext:   resourceSNMPPropertiesRead,
-		UpdateContext: resourceSNMPPropertiesUpdate,
-		DeleteContext: resourceSNMPPropertiesDelete,
-		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
-		},
+    CreateContext: resourceSNMPPropertiesCreate,
+    ReadContext:   resourceSNMPPropertiesRead,
+    UpdateContext: resourceSNMPPropertiesUpdate,
+    DeleteContext: resourceSNMPPropertiesDelete,
+    Importer: &schema.ResourceImporter{
+      StateContext: schema.ImportStatePassthroughContext,
+    },
 
-		Schema: map[string]*schema.Schema{
-			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"parameters": &schema.Schema{
-				Description: `Array of RequestDiscoveryCreateUpdateSNMPProperties`,
-				Type:        schema.TypeList,
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"id": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"instance_tenant_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"instance_uuid": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"int_value": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"system_property_name": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-		},
-	}
+    Schema: map[string]*schema.Schema{
+      "last_updated": &schema.Schema{
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+      "parameters": &schema.Schema{
+        Description: `Array of RequestDiscoveryCreateUpdateSNMPProperties`,
+        Type:        schema.TypeList,
+        Optional:    true,
+        Elem: &schema.Resource{
+          Schema: map[string]*schema.Schema{
+          
+            "id": &schema.Schema{
+              Type:     schema.TypeString,
+              Optional: true,
+            },
+            "instance_tenant_id": &schema.Schema{
+              Type:     schema.TypeString,
+              Optional: true,
+            },
+            "instance_uuid": &schema.Schema{
+              Type:     schema.TypeString,
+              Optional: true,
+            },
+            "int_value": &schema.Schema{
+              Type:     schema.TypeInt,
+              Optional: true,
+            },
+            "system_property_name": &schema.Schema{
+              Type:     schema.TypeString,
+              Optional: true,
+            },
+          },
+        },
+      },
+    },
+  }
 }
 
 func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
-	var diags diag.Diagnostics
+  var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
+  
 	resp1, restyResp1, err := client.Discovery.CreateUpdateSNMPProperties(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -87,33 +88,36 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 			"Failure when executing CreateUpdateSNMPProperties", err))
 		return diags
 	}
-	resourceMap := make(map[string]string)
-	d.SetId(joinResourceID(resourceMap))
-	return resourceSNMPPropertiesRead(ctx, d, m)
+				resourceMap := make(map[string]string)
+			d.SetId(joinResourceID(resourceMap))
+			return resourceSNMPPropertiesRead(ctx, d, m)
 }
 
 func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
+
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetSNMPProperties")
-
+	
 		response1, restyResp1, err := client.Discovery.GetSNMPProperties()
 
+	
+	
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetSNMPProperties", err,
-				"Failure at GetSNMPProperties, unexpected response", ""))
-			return diags
+		  if restyResp1 != nil {
+		    log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		  }
+		  diags = append(diags, diagErrorWithAlt(
+		    "Failure when executing GetSNMPProperties", err,
+		    "Failure at GetSNMPProperties, unexpected response", ""))
+		  return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
@@ -121,54 +125,56 @@ func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m i
 		//TODO Code Items for DNAC
 
 	}
-	return diags
+  return diags
 }
 
 func resourceSNMPPropertiesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceSNMPPropertiesRead(ctx, d, m)
+  return resourceSNMPPropertiesRead(ctx, d, m)
 }
 
 func resourceSNMPPropertiesDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	var diags diag.Diagnostics
-	// NOTE: Unable to delete SNMPProperties on Dna Center
-	//       Returning empty diags to delete it on Terraform
-	return diags
+  var diags diag.Diagnostics
+  // NOTE: Unable to delete SNMPProperties on Dna Center
+  //       Returning empty diags to delete it on Terraform
+  return diags
 }
 func expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateUpdateSNMPProperties {
 	request := dnacentersdkgo.RequestDiscoveryCreateUpdateSNMPProperties{}
 	if v := expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemDiscoveryCreateUpdateSNMPProperties {
 	request := []dnacentersdkgo.RequestItemDiscoveryCreateUpdateSNMPProperties{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-		return nil
+			return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+			return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
+			i := expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+			if i != nil {
+				request = append(request, *i)
+			}
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemDiscoveryCreateUpdateSNMPProperties {
 	request := dnacentersdkgo.RequestItemDiscoveryCreateUpdateSNMPProperties{}
@@ -187,11 +193,46 @@ func expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItem(ctx context.Conte
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".system_property_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".system_property_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".system_property_name")))) {
 		request.SystemPropertyName = interfaceToString(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
 
-//TODO
+
+
+
+func searchDiscoveryGetSNMPProperties(m interface{}, items []dnacentersdkgo.ResponseDiscoveryGetSNMPPropertiesResponse, name string, id string) (, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem 
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseDiscovery
+			getItem, _, err = client.Discovery.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseDiscovery
+			getItem, _, err = client.Discovery.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

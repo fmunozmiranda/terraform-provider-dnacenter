@@ -846,4 +846,36 @@ func expandRequestReportsCreateOrScheduleAReportViewFormat(ctx context.Context, 
 	return &request
 }
 
-//TODO
+func searchReportsGetListOfScheduledReports(m interface{}, items []dnacentersdkgo.ResponseReportsGetListOfScheduledReports, name string, id string) (*dnacentersdkgo.ResponseReportsGetAScheduledReport, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseReportsGetAScheduledReport
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseReportsGetAScheduledReport
+			getItem, _, err = client.Reports.GetAScheduledReport(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetAScheduledReport")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseReportsGetAScheduledReport
+			getItem, _, err = client.Reports.GetAScheduledReport(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetAScheduledReport")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

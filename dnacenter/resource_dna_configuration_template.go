@@ -3337,4 +3337,36 @@ func expandRequestConfigurationTemplateUpdateTemplateValidationErrorsTemplateErr
 	return &request
 }
 
-//TODO
+func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, items []dnacentersdkgo.ResponseConfigurationTemplatesGetsTheTemplatesAvailable, name string, id string) (*dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate
+			getItem, _, err = client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetsDetailsOfAGivenTemplate")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate
+			getItem, _, err = client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetsDetailsOfAGivenTemplate")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

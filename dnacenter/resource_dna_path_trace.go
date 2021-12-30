@@ -3454,4 +3454,36 @@ func expandRequestPathTraceInitiateANewPathtrace(ctx context.Context, key string
 	return &request
 }
 
-//TODO
+func searchPathTraceRetrivesAllPreviousPathtracesSummary(m interface{}, items []dnacentersdkgo.ResponsePathTraceRetrivesAllPreviousPathtracesSummaryResponse, name string, id string) (*dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtraceResponse, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtraceResponse
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtrace
+			getItem, _, err = client.PathTrace.RetrievesPreviousPathtrace(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "RetrievesPreviousPathtrace")
+			}
+			foundItem = getItem.Response
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtrace
+			getItem, _, err = client.PathTrace.RetrievesPreviousPathtrace(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "RetrievesPreviousPathtrace")
+			}
+			foundItem = getItem.Response
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

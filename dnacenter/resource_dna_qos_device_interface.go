@@ -1,21 +1,21 @@
 package dnacenter
 
 import (
-	"context"
-	"fmt"
-	"reflect"
+  "context"
+  "fmt"
+  "reflect"
 
-	"log"
+  "log"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+  dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceQosDeviceInterface() *schema.Resource {
-	return &schema.Resource{
-		Description: `It manages create, read, update and delete operations on Application Policy.
+  return &schema.Resource{
+    Description: `It manages create, read, update and delete operations on Application Policy.
 
 - Update existing qos device interface infos associate with network device id
 
@@ -25,123 +25,124 @@ WAN, to associate WAN interfaces with specific SP Profile and to be able to defi
 - Delete all qos device interface infos associate with network device id
 `,
 
-		CreateContext: resourceQosDeviceInterfaceCreate,
-		ReadContext:   resourceQosDeviceInterfaceRead,
-		UpdateContext: resourceQosDeviceInterfaceUpdate,
-		DeleteContext: resourceQosDeviceInterfaceDelete,
-		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
-		},
+    CreateContext: resourceQosDeviceInterfaceCreate,
+    ReadContext:   resourceQosDeviceInterfaceRead,
+    UpdateContext: resourceQosDeviceInterfaceUpdate,
+    DeleteContext: resourceQosDeviceInterfaceDelete,
+    Importer: &schema.ResourceImporter{
+      StateContext: schema.ImportStatePassthroughContext,
+    },
 
-		Schema: map[string]*schema.Schema{
-			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"parameters": &schema.Schema{
-				Description: `Array of RequestApplicationPolicyCreateQosDeviceInterfaceInfo`,
-				Type:        schema.TypeList,
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"excluded_interfaces": &schema.Schema{
-							Description: `Excluded interfaces ids
+    Schema: map[string]*schema.Schema{
+      "last_updated": &schema.Schema{
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+      "parameters": &schema.Schema{
+        Description: `Array of RequestApplicationPolicyCreateQosDeviceInterfaceInfo`,
+        Type:        schema.TypeList,
+        Optional:    true,
+        Elem: &schema.Resource{
+          Schema: map[string]*schema.Schema{
+          
+            "excluded_interfaces": &schema.Schema{
+              Description: `Excluded interfaces ids
 `,
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"id": &schema.Schema{
-							Description: `Id of Qos device info
+              Type:        schema.TypeList,
+              Optional:    true,
+              Elem:        &schema.Schema{
+                Type:      schema.TypeString,
+              },
+            },
+            "id": &schema.Schema{
+              Description: `Id of Qos device info
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": &schema.Schema{
-							Description: `Device name
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "name": &schema.Schema{
+              Description: `Device name
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"network_device_id": &schema.Schema{
-							Description: `Network device id
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "network_device_id": &schema.Schema{
+              Description: `Network device id
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"qos_device_interface_info": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"dmvpn_remote_sites_bw": &schema.Schema{
-										Description: `Dmvpn remote sites bandwidth
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "qos_device_interface_info": &schema.Schema{
+              Type:     schema.TypeList,
+              Optional: true,
+              Elem: &schema.Resource{
+                Schema: map[string]*schema.Schema{
+                
+                  "dmvpn_remote_sites_bw": &schema.Schema{
+                    Description: `Dmvpn remote sites bandwidth
 `,
-										Type:     schema.TypeList,
-										Optional: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeInt,
-										},
-									},
-									"instance_id": &schema.Schema{
-										Description: `Instance id
+                    Type:        schema.TypeList,
+                    Optional:    true,
+                    Elem:        &schema.Schema{
+                      Type:      schema.TypeInt,
+                    },
+                  },
+                  "instance_id": &schema.Schema{
+                    Description: `Instance id
 `,
-										Type:     schema.TypeInt,
-										Optional: true,
-									},
-									"interface_id": &schema.Schema{
-										Description: `Interface id
+                    Type:        schema.TypeInt,
+                    Optional:    true,
+                  },
+                  "interface_id": &schema.Schema{
+                    Description: `Interface id
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"interface_name": &schema.Schema{
-										Description: `Interface name
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "interface_name": &schema.Schema{
+                    Description: `Interface name
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"label": &schema.Schema{
-										Description: `SP Profile name
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "label": &schema.Schema{
+                    Description: `SP Profile name
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"role": &schema.Schema{
-										Description: `Interface role
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "role": &schema.Schema{
+                    Description: `Interface role
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"upload_bw": &schema.Schema{
-										Description: `Upload bandwidth
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "upload_bw": &schema.Schema{
+                    Description: `Upload bandwidth
 `,
-										Type:     schema.TypeInt,
-										Optional: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
+                    Type:        schema.TypeInt,
+                    Optional:    true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  }
 }
 
 func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
-	var diags diag.Diagnostics
+  var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfo(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
+  
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
 	resp1, restyResp1, err := client.ApplicationPolicy.CreateQosDeviceInterfaceInfo(request1)
@@ -155,40 +156,43 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 			"Failure when executing CreateQosDeviceInterfaceInfo", err))
 		return diags
 	}
-	resourceMap := make(map[string]string)
-	resourceMap["id"] = vvID
-	d.SetId(joinResourceID(resourceMap))
-	return resourceQosDeviceInterfaceRead(ctx, d, m)
+				resourceMap := make(map[string]string)
+			resourceMap["id"] = vvID
+			d.SetId(joinResourceID(resourceMap))
+			return resourceQosDeviceInterfaceRead(ctx, d, m)
 }
 
 func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
 	vNetworkDeviceID, okNetworkDeviceID := resourceMap["network_device_id"]
+
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetQosDeviceInterfaceInfo")
 		queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams{}
 
-		if okNetworkDeviceID {
-			queryParams1.NetworkDeviceID = vNetworkDeviceID
-		}
+	  if okNetworkDeviceID {
+	    queryParams1.NetworkDeviceID = vNetworkDeviceID
+	  }
 
 		response1, restyResp1, err := client.ApplicationPolicy.GetQosDeviceInterfaceInfo(&queryParams1)
 
+	
+	
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetQosDeviceInterfaceInfo", err,
-				"Failure at GetQosDeviceInterfaceInfo, unexpected response", ""))
-			return diags
+		  if restyResp1 != nil {
+		    log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		  }
+		  diags = append(diags, diagErrorWithAlt(
+		    "Failure when executing GetQosDeviceInterfaceInfo", err,
+		    "Failure at GetQosDeviceInterfaceInfo, unexpected response", ""))
+		  return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
@@ -196,17 +200,18 @@ func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData,
 		//TODO Code Items for DNAC
 
 	}
-	return diags
+  return diags
 }
 
 func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
-	var diags diag.Diagnostics
+  var diags diag.Diagnostics
 
-	resourceID := d.Id()
+  resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vNetworkDeviceID, okNetworkDeviceID := resourceMap["network_device_id"]
+
 
 	selectedMethod := 1
 	var vvID string
@@ -214,11 +219,11 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx, "item.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-		response1, restyResp1, err := client.ApplicationPolicy.UpdateQosDeviceInterfaceInfo(request1)
-		if err != nil || response1 == nil {
+	log.Printf("[DEBUG] Name used for update operation %s", vvName)
+	request1 := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx, "item.0", d)
+	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	response1, restyResp1, err := client.ApplicationPolicy.UpdateQosDeviceInterfaceInfo(request1)
+	if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
 				diags = append(diags, diagErrorWithAltAndResponse(
@@ -227,62 +232,64 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 				return diags
 			}
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing UpdateQosDeviceInterfaceInfo", err,
-				"Failure at UpdateQosDeviceInterfaceInfo, unexpected response", ""))
+			  "Failure when executing UpdateQosDeviceInterfaceInfo", err,
+			  "Failure at UpdateQosDeviceInterfaceInfo, unexpected response", ""))
 			return diags
 		}
 	}
 
-	return resourceQosDeviceInterfaceRead(ctx, d, m)
+  return resourceQosDeviceInterfaceRead(ctx, d, m)
 }
 
 func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+  
+  client := m.(*dnacentersdkgo.Client)
 
-	client := m.(*dnacentersdkgo.Client)
+  var diags diag.Diagnostics
 
-	var diags diag.Diagnostics
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
+    //TODO
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-	//TODO
-
-	return diags
+  return diags
 }
 func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestApplicationPolicyCreateQosDeviceInterfaceInfo{}
 	if v := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfo {
 	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfo{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-		return nil
+			return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+			return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
+			i := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+			if i != nil {
+				request = append(request, *i)
+			}
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfo{}
@@ -298,36 +305,38 @@ func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItem(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".qos_device_interface_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".qos_device_interface_info")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".qos_device_interface_info")))) {
 		request.QosDeviceInterfaceInfo = expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfoArray(ctx, key+".qos_device_interface_info", d)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfoArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfoQosDeviceInterfaceInfo {
 	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfoQosDeviceInterfaceInfo{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-		return nil
+			return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+			return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfo(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
+			i := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfo(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+			if i != nil {
+				request = append(request, *i)
+			}
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfoQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestItemApplicationPolicyCreateQosDeviceInterfaceInfoQosDeviceInterfaceInfo{}
@@ -349,48 +358,51 @@ func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemQosDeviceInt
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".upload_bw")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".upload_bw")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".upload_bw")))) {
 		request.UploadBW = interfaceToIntPtr(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyUpdateQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestApplicationPolicyUpdateQosDeviceInterfaceInfo{}
 	if v := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemArray(ctx, key+".", d); v != nil {
 		request = *v
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfo {
 	request := []dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfo{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-		return nil
+			return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+			return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
+			i := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItem(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+			if i != nil {
+				request = append(request, *i)
+			}
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItem(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfo{}
@@ -409,36 +421,38 @@ func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItem(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".qos_device_interface_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".qos_device_interface_info")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".qos_device_interface_info")))) {
 		request.QosDeviceInterfaceInfo = expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfoArray(ctx, key+".qos_device_interface_info", d)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfoArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfoQosDeviceInterfaceInfo {
 	request := []dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfoQosDeviceInterfaceInfo{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-		return nil
+			return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+			return nil
 	}
 	for item_no, _ := range objs {
-		i := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfo(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-		if i != nil {
-			request = append(request, *i)
-		}
+			i := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfo(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+			if i != nil {
+				request = append(request, *i)
+			}
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInterfaceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfoQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestItemApplicationPolicyUpdateQosDeviceInterfaceInfoQosDeviceInterfaceInfo{}
@@ -463,11 +477,46 @@ func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInt
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".upload_bw")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".upload_bw")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".upload_bw")))) {
 		request.UploadBW = interfaceToIntPtr(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
 
-//TODO
+
+
+
+func searchApplicationPolicyGetQosDeviceInterfaceInfo(m interface{}, items []dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse, name string, id string) (, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem 
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseApplicationPolicy
+			getItem, _, err = client.ApplicationPolicy.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseApplicationPolicy
+			getItem, _, err = client.ApplicationPolicy.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

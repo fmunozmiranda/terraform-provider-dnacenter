@@ -1,21 +1,21 @@
 package dnacenter
 
 import (
-	"context"
-	"fmt"
-	"reflect"
+  "context"
+  "fmt"
+  "reflect"
 
-	"log"
+  "log"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+  dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceWirelessEnterpriseSSID() *schema.Resource {
-	return &schema.Resource{
-		Description: `It manages create, read, update and delete operations on Wireless.
+  return &schema.Resource{
+    Description: `It manages create, read, update and delete operations on Wireless.
 
 - Creates enterprise SSID
 
@@ -24,171 +24,172 @@ func resourceWirelessEnterpriseSSID() *schema.Resource {
 - Deletes given enterprise SSID
 `,
 
-		CreateContext: resourceWirelessEnterpriseSSIDCreate,
-		ReadContext:   resourceWirelessEnterpriseSSIDRead,
-		UpdateContext: resourceWirelessEnterpriseSSIDUpdate,
-		DeleteContext: resourceWirelessEnterpriseSSIDDelete,
-		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
-		},
+    CreateContext: resourceWirelessEnterpriseSSIDCreate,
+    ReadContext:   resourceWirelessEnterpriseSSIDRead,
+    UpdateContext: resourceWirelessEnterpriseSSIDUpdate,
+    DeleteContext: resourceWirelessEnterpriseSSIDDelete,
+    Importer: &schema.ResourceImporter{
+      StateContext: schema.ImportStatePassthroughContext,
+    },
 
-		Schema: map[string]*schema.Schema{
-			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"parameters": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"basic_service_set_client_idle_timeout": &schema.Schema{
-							Description: `Basic Service Set Client Idle Timeout
+    Schema: map[string]*schema.Schema{
+      "last_updated": &schema.Schema{
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+      "parameters": &schema.Schema{
+        Type:     schema.TypeList,
+        Optional: true,
+        Elem: &schema.Resource{
+          Schema: map[string]*schema.Schema{
+          
+            "basic_service_set_client_idle_timeout": &schema.Schema{
+              Description: `Basic Service Set Client Idle Timeout
 `,
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"client_exclusion_timeout": &schema.Schema{
-							Description: `Client Exclusion Timeout
+              Type:        schema.TypeInt,
+              Optional:    true,
+            },
+            "client_exclusion_timeout": &schema.Schema{
+              Description: `Client Exclusion Timeout
 `,
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"enable_basic_service_set_max_idle": &schema.Schema{
-							Description: `Enable Basic Service Set Max Idle 
+              Type:        schema.TypeInt,
+              Optional:    true,
+            },
+            "enable_basic_service_set_max_idle": &schema.Schema{
+              Description: `Enable Basic Service Set Max Idle 
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_broadcast_ssi_d": &schema.Schema{
-							Description: `Enable Broadcast SSID
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_broadcast_ssi_d": &schema.Schema{
+              Description: `Enable Broadcast SSID
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_client_exclusion": &schema.Schema{
-							Description: `Enable Client Exclusion
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_client_exclusion": &schema.Schema{
+              Description: `Enable Client Exclusion
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_directed_multicast_service": &schema.Schema{
-							Description: `Enable Directed Multicast Service
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_directed_multicast_service": &schema.Schema{
+              Description: `Enable Directed Multicast Service
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_fast_lane": &schema.Schema{
-							Description: `Enable Fast Lane
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_fast_lane": &schema.Schema{
+              Description: `Enable Fast Lane
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_mac_filtering": &schema.Schema{
-							Description: `Enable MAC Filtering
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_mac_filtering": &schema.Schema{
+              Description: `Enable MAC Filtering
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_neighbor_list": &schema.Schema{
-							Description: `Enable Neighbor List
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_neighbor_list": &schema.Schema{
+              Description: `Enable Neighbor List
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_session_time_out": &schema.Schema{
-							Description: `Enable Session Timeout
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_session_time_out": &schema.Schema{
+              Description: `Enable Session Timeout
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"fast_transition": &schema.Schema{
-							Description: `Fast Transition
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "fast_transition": &schema.Schema{
+              Description: `Fast Transition
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"mfp_client_protection": &schema.Schema{
-							Description: `Management Frame Protection Client
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "mfp_client_protection": &schema.Schema{
+              Description: `Management Frame Protection Client
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": &schema.Schema{
-							Description: `Enter SSID Name
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "name": &schema.Schema{
+              Description: `Enter SSID Name
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"passphrase": &schema.Schema{
-							Description: `Pass Phrase (Only applicable for SSID with PERSONAL security level)
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "passphrase": &schema.Schema{
+              Description: `Pass Phrase (Only applicable for SSID with PERSONAL security level)
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"radio_policy": &schema.Schema{
-							Description: `Radio Policy. Allowed values are 'Dual band operation (2.4GHz and 5GHz)', 'Dual band operation with band select', '5GHz only', '2.4GHz only'.
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "radio_policy": &schema.Schema{
+              Description: `Radio Policy. Allowed values are 'Dual band operation (2.4GHz and 5GHz)', 'Dual band operation with band select', '5GHz only', '2.4GHz only'.
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"security_level": &schema.Schema{
-							Description: `Security Level
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "security_level": &schema.Schema{
+              Description: `Security Level
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"session_time_out": &schema.Schema{
-							Description: `Session Time Out
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "session_time_out": &schema.Schema{
+              Description: `Session Time Out
 `,
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"ssid_name": &schema.Schema{
-							Description: `ssidName path parameter. Enter the SSID name to be deleted
+              Type:        schema.TypeInt,
+              Optional:    true,
+            },
+            "ssid_name": &schema.Schema{
+              Description: `ssidName path parameter. Enter the SSID name to be deleted
 `,
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"traffic_type": &schema.Schema{
-							Description: `Traffic Type
+              Type:        schema.TypeString,
+              Required:    true,
+            },
+            "traffic_type": &schema.Schema{
+              Description: `Traffic Type
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-		},
-	}
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+          },
+        },
+      },
+    },
+  }
 }
 
 func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
-	var diags diag.Diagnostics
+  var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestWirelessEnterpriseSSIDCreateEnterpriseSSID(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
+  
 	vSSIDName, okSSIDName := resourceItem["ssid_name"]
 	vvSSIDName := interfaceToString(vSSIDName)
 	resp1, restyResp1, err := client.Wireless.CreateEnterpriseSSID(request1)
@@ -202,40 +203,43 @@ func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.Resourc
 			"Failure when executing CreateEnterpriseSSID", err))
 		return diags
 	}
-	resourceMap := make(map[string]string)
-	resourceMap["ssid_name"] = vvSSIDName
-	d.SetId(joinResourceID(resourceMap))
-	return resourceWirelessEnterpriseSSIDRead(ctx, d, m)
+				resourceMap := make(map[string]string)
+			resourceMap["ssid_name"] = vvSSIDName
+			d.SetId(joinResourceID(resourceMap))
+			return resourceWirelessEnterpriseSSIDRead(ctx, d, m)
 }
 
 func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
 	vSSIDName, okSSIDName := resourceMap["ssid_name"]
+
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetEnterpriseSSID")
 		queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams{}
 
-		if okSSIDName {
-			queryParams1.SSIDName = vSSIDName
-		}
+	  if okSSIDName {
+	    queryParams1.SSIDName = vSSIDName
+	  }
 
 		response1, restyResp1, err := client.Wireless.GetEnterpriseSSID(&queryParams1)
 
+	
+	
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetEnterpriseSSID", err,
-				"Failure at GetEnterpriseSSID, unexpected response", ""))
-			return diags
+		  if restyResp1 != nil {
+		    log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		  }
+		  diags = append(diags, diagErrorWithAlt(
+		    "Failure when executing GetEnterpriseSSID", err,
+		    "Failure at GetEnterpriseSSID, unexpected response", ""))
+		  return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
@@ -243,17 +247,18 @@ func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceD
 		//TODO Code Items for DNAC
 
 	}
-	return diags
+  return diags
 }
 
 func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
-	var diags diag.Diagnostics
+  var diags diag.Diagnostics
 
-	resourceID := d.Id()
+  resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSSIDName, okSSIDName := resourceMap["ssid_name"]
+
 
 	selectedMethod := 1
 	var vvID string
@@ -261,11 +266,11 @@ func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.Resourc
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx, "item.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-		response1, restyResp1, err := client.Wireless.UpdateEnterpriseSSID(request1)
-		if err != nil || response1 == nil {
+	log.Printf("[DEBUG] Name used for update operation %s", vvName)
+	request1 := expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx, "item.0", d)
+	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	response1, restyResp1, err := client.Wireless.UpdateEnterpriseSSID(request1)
+	if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
 				diags = append(diags, diagErrorWithAltAndResponse(
@@ -274,26 +279,26 @@ func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.Resourc
 				return diags
 			}
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing UpdateEnterpriseSSID", err,
-				"Failure at UpdateEnterpriseSSID, unexpected response", ""))
+			  "Failure when executing UpdateEnterpriseSSID", err,
+			  "Failure at UpdateEnterpriseSSID, unexpected response", ""))
 			return diags
 		}
 	}
 
-	return resourceWirelessEnterpriseSSIDRead(ctx, d, m)
+  return resourceWirelessEnterpriseSSIDRead(ctx, d, m)
 }
 
 func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+  
+  client := m.(*dnacentersdkgo.Client)
 
-	client := m.(*dnacentersdkgo.Client)
+  var diags diag.Diagnostics
 
-	var diags diag.Diagnostics
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
+    //TODO
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-	//TODO
-
-	return diags
+  return diags
 }
 func expandRequestWirelessEnterpriseSSIDCreateEnterpriseSSID(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateEnterpriseSSID {
 	request := dnacentersdkgo.RequestWirelessCreateEnterpriseSSID{}
@@ -351,12 +356,13 @@ func expandRequestWirelessEnterpriseSSIDCreateEnterpriseSSID(ctx context.Context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mfp_client_protection")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mfp_client_protection")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mfp_client_protection")))) {
 		request.MfpClientProtection = interfaceToString(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessUpdateEnterpriseSSID {
 	request := dnacentersdkgo.RequestWirelessUpdateEnterpriseSSID{}
@@ -414,11 +420,46 @@ func expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx context.Context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".mfp_client_protection")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".mfp_client_protection")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".mfp_client_protection")))) {
 		request.MfpClientProtection = interfaceToString(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
 
-//TODO
+
+
+
+func searchWirelessGetEnterpriseSSID(m interface{}, items []dnacentersdkgo.ResponseWirelessGetEnterpriseSSID, name string, id string) (, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem 
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseWireless
+			getItem, _, err = client.Wireless.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseWireless
+			getItem, _, err = client.Wireless.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

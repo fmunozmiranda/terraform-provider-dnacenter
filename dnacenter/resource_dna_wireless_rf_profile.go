@@ -1,236 +1,237 @@
 package dnacenter
 
 import (
-	"context"
-	"fmt"
-	"reflect"
+  "context"
+  "fmt"
+  "reflect"
 
-	"log"
+  "log"
 
-	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+  dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceWirelessRfProfile() *schema.Resource {
-	return &schema.Resource{
-		Description: `It manages create, read and delete operations on Wireless.
+  return &schema.Resource{
+    Description: `It manages create, read and delete operations on Wireless.
 
 - Create or Update RF profile
 
 - Delete RF profile(s)
 `,
 
-		CreateContext: resourceWirelessRfProfileCreate,
-		ReadContext:   resourceWirelessRfProfileRead,
-		UpdateContext: resourceWirelessRfProfileUpdate,
-		DeleteContext: resourceWirelessRfProfileDelete,
-		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
-		},
+    CreateContext: resourceWirelessRfProfileCreate,
+    ReadContext:   resourceWirelessRfProfileRead,
+    UpdateContext: resourceWirelessRfProfileUpdate,
+    DeleteContext: resourceWirelessRfProfileDelete,
+    Importer: &schema.ResourceImporter{
+      StateContext: schema.ImportStatePassthroughContext,
+    },
 
-		Schema: map[string]*schema.Schema{
-			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"parameters": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
-						"channel_width": &schema.Schema{
-							Description: `rf-profile channel width
+    Schema: map[string]*schema.Schema{
+      "last_updated": &schema.Schema{
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+      "parameters": &schema.Schema{
+        Type:     schema.TypeList,
+        Optional: true,
+        Elem: &schema.Resource{
+          Schema: map[string]*schema.Schema{
+          
+            "channel_width": &schema.Schema{
+              Description: `rf-profile channel width
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"default_rf_profile": &schema.Schema{
-							Description: `isDefault rf-profile
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "default_rf_profile": &schema.Schema{
+              Description: `isDefault rf-profile
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_brown_field": &schema.Schema{
-							Description: `true if enable brown field for rf-profile else false
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_brown_field": &schema.Schema{
+              Description: `true if enable brown field for rf-profile else false
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_custom": &schema.Schema{
-							Description: `true if enable custom rf-profile else false
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_custom": &schema.Schema{
+              Description: `true if enable custom rf-profile else false
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_radio_type_a": &schema.Schema{
-							Description: `tru if Enable Radio Type A else false
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_radio_type_a": &schema.Schema{
+              Description: `tru if Enable Radio Type A else false
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"enable_radio_type_b": &schema.Schema{
-							Description: `true if Enable Radio Type B else false
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "enable_radio_type_b": &schema.Schema{
+              Description: `true if Enable Radio Type B else false
 `,
-							// Type:        schema.TypeBool,
-							Type:         schema.TypeString,
-							ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
-							Optional:     true,
-						},
-						"name": &schema.Schema{
-							Description: `custom RF profile name
+              // Type:        schema.TypeBool,
+              Type:        schema.TypeString,
+              ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
+              Optional:    true,
+            },
+            "name": &schema.Schema{
+              Description: `custom RF profile name
 `,
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"radio_type_a_properties": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							MaxItems: 1,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"data_rates": &schema.Schema{
-										Description: `Data Rates
+              Type:        schema.TypeString,
+              Optional:    true,
+            },
+            "radio_type_a_properties": &schema.Schema{
+              Type:     schema.TypeList,
+              Optional: true,
+              MaxItems: 1,
+              Elem: &schema.Resource{
+                Schema: map[string]*schema.Schema{
+                
+                  "data_rates": &schema.Schema{
+                    Description: `Data Rates
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"mandatory_data_rates": &schema.Schema{
-										Description: `Mandatory Data Rates
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "mandatory_data_rates": &schema.Schema{
+                    Description: `Mandatory Data Rates
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"max_power_level": &schema.Schema{
-										Description: `Max Power Level
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "max_power_level": &schema.Schema{
+                    Description: `Max Power Level
 `,
-										Type:     schema.TypeFloat,
-										Optional: true,
-									},
-									"min_power_level": &schema.Schema{
-										Description: `Min Power Level
+                    Type:        schema.TypeFloat,
+                    Optional:    true,
+                  },
+                  "min_power_level": &schema.Schema{
+                    Description: `Min Power Level
 `,
-										Type:     schema.TypeFloat,
-										Optional: true,
-									},
-									"parent_profile": &schema.Schema{
-										Description: `Parent rf-profile name
+                    Type:        schema.TypeFloat,
+                    Optional:    true,
+                  },
+                  "parent_profile": &schema.Schema{
+                    Description: `Parent rf-profile name
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"power_threshold_v1": &schema.Schema{
-										Description: `Power Threshold V1
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "power_threshold_v1": &schema.Schema{
+                    Description: `Power Threshold V1
 `,
-										Type:     schema.TypeFloat,
-										Optional: true,
-									},
-									"radio_channels": &schema.Schema{
-										Description: `Radio Channels
+                    Type:        schema.TypeFloat,
+                    Optional:    true,
+                  },
+                  "radio_channels": &schema.Schema{
+                    Description: `Radio Channels
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"rx_sop_threshold": &schema.Schema{
-										Description: `Rx Sop Threshold
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "rx_sop_threshold": &schema.Schema{
+                    Description: `Rx Sop Threshold
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"radio_type_b_properties": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							MaxItems: 1,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-
-									"data_rates": &schema.Schema{
-										Description: `Data Rates
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                },
+              },
+            },
+            "radio_type_b_properties": &schema.Schema{
+              Type:     schema.TypeList,
+              Optional: true,
+              MaxItems: 1,
+              Elem: &schema.Resource{
+                Schema: map[string]*schema.Schema{
+                
+                  "data_rates": &schema.Schema{
+                    Description: `Data Rates
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"mandatory_data_rates": &schema.Schema{
-										Description: `Mandatory Data Rates
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "mandatory_data_rates": &schema.Schema{
+                    Description: `Mandatory Data Rates
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"max_power_level": &schema.Schema{
-										Description: `Max Power Level
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "max_power_level": &schema.Schema{
+                    Description: `Max Power Level
 `,
-										Type:     schema.TypeFloat,
-										Optional: true,
-									},
-									"min_power_level": &schema.Schema{
-										Description: `Min Power Level
+                    Type:        schema.TypeFloat,
+                    Optional:    true,
+                  },
+                  "min_power_level": &schema.Schema{
+                    Description: `Min Power Level
 `,
-										Type:     schema.TypeFloat,
-										Optional: true,
-									},
-									"parent_profile": &schema.Schema{
-										Description: `Parent rf-profile name
+                    Type:        schema.TypeFloat,
+                    Optional:    true,
+                  },
+                  "parent_profile": &schema.Schema{
+                    Description: `Parent rf-profile name
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"power_threshold_v1": &schema.Schema{
-										Description: `Power Threshold V1
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "power_threshold_v1": &schema.Schema{
+                    Description: `Power Threshold V1
 `,
-										Type:     schema.TypeFloat,
-										Optional: true,
-									},
-									"radio_channels": &schema.Schema{
-										Description: `Radio Channels
+                    Type:        schema.TypeFloat,
+                    Optional:    true,
+                  },
+                  "radio_channels": &schema.Schema{
+                    Description: `Radio Channels
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"rx_sop_threshold": &schema.Schema{
-										Description: `Rx Sop Threshold
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                  "rx_sop_threshold": &schema.Schema{
+                    Description: `Rx Sop Threshold
 `,
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"rf_profile_name": &schema.Schema{
-							Description: `rfProfileName path parameter. RF profile name to be deleted(required) *non-custom RF profile cannot be deleted
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                  },
+                },
+              },
+            },
+            "rf_profile_name": &schema.Schema{
+              Description: `rfProfileName path parameter. RF profile name to be deleted(required) *non-custom RF profile cannot be deleted
 `,
-							Type:     schema.TypeString,
-							Required: true,
-						},
-					},
-				},
-			},
-		},
-	}
+              Type:        schema.TypeString,
+              Required:    true,
+            },
+          },
+        },
+      },
+    },
+  }
 }
 
 func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
-	var diags diag.Diagnostics
+  var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestWirelessRfProfileCreateOrUpdateRfProfile(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
+  
 	vRfProfileName, okRfProfileName := resourceItem["rf_profile_name"]
 	vvRfProfileName := interfaceToString(vRfProfileName)
 	resp1, restyResp1, err := client.Wireless.CreateOrUpdateRfProfile(request1)
@@ -244,40 +245,43 @@ func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData
 			"Failure when executing CreateOrUpdateRfProfile", err))
 		return diags
 	}
-	resourceMap := make(map[string]string)
-	resourceMap["rf_profile_name"] = vvRfProfileName
-	d.SetId(joinResourceID(resourceMap))
-	return resourceWirelessRfProfileRead(ctx, d, m)
+				resourceMap := make(map[string]string)
+			resourceMap["rf_profile_name"] = vvRfProfileName
+			d.SetId(joinResourceID(resourceMap))
+			return resourceWirelessRfProfileRead(ctx, d, m)
 }
 
 func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
+  client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
 	vRfProfileName, okRfProfileName := resourceMap["rf_profile_name"]
+
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: RetrieveRfProfiles")
 		queryParams1 := dnacentersdkgo.RetrieveRfProfilesQueryParams{}
 
-		if okRfProfileName {
-			queryParams1.RfProfileName = vRfProfileName
-		}
+	  if okRfProfileName {
+	    queryParams1.RfProfileName = vRfProfileName
+	  }
 
 		response1, restyResp1, err := client.Wireless.RetrieveRfProfiles(&queryParams1)
 
+	
+	
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing RetrieveRfProfiles", err,
-				"Failure at RetrieveRfProfiles, unexpected response", ""))
-			return diags
+		  if restyResp1 != nil {
+		    log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		  }
+		  diags = append(diags, diagErrorWithAlt(
+		    "Failure when executing RetrieveRfProfiles", err,
+		    "Failure at RetrieveRfProfiles, unexpected response", ""))
+		  return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
@@ -285,24 +289,24 @@ func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, 
 		//TODO Code Items for DNAC
 
 	}
-	return diags
+  return diags
 }
 
 func resourceWirelessRfProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceWirelessRfProfileRead(ctx, d, m)
+  return resourceWirelessRfProfileRead(ctx, d, m)
 }
 
 func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+  
+  client := m.(*dnacentersdkgo.Client)
 
-	client := m.(*dnacentersdkgo.Client)
+  var diags diag.Diagnostics
 
-	var diags diag.Diagnostics
+  resourceID := d.Id()
+  resourceMap := separateResourceID(resourceID)
+    //TODO
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-	//TODO
-
-	return diags
+  return diags
 }
 func expandRequestWirelessRfProfileCreateOrUpdateRfProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfile {
 	request := dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfile{}
@@ -333,12 +337,13 @@ func expandRequestWirelessRfProfileCreateOrUpdateRfProfile(ctx context.Context, 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".radio_type_b_properties")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".radio_type_b_properties")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".radio_type_b_properties")))) {
 		request.RadioTypeBProperties = expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeBProperties(ctx, key+".radio_type_b_properties.0", d)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeAProperties(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeAProperties {
 	request := dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeAProperties{}
@@ -366,12 +371,13 @@ func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeAProperties(c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".max_power_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".max_power_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".max_power_level")))) {
 		request.MaxPowerLevel = interfaceToFloat64Ptr(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
+
 
 func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeBProperties(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeBProperties {
 	request := dnacentersdkgo.RequestWirelessCreateOrUpdateRfProfileRadioTypeBProperties{}
@@ -399,11 +405,46 @@ func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeBProperties(c
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".max_power_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".max_power_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".max_power_level")))) {
 		request.MaxPowerLevel = interfaceToFloat64Ptr(v)
 	}
-	if isEmptyValue(reflect.ValueOf(request)) {
-		return nil
-	}
-
+        if isEmptyValue(reflect.ValueOf(request)) {
+            return nil
+        }
+    
 	return &request
 }
 
-//TODO
+
+
+
+func searchWirelessRetrieveRfProfiles(m interface{}, items []dnacentersdkgo.ResponseWirelessRetrieveRfProfilesResponse, name string, id string) (, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem 
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseWireless
+			getItem, _, err = client.Wireless.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseWireless
+			getItem, _, err = client.Wireless.(id,name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

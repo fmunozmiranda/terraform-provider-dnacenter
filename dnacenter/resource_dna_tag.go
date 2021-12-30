@@ -664,4 +664,36 @@ func expandRequestTagUpdateTagDynamicRulesRulesItems(ctx context.Context, key st
 	return &request
 }
 
-//TODO
+func searchTagGetTag(m interface{}, items []dnacentersdkgo.ResponseTagGetTagResponse, name string, id string) (*dnacentersdkgo.ResponseTagGetTagByIdResponse, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseTagGetTagByIdResponse
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseTagGetTagByID
+			getItem, _, err = client.Tag.GetTagByID(id)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetTagByID")
+			}
+			foundItem = getItem.Response
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseTagGetTagByID
+			getItem, _, err = client.Tag.GetTagByID(id)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetTagByID")
+			}
+			foundItem = getItem.Response
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

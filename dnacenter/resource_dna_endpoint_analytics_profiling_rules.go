@@ -901,4 +901,36 @@ func expandRequestEndpointAnalyticsProfilingRulesUpdateAnExistingProfilingRuleCo
 	return &request
 }
 
-//TODO
+func searchPolicyGetListOfProfilingRules(m interface{}, items []dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRules, name string, id string) (*dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule
+			getItem, _, err = client.Policy.GetDetailsOfASingleProfilingRule(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetDetailsOfASingleProfilingRule")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule
+			getItem, _, err = client.Policy.GetDetailsOfASingleProfilingRule(id, name)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetDetailsOfASingleProfilingRule")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}

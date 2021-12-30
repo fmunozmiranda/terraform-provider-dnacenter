@@ -927,4 +927,36 @@ func expandRequestPnpWorkflowUpdateWorkflowTasksWorkItemList(ctx context.Context
 	return &request
 }
 
-//TODO
+func searchDeviceOnboardingPnpGetWorkflows(m interface{}, items []dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflows, name string, id string) (*dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowById, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowById
+	for _, item := range items {
+		if id != "" && item.ID == id {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowByID
+			getItem, _, err = client.DeviceOnboardingPnp.GetWorkflowByID(id)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetWorkflowByID")
+			}
+			foundItem = getItem
+			return foundItem, err
+		} else if name != "" && item.Name == name {
+			// Call get by _ method and set value to foundItem and return
+			var getItem *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowByID
+			getItem, _, err = client.DeviceOnboardingPnp.GetWorkflowByID(id)
+			if err != nil {
+				return foundItem, err
+			}
+			if getItem == nil {
+				return foundItem, fmt.Errorf("Empty response from %s", "GetWorkflowByID")
+			}
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
+}
