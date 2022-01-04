@@ -70,9 +70,12 @@ func resourceApplicationSets() *schema.Resource {
 }
 
 func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] Beginning ApplicationSets Create")
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+
+	//resourceItem := *getResourceItem(d.Get("parameters")) TO DO, veririficar que el objeto fue creado realmente, para consultarlo y sacar su id...
 
 	request1 := expandRequestApplicationSetsCreateApplicationSet(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
@@ -177,13 +180,7 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 	// REVIEW: Add getAllItems and search function to get missing params
 	if selectedMethod == 1 {
 
-		getResp1, _, err := client.ApplicationPolicy.GetApplicationSets(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-
-		item1, err := searchApplicationPolicyGetApplicationSets(m, &queryParams1)
+		item1, err := searchApplicationPolicyGetApplicationSets(m, queryParams1)
 		if err != nil || item1 == nil {
 			// Assume that element it is already gone
 			return diags
@@ -260,12 +257,12 @@ func expandRequestApplicationSetsCreateApplicationSetItem(ctx context.Context, k
 	return &request
 }
 
-func searchApplicationPolicyGetApplicationSets(m interface{}, queryParams *dnacentersdkgo.GetApplicationSetsQueryParams) (*dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponse, error) {
+func searchApplicationPolicyGetApplicationSets(m interface{}, queryParams dnacentersdkgo.GetApplicationSetsQueryParams) (*dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
 	var foundItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponse
 	var ite *dnacentersdkgo.ResponseApplicationPolicyGetApplicationSets
-	ite, _, err = client.ApplicationPolicy.GetApplicationSets(queryParams)
+	ite, _, err = client.ApplicationPolicy.GetApplicationSets(&queryParams)
 
 	items := ite.Response
 	if items == nil {

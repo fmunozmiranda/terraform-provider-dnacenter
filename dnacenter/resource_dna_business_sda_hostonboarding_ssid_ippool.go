@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -81,10 +80,31 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
-	request1 := expandRequestBusinessSdaHostonboardingSSIDIPpoolAddSSIDToIPPoolMapping(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
+	request1 := expandRequestBusinessSdaHostonboardingSSIDIPpoolAddSSIDToIPPoolMapping(ctx, "parameters.0", d)
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
+	vVlan_name := resourceItem["vlan_name"]
+	vSite_name_hierarchy := resourceItem["site_name_hierarchy"]
+	vvVlan_name := interfaceToString(vVlan_name)
+	vvSite_name_hierarchy := interfaceToString(vSite_name_hierarchy)
+
+	queryParams1 := dnacentersdkgo.GetSSIDToIPPoolMappingQueryParams{}
+
+	queryParams1.VLANName = vvVlan_name
+	queryParams1.SiteNameHierarchy = vvSite_name_hierarchy
+	getResponse1, _, err := client.FabricWireless.GetSSIDToIPPoolMapping(&queryParams1)
+
+	if err == nil && getResponse1 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["vlan_name"] = vvVlan_name
+		resourceMap["site_name_hierarchy"] = vvSite_name_hierarchy
+		d.SetId(joinResourceID(resourceMap))
+		return resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.FabricWireless.AddSSIDToIPPoolMapping(request1)
+
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
 			diags = append(diags, diagErrorWithResponse(
@@ -97,6 +117,8 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 	}
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
+	resourceMap["vlan_name"] = vvVlan_name
+	resourceMap["site_name_hierarchy"] = vvSite_name_hierarchy
 	return resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx, d, m)
 }
 
@@ -107,8 +129,8 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *sch
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vVLANName, okVLANName := resourceMap["vlan_name"]
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vVLANName := resourceMap["vlan_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -153,17 +175,26 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vVLANName, okVLANName := resourceMap["vlan_name"]
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vVLANName := resourceMap["vlan_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
+	//selectedMethod := 1
+	queryParams1 := dnacentersdkgo.GetSSIDToIPPoolMappingQueryParams{}
+	queryParams1.VLANName = vVLANName
+	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
+
+	getResp, _, err := client.FabricWireless.GetSSIDToIPPoolMapping(&queryParams1)
+	if err != nil || getResp == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetAllowedProtocolByName", err,
+			"Failure at GetAllowedProtocolByName, unexpected response", ""))
+		return diags
+	}
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestBusinessSdaHostonboardingSSIDIPpoolUpdateSSIDToIPPoolMapping(ctx, "item.0", d)
+		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
+		request1 := expandRequestBusinessSdaHostonboardingSSIDIPpoolUpdateSSIDToIPPoolMapping(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.FabricWireless.UpdateSSIDToIPPoolMapping(request1)
 		if err != nil || response1 == nil {

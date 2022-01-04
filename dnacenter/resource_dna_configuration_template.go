@@ -2178,7 +2178,13 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		vItems1 := flattenConfigurationTemplatesGetsTheTemplatesAvailableItems(response1)
+		if err := d.Set("items", vItems1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetsTheTemplatesAvailable response",
+				err))
+			return diags
+		}
 
 	}
 	if selectedMethod == 2 {
@@ -2224,42 +2230,27 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vProjectID, okProjectID := resourceMap["project_id"]
-	vSoftwareType, okSoftwareType := resourceMap["software_type"]
-	vSoftwareVersion, okSoftwareVersion := resourceMap["software_version"]
-	vProductFamily, okProductFamily := resourceMap["product_family"]
-	vProductSeries, okProductSeries := resourceMap["product_series"]
-	vProductType, okProductType := resourceMap["product_type"]
-	vFilterConflictingTemplates, okFilterConflictingTemplates := resourceMap["filter_conflicting_templates"]
-	vTags, okTags := resourceMap["tags"]
-	vProjectNames, okProjectNames := resourceMap["project_names"]
-	vUnCommitted, okUnCommitted := resourceMap["un_committed"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
-	vTemplateID, okTemplateID := resourceMap["template_id"]
+	vTemplateID := resourceMap["template_id"]
 	vLatestVersion, okLatestVersion := resourceMap["latest_version"]
 
-	method1 := []bool{okProjectID, okSoftwareType, okSoftwareVersion, okProductFamily, okProductSeries, okProductType, okFilterConflictingTemplates, okTags, okProjectNames, okUnCommitted, okSortOrder}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okTemplateID, okLatestVersion}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	var vvID string
+	selectedMethod := 2
+	var vvTemplateID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if selectedMethod == 2 {
-		vvID = vID
-		getResp, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID)
+		vvTemplateID = vTemplateID
+		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
+
+		if okLatestVersion {
+			queryParams2.LatestVersion = *stringToBooleanPtr(vLatestVersion)
+		}
+		getResp, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)
 		if err != nil || getResp == nil {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetsDetailsOfAGivenTemplate", err,
 				"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
 			return diags
-		}
-		//Set value vvName = getResp.
-		if getResp.tags != nil {
-			vvName = getResp.tags.Name
 		}
 	}
 	if d.HasChange("item") {
@@ -2293,53 +2284,24 @@ func resourceConfigurationTemplateDelete(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vProjectID, okProjectID := resourceMap["project_id"]
-	vSoftwareType, okSoftwareType := resourceMap["software_type"]
-	vSoftwareVersion, okSoftwareVersion := resourceMap["software_version"]
-	vProductFamily, okProductFamily := resourceMap["product_family"]
-	vProductSeries, okProductSeries := resourceMap["product_series"]
-	vProductType, okProductType := resourceMap["product_type"]
-	vFilterConflictingTemplates, okFilterConflictingTemplates := resourceMap["filter_conflicting_templates"]
-	vTags, okTags := resourceMap["tags"]
-	vProjectNames, okProjectNames := resourceMap["project_names"]
-	vUnCommitted, okUnCommitted := resourceMap["un_committed"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
-	vTemplateID, okTemplateID := resourceMap["template_id"]
+	vTemplateID := resourceMap["template_id"]
 	vLatestVersion, okLatestVersion := resourceMap["latest_version"]
 
-	method1 := []bool{okProjectID, okSoftwareType, okSoftwareVersion, okProductFamily, okProductSeries, okProductType, okFilterConflictingTemplates, okTags, okProjectNames, okUnCommitted, okSortOrder}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okTemplateID, okLatestVersion}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	var vvID string
-	var vvName string
+	selectedMethod := 1
+	var vvTemplateID string
 	// REVIEW: Add getAllItems and search function to get missing params
 	if selectedMethod == 1 {
+		vvTemplateID = vTemplateID
+		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
 
-		getResp1, _, err := client.ConfigurationTemplates.GetsTheTemplatesAvailable(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
+		if okLatestVersion {
+			queryParams2.LatestVersion = *stringToBooleanPtr(vLatestVersion)
 		}
-		items1 := getAllItemsConfigurationTemplatesGetsTheTemplatesAvailable(m, getResp1, nil)
-		item1, err := searchConfigurationTemplatesGetsTheTemplatesAvailable(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vID != item1.ID {
-			vvID = item1.ID
-		} else {
-			vvID = vID
-		}
-	}
-	if selectedMethod == 2 {
-		vvID = vID
-		getResp, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID)
+		getResp, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)
 		if err != nil || getResp == nil {
-			// Assume that element it is already gone
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetsDetailsOfAGivenTemplate", err,
+				"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
 			return diags
 		}
 	}
@@ -3409,38 +3371,4 @@ func expandRequestConfigurationTemplateUpdateTemplateValidationErrorsTemplateErr
 	}
 
 	return &request
-}
-
-func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, items []dnacentersdkgo.ResponseConfigurationTemplatesGetsTheTemplatesAvailable, name string, id string) (*dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate, error) {
-	client := m.(*dnacentersdkgo.Client)
-	var err error
-	var foundItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate
-			getItem, _, err = client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetsDetailsOfAGivenTemplate")
-			}
-			foundItem = getItem
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsDetailsOfAGivenTemplate
-			getItem, _, err = client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetsDetailsOfAGivenTemplate")
-			}
-			foundItem = getItem
-			return foundItem, err
-		}
-	}
-	return foundItem, err
 }

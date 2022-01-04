@@ -2239,6 +2239,8 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	vProjectID, okProjectID := resourceItem["project_id"]
+	vName := resourceItem["name"]
+	vvName := interfaceToString(vName)
 	vvProjectID := interfaceToString(vProjectID)
 	if okProjectID && vvProjectID != "" {
 		getResponse2, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvProjectID)
@@ -2249,16 +2251,14 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			return resourceConfigurationTemplateProjectRead(ctx, d, m)
 		}
 	} else {
-		response2, _, err := client.ConfigurationTemplates.GetsAListOfProjects(nil)
-		if response2 != nil && err == nil {
-			items2 := getAllItemsConfigurationTemplatesGetsAListOfProjects(m, response2, nil)
-			item2, err := searchConfigurationTemplatesGetsAListOfProjects(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["project_id"] = vvProjectID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceConfigurationTemplateProjectRead(ctx, d, m)
-			}
+		queryParams1 := dnacentersdkgo.GetsAListOfProjectsQueryParams{}
+		queryParams1.Name = vvName
+		item2, err := searchConfigurationTemplatesGetsAListOfProjects(m, queryParams1)
+		if err == nil && item2 != nil {
+			resourceMap := make(map[string]string)
+			resourceMap["project_id"] = vvProjectID
+			d.SetId(joinResourceID(resourceMap))
+			return resourceConfigurationTemplateProjectRead(ctx, d, m)
 		}
 	}
 	resp1, restyResp1, err := client.ConfigurationTemplates.CreateProject(request1)
@@ -2321,7 +2321,14 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		//TODO Code Items for DNAC
-
+		vItem1 := flattenConfigurationTemplatesGetsAListOfProjectsItems(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetsTheDetailsOfAGivenProject response",
+				err))
+			return diags
+		}
+		return diags
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetsTheDetailsOfAGivenProject")
@@ -2361,22 +2368,14 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vName, okName := resourceMap["name"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
-	vProjectID, okProjectID := resourceMap["project_id"]
+	vProjectID := resourceMap["project_id"]
 
-	method1 := []bool{okName, okSortOrder}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okProjectID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	var vvID string
-	var vvName string
+	var vvProjectID string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
+	selectedMethod := 2
 	if selectedMethod == 2 {
-		vvID = vID
+		vvProjectID = vProjectID
 		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvProjectID)
 		if err != nil || getResp == nil {
 			diags = append(diags, diagErrorWithAlt(
@@ -2385,12 +2384,10 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 			return diags
 		}
 		//Set value vvName = getResp.
-		if getResp.tags != nil {
-			vvName = getResp.tags.Name
-		}
 	}
+
 	if d.HasChange("item") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		//log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestConfigurationTemplateProjectUpdateProject(ctx, "item.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ConfigurationTemplates.UpdateProject(request1)
@@ -2430,37 +2427,32 @@ func resourceConfigurationTemplateProjectDelete(ctx context.Context, d *schema.R
 	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
 
 	selectedMethod := pickMethod([][]bool{method1, method2})
-	var vvID string
-	var vvName string
 	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.ConfigurationTemplates.GetsAListOfProjects(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsConfigurationTemplatesGetsAListOfProjects(m, getResp1, nil)
-		item1, err := searchConfigurationTemplatesGetsAListOfProjects(m, items1, vName, vID)
+	var vvID string
+	if selectedMethod == 2 {
+		queryParams1 := dnacentersdkgo.GetsAListOfProjectsQueryParams{}
+		queryParams1.Name = vName
+		queryParams1.SortOrder = vSortOrder
+		item1, err := searchConfigurationTemplatesGetsAListOfProjects(m, queryParams1)
 		if err != nil || item1 == nil {
 			// Assume that element it is already gone
 			return diags
 		}
-		if vID != item1.ID {
+		if vProjectID != item1.ID {
 			vvID = item1.ID
 		} else {
-			vvID = vID
+			vvID = vProjectID
 		}
 	}
-	if selectedMethod == 2 {
-		vvID = vID
-		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvProjectID)
+	if selectedMethod == 1 {
+		vvID = vProjectID
+		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvID)
 		if err != nil || getResp == nil {
 			// Assume that element it is already gone
 			return diags
 		}
 	}
-	response1, restyResp1, err := client.ConfigurationTemplates.DeletesTheProject(vvProjectID)
+	response1, restyResp1, err := client.ConfigurationTemplates.DeletesTheProject(vvID)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -4773,33 +4765,27 @@ func expandRequestConfigurationTemplateProjectUpdateProjectTemplatesValidationEr
 	return &request
 }
 
-func searchConfigurationTemplatesGetsAListOfProjects(m interface{}, items []dnacentersdkgo.ResponseConfigurationTemplatesGetsAListOfProjects, name string, id string) (*dnacentersdkgo.ResponseConfigurationTemplatesGetsTheDetailsOfAGivenProject, error) {
+func searchConfigurationTemplatesGetsAListOfProjects(m interface{}, queryParams dnacentersdkgo.GetsAListOfProjectsQueryParams) (*dnacentersdkgo.ResponseItemConfigurationTemplatesGetsAListOfProjects, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsTheDetailsOfAGivenProject
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsTheDetailsOfAGivenProject
-			getItem, _, err = client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetsTheDetailsOfAGivenProject")
-			}
-			foundItem = getItem
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseConfigurationTemplatesGetsTheDetailsOfAGivenProject
-			getItem, _, err = client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetsTheDetailsOfAGivenProject")
-			}
+
+	var foundItem *dnacentersdkgo.ResponseItemConfigurationTemplatesGetsAListOfProjects
+	var ite *dnacentersdkgo.ResponseConfigurationTemplatesGetsAListOfProjects
+	ite, _, err = client.ConfigurationTemplates.GetsAListOfProjects(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemConfigurationTemplatesGetsAListOfProjects
+			getItem = &item
 			foundItem = getItem
 			return foundItem, err
 		}
