@@ -747,34 +747,26 @@ func expandRequestTagUpdateTagDynamicRulesRulesItems(ctx context.Context, key st
 	return &request
 }
 
-func searchTagGetTag(m interface{}, items []dnacentersdkgo.ResponseTagGetTagResponse, name string, id string) (*dnacentersdkgo.ResponseTagGetTagByIdResponse, error) {
+func searchTagGetTag(m interface{}, queryParams dnacentersdkgo.GetTagQueryParams) (*dnacentersdkgo.ResponseItemTagGetTag, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseTagGetTagByIdResponse
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseTagGetTagByID
-			getItem, _, err = client.Tag.GetTagByID(id)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetTagByID")
-			}
-			foundItem = getItem.Response
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseTagGetTagByID
-			getItem, _, err = client.Tag.GetTagByID(id)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetTagByID")
-			}
-			foundItem = getItem.Response
+	var foundItem *dnacentersdkgo.ResponseItemTagGetTag
+	var ite *dnacentersdkgo.ResponseTagGetTag
+	ite, _, err = client.Tag.GetTag(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemTagGetTag
+			getItem = &item
+			foundItem = getItem
 			return foundItem, err
 		}
 	}

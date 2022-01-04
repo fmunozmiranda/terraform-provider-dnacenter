@@ -236,7 +236,7 @@ func resourceNetworkDeviceRead(ctx context.Context, d *schema.ResourceData, m in
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
+	vID := resourceMap["id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -282,7 +282,7 @@ func resourceNetworkDeviceDelete(ctx context.Context, d *schema.ResourceData, m 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
+	vID := resourceMap["id"]
 
 	selectedMethod := 1
 	var vvID string

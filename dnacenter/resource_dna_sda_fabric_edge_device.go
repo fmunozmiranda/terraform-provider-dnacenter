@@ -92,7 +92,7 @@ func resourceSdaFabricEdgeDeviceRead(ctx context.Context, d *schema.ResourceData
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -140,7 +140,7 @@ func resourceSdaFabricEdgeDeviceDelete(ctx context.Context, d *schema.ResourceDa
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
 	selectedMethod := 1
 	var vvID string

@@ -92,8 +92,8 @@ func resourceSdaVirtualNetworkRead(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vVirtualNetworkName, okVirtualNetworkName := resourceMap["virtual_network_name"]
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vVirtualNetworkName := resourceMap["virtual_network_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -143,8 +143,8 @@ func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vVirtualNetworkName, okVirtualNetworkName := resourceMap["virtual_network_name"]
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vVirtualNetworkName := resourceMap["virtual_network_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	var vvID string

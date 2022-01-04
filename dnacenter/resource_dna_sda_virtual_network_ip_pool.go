@@ -150,8 +150,8 @@ func resourceSdaVirtualNetworkIPPoolRead(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vIPPoolName, okIPPoolName := resourceMap["ip_pool_name"]
-	vVirtualNetworkName, okVirtualNetworkName := resourceMap["virtual_network_name"]
+	vIPPoolName := resourceMap["ip_pool_name"]
+	vVirtualNetworkName := resourceMap["virtual_network_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -201,8 +201,8 @@ func resourceSdaVirtualNetworkIPPoolDelete(ctx context.Context, d *schema.Resour
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vIPPoolName, okIPPoolName := resourceMap["ip_pool_name"]
-	vVirtualNetworkName, okVirtualNetworkName := resourceMap["virtual_network_name"]
+	vIPPoolName := resourceMap["ip_pool_name"]
+	vVirtualNetworkName := resourceMap["virtual_network_name"]
 
 	selectedMethod := 1
 	var vvID string

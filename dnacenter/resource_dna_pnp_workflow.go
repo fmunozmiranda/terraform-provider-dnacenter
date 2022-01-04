@@ -1005,33 +1005,25 @@ func expandRequestPnpWorkflowUpdateWorkflowTasksWorkItemList(ctx context.Context
 	return &request
 }
 
-func searchDeviceOnboardingPnpGetWorkflows(m interface{}, items []dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflows, name string, id string) (*dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowById, error) {
+func searchDeviceOnboardingPnpGetWorkflows(m interface{}, queryParams dnacentersdkgo.GetWorkflowsQueryParams) (*dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetWorkflows, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowById
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowByID
-			getItem, _, err = client.DeviceOnboardingPnp.GetWorkflowByID(id)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetWorkflowByID")
-			}
-			foundItem = getItem
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflowByID
-			getItem, _, err = client.DeviceOnboardingPnp.GetWorkflowByID(id)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetWorkflowByID")
-			}
+	var foundItem *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetWorkflows
+	var ite *dnacentersdkgo.ResponseDeviceOnboardingPnpGetWorkflows
+	ite, _, err = client.DeviceOnboardingPnp.GetWorkflows(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetWorkflows
+			getItem = &item
 			foundItem = getItem
 			return foundItem, err
 		}

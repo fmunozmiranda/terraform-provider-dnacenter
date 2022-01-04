@@ -713,7 +713,7 @@ func resourceDiscoveryRead(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
+	vID := resourceMap["id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -754,7 +754,7 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
+	vID := resourceMap["id"]
 
 	selectedMethod := 1
 	var vvID string
@@ -804,7 +804,7 @@ func resourceDiscoveryDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
+	vID := resourceMap["id"]
 
 	selectedMethod := 1
 	var vvID string

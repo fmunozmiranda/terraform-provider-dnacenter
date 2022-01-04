@@ -94,7 +94,7 @@ func resourceSdaProvisionDeviceRead(ctx context.Context, d *schema.ResourceData,
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -137,7 +137,7 @@ func resourceSdaProvisionDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
 	selectedMethod := 1
 	var vvID string
@@ -175,7 +175,7 @@ func resourceSdaProvisionDeviceDelete(ctx context.Context, d *schema.ResourceDat
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
 	selectedMethod := 1
 	var vvID string

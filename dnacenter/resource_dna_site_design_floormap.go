@@ -108,7 +108,7 @@ func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData,
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFloorID, okFloorID := resourceMap["floor_id"]
+	vFloorID := resourceMap["floor_id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -146,7 +146,7 @@ func resourceSiteDesignFloormapUpdate(ctx context.Context, d *schema.ResourceDat
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFloorID, okFloorID := resourceMap["floor_id"]
+	vFloorID := resourceMap["floor_id"]
 
 	selectedMethod := 1
 	var vvID string
@@ -182,7 +182,7 @@ func resourceSiteDesignFloormapDelete(ctx context.Context, d *schema.ResourceDat
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFloorID, okFloorID := resourceMap["floor_id"]
+	vFloorID := resourceMap["floor_id"]
 
 	selectedMethod := 1
 	var vvID string

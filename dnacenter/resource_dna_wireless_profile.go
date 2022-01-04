@@ -1,21 +1,21 @@
 package dnacenter
 
 import (
-  "context"
-  "fmt"
-  "reflect"
+	"context"
+	"fmt"
+	"reflect"
 
-  "log"
+	"log"
 
-  dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
-  "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceWirelessProfile() *schema.Resource {
-  return &schema.Resource{
-    Description: `It manages create, read, update and delete operations on Wireless.
+	return &schema.Resource{
+		Description: `It manages create, read, update and delete operations on Wireless.
 
 - Delete the Wireless Profile from DNAC whose name is provided.
 
@@ -25,132 +25,131 @@ should be provided.
 - Creates Wireless Network Profile on DNAC and associates sites and SSIDs to it.
 `,
 
-    CreateContext: resourceWirelessProfileCreate,
-    ReadContext:   resourceWirelessProfileRead,
-    UpdateContext: resourceWirelessProfileUpdate,
-    DeleteContext: resourceWirelessProfileDelete,
-    Importer: &schema.ResourceImporter{
-      StateContext: schema.ImportStatePassthroughContext,
-    },
+		CreateContext: resourceWirelessProfileCreate,
+		ReadContext:   resourceWirelessProfileRead,
+		UpdateContext: resourceWirelessProfileUpdate,
+		DeleteContext: resourceWirelessProfileDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 
-    Schema: map[string]*schema.Schema{
-      "last_updated": &schema.Schema{
-        Type:     schema.TypeString,
-        Computed: true,
-      },
-      "parameters": &schema.Schema{
-        Type:     schema.TypeList,
-        Optional: true,
-        Elem: &schema.Resource{
-          Schema: map[string]*schema.Schema{
-          
-            "profile_details": &schema.Schema{
-              Type:     schema.TypeList,
-              Optional: true,
-              MaxItems: 1,
-              Elem: &schema.Resource{
-                Schema: map[string]*schema.Schema{
-                
-                  "name": &schema.Schema{
-                    Description: `Profile Name
+		Schema: map[string]*schema.Schema{
+			"last_updated": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"parameters": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"profile_details": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"name": &schema.Schema{
+										Description: `Profile Name
 `,
-                    Type:        schema.TypeString,
-                    Optional:    true,
-                  },
-                  "sites": &schema.Schema{
-                    Description: `array of site name hierarchies(eg: ["Global/aaa/zzz", "Global/aaa/zzz"]) 
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"sites": &schema.Schema{
+										Description: `array of site name hierarchies(eg: ["Global/aaa/zzz", "Global/aaa/zzz"]) 
 `,
-                    Type:        schema.TypeList,
-                    Optional:    true,
-                    Elem:        &schema.Schema{
-                      Type:      schema.TypeString,
-                    },
-                  },
-                  "ssid_details": &schema.Schema{
-                    Type:     schema.TypeList,
-                    Optional: true,
-                    Elem: &schema.Resource{
-                      Schema: map[string]*schema.Schema{
-                      
-                        "enable_fabric": &schema.Schema{
-                          Description: `true is ssid is fabric else false
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"ssid_details": &schema.Schema{
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"enable_fabric": &schema.Schema{
+													Description: `true is ssid is fabric else false
 `,
-                          // Type:        schema.TypeBool,
-                          Type:        schema.TypeString,
-                          ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
-                          Optional:    true,
-                        },
-                        "flex_connect": &schema.Schema{
-                          Type:     schema.TypeList,
-                          Optional: true,
-                          MaxItems: 1,
-                          Elem: &schema.Resource{
-                            Schema: map[string]*schema.Schema{
-                            
-                              "enable_flex_connect": &schema.Schema{
-                                Description: `true if flex connect is enabled else false
+													// Type:        schema.TypeBool,
+													Type:         schema.TypeString,
+													ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+													Optional:     true,
+												},
+												"flex_connect": &schema.Schema{
+													Type:     schema.TypeList,
+													Optional: true,
+													MaxItems: 1,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"enable_flex_connect": &schema.Schema{
+																Description: `true if flex connect is enabled else false
 `,
-                                // Type:        schema.TypeBool,
-                                Type:        schema.TypeString,
-                                ValidateFunc:        validateStringHasValueFunc([]string{"", "true", "false"}),
-                                Optional:    true,
-                              },
-                              "local_to_vlan": &schema.Schema{
-                                Description: `Local To Vlan
+																// Type:        schema.TypeBool,
+																Type:         schema.TypeString,
+																ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+																Optional:     true,
+															},
+															"local_to_vlan": &schema.Schema{
+																Description: `Local To Vlan
 `,
-                                Type:        schema.TypeInt,
-                                Optional:    true,
-                              },
-                            },
-                          },
-                        },
-                        "interface_name": &schema.Schema{
-                          Description: `Interface Name
+																Type:     schema.TypeInt,
+																Optional: true,
+															},
+														},
+													},
+												},
+												"interface_name": &schema.Schema{
+													Description: `Interface Name
 `,
-                          Type:        schema.TypeString,
-                          Optional:    true,
-                        },
-                        "name": &schema.Schema{
-                          Description: `Ssid Name
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"name": &schema.Schema{
+													Description: `Ssid Name
 `,
-                          Type:        schema.TypeString,
-                          Optional:    true,
-                        },
-                        "type": &schema.Schema{
-                          Description: `Ssid Type(enum: Enterprise/Guest)
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"type": &schema.Schema{
+													Description: `Ssid Type(enum: Enterprise/Guest)
 `,
-                          Type:        schema.TypeString,
-                          Optional:    true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            "wireless_profile_name": &schema.Schema{
-              Description: `wirelessProfileName path parameter. Wireless Profile Name
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"wireless_profile_name": &schema.Schema{
+							Description: `wirelessProfileName path parameter. Wireless Profile Name
 `,
-              Type:        schema.TypeString,
-              Required:    true,
-            },
-          },
-        },
-      },
-    },
-  }
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
+		},
+	}
 }
 
 func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  client := m.(*dnacentersdkgo.Client)
+	client := m.(*dnacentersdkgo.Client)
 
-  var diags diag.Diagnostics
+	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestWirelessProfileCreateWirelessProfile(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-  
 	vWirelessProfileName, okWirelessProfileName := resourceItem["wireless_profile_name"]
 	vvWirelessProfileName := interfaceToString(vWirelessProfileName)
 	resp1, restyResp1, err := client.Wireless.CreateWirelessProfile(request1)
@@ -164,43 +163,40 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 			"Failure when executing CreateWirelessProfile", err))
 		return diags
 	}
-				resourceMap := make(map[string]string)
-			resourceMap["wireless_profile_name"] = vvWirelessProfileName
-			d.SetId(joinResourceID(resourceMap))
-			return resourceWirelessProfileRead(ctx, d, m)
+	resourceMap := make(map[string]string)
+	resourceMap["wireless_profile_name"] = vvWirelessProfileName
+	d.SetId(joinResourceID(resourceMap))
+	return resourceWirelessProfileRead(ctx, d, m)
 }
 
 func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  client := m.(*dnacentersdkgo.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-  resourceID := d.Id()
-  resourceMap := separateResourceID(resourceID)
-	vProfileName, okProfileName := resourceMap["profile_name"]
-
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vProfileName := resourceMap["profile_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetWirelessProfile")
 		queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
 
-	  if okProfileName {
-	    queryParams1.ProfileName = vProfileName
-	  }
+		if okProfileName {
+			queryParams1.ProfileName = vProfileName
+		}
 
 		response1, restyResp1, err := client.Wireless.GetWirelessProfile(&queryParams1)
 
-	
-	
 		if err != nil || response1 == nil {
-		  if restyResp1 != nil {
-		    log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-		  }
-		  diags = append(diags, diagErrorWithAlt(
-		    "Failure when executing GetWirelessProfile", err,
-		    "Failure at GetWirelessProfile, unexpected response", ""))
-		  return diags
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetWirelessProfile", err,
+				"Failure at GetWirelessProfile, unexpected response", ""))
+			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
@@ -208,18 +204,17 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 		//TODO Code Items for DNAC
 
 	}
-  return diags
+	return diags
 }
 
 func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  client := m.(*dnacentersdkgo.Client)
+	client := m.(*dnacentersdkgo.Client)
 
-  var diags diag.Diagnostics
+	var diags diag.Diagnostics
 
-  resourceID := d.Id()
+	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vProfileName, okProfileName := resourceMap["profile_name"]
-
+	vProfileName := resourceMap["profile_name"]
 
 	selectedMethod := 1
 	var vvID string
@@ -227,11 +222,11 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
-	log.Printf("[DEBUG] Name used for update operation %s", vvName)
-	request1 := expandRequestWirelessProfileUpdateWirelessProfile(ctx, "item.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-	response1, restyResp1, err := client.Wireless.UpdateWirelessProfile(request1)
-	if err != nil || response1 == nil {
+		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		request1 := expandRequestWirelessProfileUpdateWirelessProfile(ctx, "item.0", d)
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		response1, restyResp1, err := client.Wireless.UpdateWirelessProfile(request1)
+		if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
 				diags = append(diags, diagErrorWithAltAndResponse(
@@ -240,32 +235,31 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 				return diags
 			}
 			diags = append(diags, diagErrorWithAlt(
-			  "Failure when executing UpdateWirelessProfile", err,
-			  "Failure at UpdateWirelessProfile, unexpected response", ""))
+				"Failure when executing UpdateWirelessProfile", err,
+				"Failure at UpdateWirelessProfile, unexpected response", ""))
 			return diags
 		}
 	}
 
-  return resourceWirelessProfileRead(ctx, d, m)
+	return resourceWirelessProfileRead(ctx, d, m)
 }
 
 func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  
-  client := m.(*dnacentersdkgo.Client)
 
-  var diags diag.Diagnostics
+	client := m.(*dnacentersdkgo.Client)
 
-  resourceID := d.Id()
-  resourceMap := separateResourceID(resourceID)
-	vProfileName, okProfileName := resourceMap["profile_name"]
+	var diags diag.Diagnostics
 
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vProfileName := resourceMap["profile_name"]
 
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// REVIEW: Add getAllItems and search function to get missing params
 	if selectedMethod == 1 {
-	
+
 		getResp1, _, err := client.Wireless.GetWirelessProfile(nil)
 		if err != nil || getResp1 == nil {
 			// Assume that element it is already gone
@@ -302,18 +296,17 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 	// it is added here for explicitness.
 	d.SetId("")
 
-  return diags
+	return diags
 }
 func expandRequestWirelessProfileCreateWirelessProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateWirelessProfile {
 	request := dnacentersdkgo.RequestWirelessCreateWirelessProfile{}
 	request.ProfileDetails = expandRequestWirelessProfileCreateWirelessProfileProfileDetails(ctx, key, d)
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileCreateWirelessProfileProfileDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetails {
 	request := dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetails{}
@@ -326,38 +319,36 @@ func expandRequestWirelessProfileCreateWirelessProfileProfileDetails(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ssid_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ssid_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ssid_details")))) {
 		request.SSIDDetails = expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetailsArray(ctx, key+".ssid_details", d)
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetailsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetailsSSIDDetails {
 	request := []dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetailsSSIDDetails{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-			return nil
+		return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-			return nil
+		return nil
 	}
 	for item_no, _ := range objs {
-			i := expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetails(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-			if i != nil {
-				request = append(request, *i)
-			}
+		i := expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetails(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		if i != nil {
+			request = append(request, *i)
+		}
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetailsSSIDDetails {
 	request := dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetailsSSIDDetails{}
@@ -376,13 +367,12 @@ func expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetails(
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_name")))) {
 		request.InterfaceName = interfaceToString(v)
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetailsFlexConnect(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetailsSSIDDetailsFlexConnect {
 	request := dnacentersdkgo.RequestWirelessCreateWirelessProfileProfileDetailsSSIDDetailsFlexConnect{}
@@ -392,24 +382,22 @@ func expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetailsF
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_to_vlan")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_to_vlan")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".local_to_vlan")))) {
 		request.LocalToVLAN = interfaceToIntPtr(v)
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileUpdateWirelessProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessUpdateWirelessProfile {
 	request := dnacentersdkgo.RequestWirelessUpdateWirelessProfile{}
 	request.ProfileDetails = expandRequestWirelessProfileUpdateWirelessProfileProfileDetails(ctx, key, d)
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileUpdateWirelessProfileProfileDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetails {
 	request := dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetails{}
@@ -422,38 +410,36 @@ func expandRequestWirelessProfileUpdateWirelessProfileProfileDetails(ctx context
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ssid_details")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ssid_details")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ssid_details")))) {
 		request.SSIDDetails = expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetailsArray(ctx, key+".ssid_details", d)
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetailsArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetailsSSIDDetails {
 	request := []dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetailsSSIDDetails{}
 	key = fixKeyAccess(key)
 	o := d.Get(key)
 	if o == nil {
-			return nil
+		return nil
 	}
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-			return nil
+		return nil
 	}
 	for item_no, _ := range objs {
-			i := expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetails(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
-			if i != nil {
-				request = append(request, *i)
-			}
+		i := expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetails(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		if i != nil {
+			request = append(request, *i)
+		}
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetails(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetailsSSIDDetails {
 	request := dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetailsSSIDDetails{}
@@ -472,13 +458,12 @@ func expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetails(
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".interface_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".interface_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".interface_name")))) {
 		request.InterfaceName = interfaceToString(v)
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
-
 
 func expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetailsFlexConnect(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetailsSSIDDetailsFlexConnect {
 	request := dnacentersdkgo.RequestWirelessUpdateWirelessProfileProfileDetailsSSIDDetailsFlexConnect{}
@@ -488,43 +473,32 @@ func expandRequestWirelessProfileUpdateWirelessProfileProfileDetailsSSIDDetailsF
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".local_to_vlan")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".local_to_vlan")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".local_to_vlan")))) {
 		request.LocalToVLAN = interfaceToIntPtr(v)
 	}
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
-
-
-
-func searchWirelessGetWirelessProfile(m interface{}, items []dnacentersdkgo.ResponseWirelessGetWirelessProfile, name string, id string) (, error) {
+func searchWirelessGetWirelessProfile(m interface{}, queryParams dnacentersdkgo.GetWirelessProfileQueryParams) (*dnacentersdkgo.ResponseItemWirelessGetWirelessProfile, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem 
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseWireless
-			getItem, _, err = client.Wireless.(id,name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "")
-			}
-			foundItem = getItem
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseWireless
-			getItem, _, err = client.Wireless.(id,name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "")
-			}
+	var foundItem *dnacentersdkgo.ResponseItemWirelessGetWirelessProfile
+	var ite *dnacentersdkgo.ResponseWirelessGetWirelessProfile
+	ite, _, err = client.Wireless.GetWirelessProfile(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemWirelessGetWirelessProfile
+			getItem = &item
 			foundItem = getItem
 			return foundItem, err
 		}

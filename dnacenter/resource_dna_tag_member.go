@@ -1,75 +1,74 @@
 package dnacenter
 
 import (
-  "context"
-  "fmt"
-  "reflect"
+	"context"
+	"fmt"
+	"reflect"
 
-  "log"
+	"log"
 
-  dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
+	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
-  "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceTagMember() *schema.Resource {
-  return &schema.Resource{
-    Description: `It manages create, read and delete operations on Tag.
+	return &schema.Resource{
+		Description: `It manages create, read and delete operations on Tag.
 
 - Adds members to the tag specified by id
 
 - Removes Tag member from the tag specified by id
 `,
 
-    CreateContext: resourceTagMemberCreate,
-    ReadContext:   resourceTagMemberRead,
-    UpdateContext: resourceTagMemberUpdate,
-    DeleteContext: resourceTagMemberDelete,
-    Importer: &schema.ResourceImporter{
-      StateContext: schema.ImportStatePassthroughContext,
-    },
+		CreateContext: resourceTagMemberCreate,
+		ReadContext:   resourceTagMemberRead,
+		UpdateContext: resourceTagMemberUpdate,
+		DeleteContext: resourceTagMemberDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 
-    Schema: map[string]*schema.Schema{
-      "last_updated": &schema.Schema{
-        Type:     schema.TypeString,
-        Computed: true,
-      },
-      "parameters": &schema.Schema{
-        Type:     schema.TypeList,
-        Optional: true,
-        Elem: &schema.Resource{
-          Schema: map[string]*schema.Schema{
-          
-            "id": &schema.Schema{
-              Description: `id path parameter. Tag ID
+		Schema: map[string]*schema.Schema{
+			"last_updated": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"parameters": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"id": &schema.Schema{
+							Description: `id path parameter. Tag ID
 `,
-              Type:        schema.TypeString,
-              Required:    true,
-            },
-            "member_id": &schema.Schema{
-              Description: `memberId path parameter. TagMember id to be removed from tag
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"member_id": &schema.Schema{
+							Description: `memberId path parameter. TagMember id to be removed from tag
 `,
-              Type:        schema.TypeString,
-              Required:    true,
-            },
-          },
-        },
-      },
-    },
-  }
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
+		},
+	}
 }
 
 func resourceTagMemberCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  client := m.(*dnacentersdkgo.Client)
+	client := m.(*dnacentersdkgo.Client)
 
-  var diags diag.Diagnostics
+	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestTagMemberAddMembersToTheTag(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-  
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
 	vMemberID, okMemberID := resourceItem["member_id"]
@@ -95,61 +94,58 @@ func resourceTagMemberCreate(ctx context.Context, d *schema.ResourceData, m inte
 			"Failure when executing AddMembersToTheTag", err))
 		return diags
 	}
-				resourceMap := make(map[string]string)
-			resourceMap["id"] = vvID
-			resourceMap["member_id"] = vvMemberID
-			d.SetId(joinResourceID(resourceMap))
-			return resourceTagMemberRead(ctx, d, m)
+	resourceMap := make(map[string]string)
+	resourceMap["id"] = vvID
+	resourceMap["member_id"] = vvMemberID
+	d.SetId(joinResourceID(resourceMap))
+	return resourceTagMemberRead(ctx, d, m)
 }
 
 func resourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  client := m.(*dnacentersdkgo.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
-  resourceID := d.Id()
-  resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
-	vMemberType, okMemberType := resourceMap["member_type"]
-	vOffset, okOffset := resourceMap["offset"]
-	vLimit, okLimit := resourceMap["limit"]
-	vMemberAssociationType, okMemberAssociationType := resourceMap["member_association_type"]
-	vLevel, okLevel := resourceMap["level"]
-
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vID := resourceMap["id"]
+	vMemberType := resourceMap["member_type"]
+	vOffset := resourceMap["offset"]
+	vLimit := resourceMap["limit"]
+	vMemberAssociationType := resourceMap["member_association_type"]
+	vLevel := resourceMap["level"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetTagMembersByID")
 		vvID := vID
-	queryParams1 := dnacentersdkgo.GetTagMembersByIDQueryParams{}
+		queryParams1 := dnacentersdkgo.GetTagMembersByIDQueryParams{}
 
-	queryParams1.MemberType = vMemberType
+		queryParams1.MemberType = vMemberType
 
-	  if okOffset {
-	    queryParams1.Offset = vOffset
-	  }
-	  if okLimit {
-	    queryParams1.Limit = vLimit
-	  }
-	  if okMemberAssociationType {
-	    queryParams1.MemberAssociationType = vMemberAssociationType
-	  }
-	  if okLevel {
-	    queryParams1.Level = vLevel
-	  }
+		if okOffset {
+			queryParams1.Offset = vOffset
+		}
+		if okLimit {
+			queryParams1.Limit = vLimit
+		}
+		if okMemberAssociationType {
+			queryParams1.MemberAssociationType = vMemberAssociationType
+		}
+		if okLevel {
+			queryParams1.Level = vLevel
+		}
 
 		response1, restyResp1, err := client.Tag.GetTagMembersByID(vvID, &queryParams1)
 
-	
-	
 		if err != nil || response1 == nil {
-		  if restyResp1 != nil {
-		    log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-		  }
-		  diags = append(diags, diagErrorWithAlt(
-		    "Failure when executing GetTagMembersByID", err,
-		    "Failure at GetTagMembersByID, unexpected response", ""))
-		  return diags
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTagMembersByID", err,
+				"Failure at GetTagMembersByID, unexpected response", ""))
+			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
@@ -157,28 +153,27 @@ func resourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interf
 		//TODO Code Items for DNAC
 
 	}
-  return diags
+	return diags
 }
 
 func resourceTagMemberUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  return resourceTagMemberRead(ctx, d, m)
+	return resourceTagMemberRead(ctx, d, m)
 }
 
 func resourceTagMemberDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-  
-  client := m.(*dnacentersdkgo.Client)
 
-  var diags diag.Diagnostics
+	client := m.(*dnacentersdkgo.Client)
 
-  resourceID := d.Id()
-  resourceMap := separateResourceID(resourceID)
-	vID, okID := resourceMap["id"]
-	vMemberType, okMemberType := resourceMap["member_type"]
-	vOffset, okOffset := resourceMap["offset"]
-	vLimit, okLimit := resourceMap["limit"]
-	vMemberAssociationType, okMemberAssociationType := resourceMap["member_association_type"]
-	vLevel, okLevel := resourceMap["level"]
+	var diags diag.Diagnostics
 
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vID := resourceMap["id"]
+	vMemberType := resourceMap["member_type"]
+	vOffset := resourceMap["offset"]
+	vLimit := resourceMap["limit"]
+	vMemberAssociationType := resourceMap["member_association_type"]
+	vLevel := resourceMap["level"]
 
 	selectedMethod := 1
 	var vvID string
@@ -210,48 +205,37 @@ func resourceTagMemberDelete(ctx context.Context, d *schema.ResourceData, m inte
 	// it is added here for explicitness.
 	d.SetId("")
 
-  return diags
+	return diags
 }
 func expandRequestTagMemberAddMembersToTheTag(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestTagAddMembersToTheTag {
 	var request dnacentersdkgo.RequestTagAddMembersToTheTag
 	request = d.Get(fixKeyAccess(key))
-        if isEmptyValue(reflect.ValueOf(request)) {
-            return nil
-        }
-    
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
 	return &request
 }
 
-
-
-
-func searchTagGetTagMembersByID(m interface{}, items []dnacentersdkgo.ResponseTagGetTagMembersByIDResponse, name string, id string) (, error) {
+func searchTagGetTagMembersByID(m interface{}, queryParams dnacentersdkgo.GetTagMembersByIDQueryParams) (*dnacentersdkgo.ResponseItemTagGetTagMembersByID, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem 
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseTag
-			getItem, _, err = client.Tag.(id,name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "")
-			}
-			foundItem = getItem
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponseTag
-			getItem, _, err = client.Tag.(id,name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "")
-			}
+	var foundItem *dnacentersdkgo.ResponseItemTagGetTagMembersByID
+	var ite *dnacentersdkgo.ResponseTagGetTagMembersByID
+	ite, _, err = client.Tag.GetTagMembersByID(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemTagGetTagMembersByID
+			getItem = &item
 			foundItem = getItem
 			return foundItem, err
 		}

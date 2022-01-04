@@ -86,7 +86,7 @@ func resourceSdaFabricRead(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFabricName, okFabricName := resourceMap["fabric_name"]
+	vFabricName := resourceMap["fabric_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -134,7 +134,7 @@ func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFabricName, okFabricName := resourceMap["fabric_name"]
+	vFabricName := resourceMap["fabric_name"]
 
 	selectedMethod := 1
 	var vvID string

@@ -145,7 +145,7 @@ func resourceSdaMulticastRead(ctx context.Context, d *schema.ResourceData, m int
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -193,7 +193,7 @@ func resourceSdaMulticastDelete(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	var vvID string

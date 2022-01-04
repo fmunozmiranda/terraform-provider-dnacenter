@@ -120,8 +120,8 @@ func resourceSdaFabricAuthenticationProfileRead(ctx context.Context, d *schema.R
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
-	vAuthenticateTemplateName, okAuthenticateTemplateName := resourceMap["authenticate_template_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -168,8 +168,8 @@ func resourceSdaFabricAuthenticationProfileUpdate(ctx context.Context, d *schema
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
-	vAuthenticateTemplateName, okAuthenticateTemplateName := resourceMap["authenticate_template_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
 	selectedMethod := 1
 	var vvID string
@@ -207,8 +207,8 @@ func resourceSdaFabricAuthenticationProfileDelete(ctx context.Context, d *schema
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
-	vAuthenticateTemplateName, okAuthenticateTemplateName := resourceMap["authenticate_template_name"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
 	selectedMethod := 1
 	var vvID string

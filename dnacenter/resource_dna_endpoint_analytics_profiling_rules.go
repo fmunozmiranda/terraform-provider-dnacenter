@@ -979,33 +979,25 @@ func expandRequestEndpointAnalyticsProfilingRulesUpdateAnExistingProfilingRuleCo
 	return &request
 }
 
-func searchPolicyGetListOfProfilingRules(m interface{}, items []dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRules, name string, id string) (*dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule, error) {
+func searchPolicyGetListOfProfilingRules(m interface{}, queryParams dnacentersdkgo.GetListOfProfilingRulesQueryParams) (*dnacentersdkgo.ResponseItemPolicyGetListOfProfilingRules, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule
-			getItem, _, err = client.Policy.GetDetailsOfASingleProfilingRule(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetDetailsOfASingleProfilingRule")
-			}
-			foundItem = getItem
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponsePolicyGetDetailsOfASingleProfilingRule
-			getItem, _, err = client.Policy.GetDetailsOfASingleProfilingRule(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "GetDetailsOfASingleProfilingRule")
-			}
+	var foundItem *dnacentersdkgo.ResponseItemPolicyGetListOfProfilingRules
+	var ite *dnacentersdkgo.ResponsePolicyGetListOfProfilingRules
+	ite, _, err = client.Policy.GetListOfProfilingRules(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemPolicyGetListOfProfilingRules
+			getItem = &item
 			foundItem = getItem
 			return foundItem, err
 		}

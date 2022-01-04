@@ -116,8 +116,8 @@ func resourceSdaPortAssignmentForAccessPointRead(ctx context.Context, d *schema.
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
-	vInterfaceName, okInterfaceName := resourceMap["interface_name"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vInterfaceName := resourceMap["interface_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -167,8 +167,8 @@ func resourceSdaPortAssignmentForAccessPointDelete(ctx context.Context, d *schem
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vDeviceManagementIPAddress, okDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
-	vInterfaceName, okInterfaceName := resourceMap["interface_name"]
+	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+	vInterfaceName := resourceMap["interface_name"]
 
 	selectedMethod := 1
 	var vvID string

@@ -3541,34 +3541,26 @@ func expandRequestPathTraceInitiateANewPathtrace(ctx context.Context, key string
 	return &request
 }
 
-func searchPathTraceRetrivesAllPreviousPathtracesSummary(m interface{}, items []dnacentersdkgo.ResponsePathTraceRetrivesAllPreviousPathtracesSummaryResponse, name string, id string) (*dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtraceResponse, error) {
+func searchPathTraceRetrivesAllPreviousPathtracesSummary(m interface{}, queryParams dnacentersdkgo.RetrivesAllPreviousPathtracesSummaryQueryParams) (*dnacentersdkgo.ResponseItemPathTraceRetrivesAllPreviousPathtracesSummary, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtraceResponse
-	for _, item := range items {
-		if id != "" && item.ID == id {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtrace
-			getItem, _, err = client.PathTrace.RetrievesPreviousPathtrace(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "RetrievesPreviousPathtrace")
-			}
-			foundItem = getItem.Response
-			return foundItem, err
-		} else if name != "" && item.Name == name {
-			// Call get by _ method and set value to foundItem and return
-			var getItem *dnacentersdkgo.ResponsePathTraceRetrievesPreviousPathtrace
-			getItem, _, err = client.PathTrace.RetrievesPreviousPathtrace(id, name)
-			if err != nil {
-				return foundItem, err
-			}
-			if getItem == nil {
-				return foundItem, fmt.Errorf("Empty response from %s", "RetrievesPreviousPathtrace")
-			}
-			foundItem = getItem.Response
+	var foundItem *dnacentersdkgo.ResponseItemPathTraceRetrivesAllPreviousPathtracesSummary
+	var ite *dnacentersdkgo.ResponsePathTraceRetrivesAllPreviousPathtracesSummary
+	ite, _, err = client.PathTrace.RetrivesAllPreviousPathtracesSummary(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseItemPathTraceRetrivesAllPreviousPathtracesSummary
+			getItem = &item
+			foundItem = getItem
 			return foundItem, err
 		}
 	}

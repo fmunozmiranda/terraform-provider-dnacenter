@@ -92,7 +92,7 @@ func resourceSdaFabricSiteRead(ctx context.Context, d *schema.ResourceData, m in
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -140,7 +140,7 @@ func resourceSdaFabricSiteDelete(ctx context.Context, d *schema.ResourceData, m 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy, okSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
 	selectedMethod := 1
 	var vvID string
