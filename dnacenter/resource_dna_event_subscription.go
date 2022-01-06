@@ -206,7 +206,15 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenEventManagementGetEventSubscriptionsItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetEventSubscriptions search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -225,14 +233,28 @@ func resourceEventSubscriptionUpdate(ctx context.Context, d *schema.ResourceData
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
 
+	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams
+	queryParams1.EventIDs = vEventIDs
+	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
+	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
+	queryParams1.SortBy = vSortBy
+	queryParams1.Order = vOrder
+	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEventSubscriptions", err,
+			"Failure at GetEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestEventSubscriptionUpdateEventSubscriptions(ctx, "item.0", d)
+		request1 := expandRequestEventSubscriptionUpdateEventSubscriptions(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateEventSubscriptions(request1)
 		if err != nil || response1 == nil {
@@ -266,6 +288,20 @@ func resourceEventSubscriptionDelete(ctx context.Context, d *schema.ResourceData
 	vLimit := resourceMap["limit"]
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
+
+	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams
+	queryParams1.EventIDs = vEventIDs
+	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
+	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
+	queryParams1.SortBy = vSortBy
+	queryParams1.Order = vOrder
+	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEventSubscriptions", err,
+			"Failure at GetEventSubscriptions, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

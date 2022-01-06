@@ -142,6 +142,16 @@ func resourceSdaFabricEdgeDeviceDelete(ctx context.Context, d *schema.ResourceDa
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
+	queryParams1 := dnacentersdkgo.GetEdgeDeviceFromSdaFabricQueryParams
+	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	item, err := searchSdaGetEdgeDeviceFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEdgeDeviceFromSDAFabric", err,
+			"Failure at GetEdgeDeviceFromSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

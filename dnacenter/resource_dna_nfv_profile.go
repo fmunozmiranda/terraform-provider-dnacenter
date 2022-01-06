@@ -375,7 +375,15 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenSiteDesignGetNfvProfileItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetNfvProfile search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -393,15 +401,27 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
 
+	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams
+	queryParams1.Offset = vOffset
+	queryParams1.Limit = vLimit
+	queryParams1.Name = vName
+	item, err := searchSiteDesignGetNFVProfile(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetNFVProfile", err,
+			"Failure at GetNFVProfile, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	if selectedMethod == 1 {
 		vvID = vID
 	}
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
-		request1 := expandRequestNfvProfileUpdateNfvProfile(ctx, "item.0", d)
+		request1 := expandRequestNfvProfileUpdateNfvProfile(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.SiteDesign.UpdateNfvProfile(vvID, request1)
 		if err != nil || response1 == nil {
@@ -434,6 +454,18 @@ func resourceNfvProfileDelete(ctx context.Context, d *schema.ResourceData, m int
 	vOffset := resourceMap["offset"]
 	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
+
+	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams
+	queryParams1.Offset = vOffset
+	queryParams1.Limit = vLimit
+	queryParams1.Name = vName
+	item, err := searchSiteDesignGetNFVProfile(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetNFVProfile", err,
+			"Failure at GetNFVProfile, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

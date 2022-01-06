@@ -146,6 +146,17 @@ func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData
 	vVirtualNetworkName := resourceMap["virtual_network_name"]
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
+	queryParams1 := dnacentersdkgo.GetVnFromSdaFabricQueryParams
+	queryParams1.VirtualNetworkName = vVirtualNetworkName
+	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
+	item, err := searchSdaGetVNFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetVNFromSDAFabric", err,
+			"Failure at GetVNFromSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

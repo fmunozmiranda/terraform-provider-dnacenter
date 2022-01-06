@@ -195,6 +195,16 @@ func resourceSdaMulticastDelete(ctx context.Context, d *schema.ResourceData, m i
 	resourceMap := separateResourceID(resourceID)
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
+	queryParams1 := dnacentersdkgo.GetMulticastDetailsFromSdaFabricQueryParams
+	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
+	item, err := searchSdaGetMulticastDetailsFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetMulticastDetailsFromSDAFabric", err,
+			"Failure at GetMulticastDetailsFromSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

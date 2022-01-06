@@ -204,6 +204,17 @@ func resourceSdaVirtualNetworkIPPoolDelete(ctx context.Context, d *schema.Resour
 	vIPPoolName := resourceMap["ip_pool_name"]
 	vVirtualNetworkName := resourceMap["virtual_network_name"]
 
+	queryParams1 := dnacentersdkgo.GetIPPoolFromSdaVirtualNetworkQueryParams
+	queryParams1.IPPoolName = vIPPoolName
+	queryParams1.VirtualNetworkName = vVirtualNetworkName
+	item, err := searchSdaGetIPPoolFromSDAVirtualNetwork(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetIPPoolFromSDAVirtualNetwork", err,
+			"Failure at GetIPPoolFromSDAVirtualNetwork, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

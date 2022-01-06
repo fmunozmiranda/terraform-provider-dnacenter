@@ -282,7 +282,15 @@ func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, 
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenWirelessRetrieveRfProfilesItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting RetrieveRfProfiles search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -301,6 +309,16 @@ func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vRfProfileName := resourceMap["rf_profile_name"]
+
+	queryParams1 := dnacentersdkgo.RetrieveRfProfilesQueryParams
+	queryParams1.RfProfileName = vRfProfileName
+	item, err := searchWirelessRetrieveRFProfiles(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing RetrieveRFProfiles", err,
+			"Failure at RetrieveRFProfiles, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

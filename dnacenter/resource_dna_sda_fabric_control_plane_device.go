@@ -142,6 +142,16 @@ func resourceSdaFabricControlPlaneDeviceDelete(ctx context.Context, d *schema.Re
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
+	queryParams1 := dnacentersdkgo.GetControlPlaneDeviceFromSdaFabricQueryParams
+	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	item, err := searchSdaGetControlPlaneDeviceFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetControlPlaneDeviceFromSDAFabric", err,
+			"Failure at GetControlPlaneDeviceFromSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

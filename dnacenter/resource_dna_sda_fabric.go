@@ -136,6 +136,16 @@ func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := separateResourceID(resourceID)
 	vFabricName := resourceMap["fabric_name"]
 
+	queryParams1 := dnacentersdkgo.GetSdaFabricInfoQueryParams
+	queryParams1.FabricName = vFabricName
+	item, err := searchSdaGetSDAFabricInfo(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetSDAFabricInfo", err,
+			"Failure at GetSDAFabricInfo, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

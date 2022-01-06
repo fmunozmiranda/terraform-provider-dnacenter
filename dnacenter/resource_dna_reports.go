@@ -495,7 +495,6 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 	} else {
 		response2, _, err := client.Reports.GetListOfScheduledReports(nil)
 		if response2 != nil && err == nil {
-			items2 := getAllItemsReportsGetListOfScheduledReports(m, response2, nil)
 			item2, err := searchReportsGetListOfScheduledReports(m, items2, vvName, vvID)
 			if err == nil && item2 != nil {
 				resourceMap := make(map[string]string)
@@ -564,7 +563,15 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenReportsGetListOfScheduledReportsItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetListOfScheduledReports search response",
+				err))
+			return diags
+		}
 
 	}
 	if selectedMethod == 2 {
@@ -612,6 +619,18 @@ func resourceReportsDelete(ctx context.Context, d *schema.ResourceData, m interf
 	resourceMap := separateResourceID(resourceID)
 	vViewGroupID, okViewGroupID := resourceMap["view_group_id"]
 	vViewID, okViewID := resourceMap["view_id"]
+
+	queryParams1 := dnacentersdkgo.GetListOfScheduledReportsQueryParams
+	queryParams1.ViewGroupID = vViewGroupID
+	queryParams1.ViewID = vViewID
+	item, err := searchReportsGetListOfScheduledReports(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetListOfScheduledReports", err,
+			"Failure at GetListOfScheduledReports, unexpected response", ""))
+		return diags
+	}
+
 	vReportID, okReportID := resourceMap["report_id"]
 
 	method1 := []bool{okViewGroupID, okViewID}

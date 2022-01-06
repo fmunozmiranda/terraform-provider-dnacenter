@@ -225,7 +225,15 @@ func resourceSensorRead(ctx context.Context, d *schema.ResourceData, m interface
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenSensorsSensorsItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting Sensors search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -244,6 +252,16 @@ func resourceSensorDelete(ctx context.Context, d *schema.ResourceData, m interfa
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSiteID := resourceMap["site_id"]
+
+	queryParams1 := dnacentersdkgo.SensorsQueryParams
+	queryParams1.SiteID = vSiteID
+	item, err := searchSensorsSensors(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing Sensors", err,
+			"Failure at Sensors, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

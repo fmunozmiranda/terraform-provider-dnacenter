@@ -215,7 +215,6 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 	} else {
 		response2, _, err := client.Tag.GetTag(nil)
 		if response2 != nil && err == nil {
-			items2 := getAllItemsTagGetTag(m, response2, nil)
 			item2, err := searchTagGetTag(m, items2, vvName, vvID)
 			if err == nil && item2 != nil {
 				resourceMap := make(map[string]string)
@@ -320,7 +319,15 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenTagGetTagItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetTag search response",
+				err))
+			return diags
+		}
 
 	}
 	if selectedMethod == 2 {
@@ -372,6 +379,27 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 	vSortBy, okSortBy := resourceMap["sort_by"]
 	vOrder, okOrder := resourceMap["order"]
 	vSystemTag, okSystemTag := resourceMap["system_tag"]
+
+	queryParams1 := dnacentersdkgo.GetTagQueryParams
+	queryParams1.Name = vName
+	queryParams1.AdditionalInfonameSpace = vAdditionalInfonameSpace
+	queryParams1.AdditionalInfoattributes = vAdditionalInfoattributes
+	queryParams1.Level = vLevel
+	queryParams1.Offset = vOffset
+	queryParams1.Limit = vLimit
+	queryParams1.Size = vSize
+	queryParams1.Field = vField
+	queryParams1.SortBy = vSortBy
+	queryParams1.Order = vOrder
+	queryParams1.SystemTag = vSystemTag
+	item, err := searchTagGetTag(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTag", err,
+			"Failure at GetTag, unexpected response", ""))
+		return diags
+	}
+
 	vID, okID := resourceMap["id"]
 
 	method1 := []bool{okName, okAdditionalInfonameSpace, okAdditionalInfoattributes, okLevel, okOffset, okLimit, okSize, okField, okSortBy, okOrder, okSystemTag}
@@ -398,9 +426,9 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 			vvName = getResp.Name
 		}
 	}
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestTagUpdateTag(ctx, "item.0", d)
+		request1 := expandRequestTagUpdateTag(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Tag.UpdateTag(request1)
 		if err != nil || response1 == nil {
@@ -440,6 +468,27 @@ func resourceTagDelete(ctx context.Context, d *schema.ResourceData, m interface{
 	vSortBy, okSortBy := resourceMap["sort_by"]
 	vOrder, okOrder := resourceMap["order"]
 	vSystemTag, okSystemTag := resourceMap["system_tag"]
+
+	queryParams1 := dnacentersdkgo.GetTagQueryParams
+	queryParams1.Name = vName
+	queryParams1.AdditionalInfonameSpace = vAdditionalInfonameSpace
+	queryParams1.AdditionalInfoattributes = vAdditionalInfoattributes
+	queryParams1.Level = vLevel
+	queryParams1.Offset = vOffset
+	queryParams1.Limit = vLimit
+	queryParams1.Size = vSize
+	queryParams1.Field = vField
+	queryParams1.SortBy = vSortBy
+	queryParams1.Order = vOrder
+	queryParams1.SystemTag = vSystemTag
+	item, err := searchTagGetTag(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTag", err,
+			"Failure at GetTag, unexpected response", ""))
+		return diags
+	}
+
 	vID, okID := resourceMap["id"]
 
 	method1 := []bool{okName, okAdditionalInfonameSpace, okAdditionalInfoattributes, okLevel, okOffset, okLimit, okSize, okField, okSortBy, okOrder, okSystemTag}

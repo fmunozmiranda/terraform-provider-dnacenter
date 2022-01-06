@@ -201,7 +201,15 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenWirelessGetWirelessProfileItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetWirelessProfile search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -216,14 +224,24 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 	resourceMap := separateResourceID(resourceID)
 	vProfileName := resourceMap["profile_name"]
 
+	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams
+	queryParams1.ProfileName = vProfileName
+	item, err := searchWirelessGetWirelessProfile(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetWirelessProfile", err,
+			"Failure at GetWirelessProfile, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestWirelessProfileUpdateWirelessProfile(ctx, "item.0", d)
+		request1 := expandRequestWirelessProfileUpdateWirelessProfile(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Wireless.UpdateWirelessProfile(request1)
 		if err != nil || response1 == nil {
@@ -253,6 +271,16 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vProfileName := resourceMap["profile_name"]
+
+	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams
+	queryParams1.ProfileName = vProfileName
+	item, err := searchWirelessGetWirelessProfile(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetWirelessProfile", err,
+			"Failure at GetWirelessProfile, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

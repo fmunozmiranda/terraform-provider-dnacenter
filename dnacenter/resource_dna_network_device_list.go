@@ -361,7 +361,15 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenDevicesGetDeviceListItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDeviceList search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -407,14 +415,55 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 	vID := resourceMap["id"]
 	vDeviceSupportLevel := resourceMap["device_support_level"]
 
+	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams
+	queryParams1.Hostname = interfaceToSliceString(vHostname)
+	queryParams1.ManagementIPAddress = interfaceToSliceString(vManagementIPAddress)
+	queryParams1.MacAddress = interfaceToSliceString(vMacAddress)
+	queryParams1.LocationName = interfaceToSliceString(vLocationName)
+	queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
+	queryParams1.Location = interfaceToSliceString(vLocation)
+	queryParams1.Family = interfaceToSliceString(vFamily)
+	queryParams1.Type = interfaceToSliceString(vType)
+	queryParams1.Series = interfaceToSliceString(vSeries)
+	queryParams1.CollectionStatus = interfaceToSliceString(vCollectionStatus)
+	queryParams1.CollectionInterval = interfaceToSliceString(vCollectionInterval)
+	queryParams1.NotSyncedForMinutes = interfaceToSliceString(vNotSyncedForMinutes)
+	queryParams1.ErrorCode = interfaceToSliceString(vErrorCode)
+	queryParams1.ErrorDescription = interfaceToSliceString(vErrorDescription)
+	queryParams1.SoftwareVersion = interfaceToSliceString(vSoftwareVersion)
+	queryParams1.SoftwareType = interfaceToSliceString(vSoftwareType)
+	queryParams1.PlatformID = interfaceToSliceString(vPlatformID)
+	queryParams1.Role = interfaceToSliceString(vRole)
+	queryParams1.ReachabilityStatus = interfaceToSliceString(vReachabilityStatus)
+	queryParams1.UpTime = interfaceToSliceString(vUpTime)
+	queryParams1.AssociatedWlcIP = interfaceToSliceString(vAssociatedWlcIP)
+	queryParams1.Licensename = interfaceToSliceString(vLicensename)
+	queryParams1.Licensetype = interfaceToSliceString(vLicensetype)
+	queryParams1.Licensestatus = interfaceToSliceString(vLicensestatus)
+	queryParams1.Modulename = interfaceToSliceString(vModulename)
+	queryParams1.Moduleequpimenttype = interfaceToSliceString(vModuleequpimenttype)
+	queryParams1.Moduleservicestate = interfaceToSliceString(vModuleservicestate)
+	queryParams1.Modulevendorequipmenttype = interfaceToSliceString(vModulevendorequipmenttype)
+	queryParams1.Modulepartnumber = interfaceToSliceString(vModulepartnumber)
+	queryParams1.Moduleoperationstatecode = interfaceToSliceString(vModuleoperationstatecode)
+	queryParams1.ID = vID
+	queryParams1.DeviceSupportLevel = vDeviceSupportLevel
+	item, err := searchDevicesGetDeviceList(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDeviceList", err,
+			"Failure at GetDeviceList, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestNetworkDeviceListSyncDevices2(ctx, "item.0", d)
+		request1 := expandRequestNetworkDeviceListSyncDevices2(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Devices.SyncDevices2(request1)
 		if err != nil || response1 == nil {

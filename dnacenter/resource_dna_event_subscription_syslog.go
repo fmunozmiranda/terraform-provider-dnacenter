@@ -196,7 +196,15 @@ func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.Resource
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenEventManagementGetSyslogEventSubscriptionsItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetSyslogEventSubscriptions search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -215,14 +223,28 @@ func resourceEventSubscriptionSyslogUpdate(ctx context.Context, d *schema.Resour
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
 
+	queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams
+	queryParams1.EventIDs = vEventIDs
+	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
+	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
+	queryParams1.SortBy = vSortBy
+	queryParams1.Order = vOrder
+	item, err := searchEventManagementGetSyslogEventSubscriptions(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetSyslogEventSubscriptions", err,
+			"Failure at GetSyslogEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscription(ctx, "item.0", d)
+		request1 := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateSyslogEventSubscription(request1)
 		if err != nil || response1 == nil {

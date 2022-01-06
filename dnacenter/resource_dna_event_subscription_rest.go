@@ -196,7 +196,15 @@ func resourceEventSubscriptionRestRead(ctx context.Context, d *schema.ResourceDa
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenEventManagementGetRestWebhookEventSubscriptionsItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetRestWebhookEventSubscriptions search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -215,14 +223,28 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
 
+	queryParams1 := dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams
+	queryParams1.EventIDs = vEventIDs
+	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
+	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
+	queryParams1.SortBy = vSortBy
+	queryParams1.Order = vOrder
+	item, err := searchEventManagementGetRestWebhookEventSubscriptions(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetRestWebhookEventSubscriptions", err,
+			"Failure at GetRestWebhookEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestEventSubscriptionRestUpdateRestWebhookEventSubscription(ctx, "item.0", d)
+		request1 := expandRequestEventSubscriptionRestUpdateRestWebhookEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateRestWebhookEventSubscription(request1)
 		if err != nil || response1 == nil {

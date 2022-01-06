@@ -182,6 +182,17 @@ func resourceSdaPortAssignmentForUserDeviceDelete(ctx context.Context, d *schema
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 	vInterfaceName := resourceMap["interface_name"]
 
+	queryParams1 := dnacentersdkgo.GetPortAssignmentForUserDeviceInSdaFabricQueryParams
+	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	queryParams1.InterfaceName = vInterfaceName
+	item, err := searchSdaGetPortAssignmentForUserDeviceInSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetPortAssignmentForUserDeviceInSDAFabric", err,
+			"Failure at GetPortAssignmentForUserDeviceInSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

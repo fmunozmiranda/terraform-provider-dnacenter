@@ -139,14 +139,24 @@ func resourceSdaProvisionDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
+	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams
+	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	item, err := searchSdaGetProvisionedWiredDevice(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetProvisionedWiredDevice", err,
+			"Failure at GetProvisionedWiredDevice, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestSdaProvisionDeviceReProvisionWiredDevice(ctx, "item.0", d)
+		request1 := expandRequestSdaProvisionDeviceReProvisionWiredDevice(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Sda.ReProvisionWiredDevice(request1)
 		if err != nil || response1 == nil {
@@ -176,6 +186,16 @@ func resourceSdaProvisionDeviceDelete(ctx context.Context, d *schema.ResourceDat
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
+
+	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams
+	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	item, err := searchSdaGetProvisionedWiredDevice(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetProvisionedWiredDevice", err,
+			"Failure at GetProvisionedWiredDevice, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

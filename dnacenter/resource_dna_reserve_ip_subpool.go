@@ -272,7 +272,15 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenNetworkSettingsGetReserveIPSubpoolItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetReserveIPSubpool search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -289,14 +297,26 @@ func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData,
 	vOffset := resourceMap["offset"]
 	vLimit := resourceMap["limit"]
 
+	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams
+	queryParams1.SiteID = vSiteID
+	queryParams1.Offset = vOffset
+	queryParams1.Limit = vLimit
+	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetReserveIPSubpool", err,
+			"Failure at GetReserveIPSubpool, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
-		request1 := expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx, "item.0", d)
+		request1 := expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vvSiteID, request1)
 		if err != nil || response1 == nil {
@@ -328,6 +348,18 @@ func resourceReserveIPSubpoolDelete(ctx context.Context, d *schema.ResourceData,
 	vSiteID := resourceMap["site_id"]
 	vOffset := resourceMap["offset"]
 	vLimit := resourceMap["limit"]
+
+	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams
+	queryParams1.SiteID = vSiteID
+	queryParams1.Offset = vOffset
+	queryParams1.Limit = vLimit
+	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetReserveIPSubpool", err,
+			"Failure at GetReserveIPSubpool, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

@@ -142,6 +142,16 @@ func resourceSdaFabricSiteDelete(ctx context.Context, d *schema.ResourceData, m 
 	resourceMap := separateResourceID(resourceID)
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
+	queryParams1 := dnacentersdkgo.GetSiteFromSdaFabricQueryParams
+	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
+	item, err := searchSdaGetSiteFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetSiteFromSDAFabric", err,
+			"Failure at GetSiteFromSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string

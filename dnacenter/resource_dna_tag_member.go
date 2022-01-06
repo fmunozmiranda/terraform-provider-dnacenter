@@ -150,7 +150,15 @@ func resourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interf
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenTagGetTagMembersByIDItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetTagMembersByID search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -169,11 +177,8 @@ func resourceTagMemberDelete(ctx context.Context, d *schema.ResourceData, m inte
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
-	vMemberType := resourceMap["member_type"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vMemberAssociationType := resourceMap["member_association_type"]
-	vLevel := resourceMap["level"]
+
+
 
 	selectedMethod := 1
 	var vvID string

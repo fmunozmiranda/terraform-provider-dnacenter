@@ -193,7 +193,15 @@ func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData,
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenApplicationPolicyGetQosDeviceInterfaceInfoItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetQosDeviceInterfaceInfo search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -208,14 +216,24 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 	resourceMap := separateResourceID(resourceID)
 	vNetworkDeviceID := resourceMap["network_device_id"]
 
+	queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams
+	queryParams1.NetworkDeviceID = vNetworkDeviceID
+	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetQosDeviceInterfaceInfo", err,
+			"Failure at GetQosDeviceInterfaceInfo, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx, "item.0", d)
+		request1 := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateQosDeviceInterfaceInfo(request1)
 		if err != nil || response1 == nil {
@@ -245,6 +263,16 @@ func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceDat
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vNetworkDeviceID := resourceMap["network_device_id"]
+
+	queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams
+	queryParams1.NetworkDeviceID = vNetworkDeviceID
+	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetQosDeviceInterfaceInfo", err,
+			"Failure at GetQosDeviceInterfaceInfo, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

@@ -155,14 +155,24 @@ func resourceSdaVirtualNetworkV2Update(ctx context.Context, d *schema.ResourceDa
 	resourceMap := separateResourceID(resourceID)
 	vVirtualNetworkName := resourceMap["virtual_network_name"]
 
+	queryParams1 := dnacentersdkgo.GetVirtualNetworkWithScalableGroupsQueryParams
+	queryParams1.VirtualNetworkName = vVirtualNetworkName
+	item, err := searchSdaGetVirtualNetworkWithScalableGroups(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetVirtualNetworkWithScalableGroups", err,
+			"Failure at GetVirtualNetworkWithScalableGroups, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestSdaVirtualNetworkV2UpdateVirtualNetworkWithScalableGroups(ctx, "item.0", d)
+		request1 := expandRequestSdaVirtualNetworkV2UpdateVirtualNetworkWithScalableGroups(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Sda.UpdateVirtualNetworkWithScalableGroups(request1)
 		if err != nil || response1 == nil {
@@ -192,6 +202,16 @@ func resourceSdaVirtualNetworkV2Delete(ctx context.Context, d *schema.ResourceDa
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vVirtualNetworkName := resourceMap["virtual_network_name"]
+
+	queryParams1 := dnacentersdkgo.GetVirtualNetworkWithScalableGroupsQueryParams
+	queryParams1.VirtualNetworkName = vVirtualNetworkName
+	item, err := searchSdaGetVirtualNetworkWithScalableGroups(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetVirtualNetworkWithScalableGroups", err,
+			"Failure at GetVirtualNetworkWithScalableGroups, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

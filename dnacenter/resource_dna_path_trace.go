@@ -3267,7 +3267,6 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	} else {
 		response2, _, err := client.PathTrace.RetrivesAllPreviousPathtracesSummary(nil)
 		if response2 != nil && err == nil {
-			items2 := getAllItemsPathTraceRetrivesAllPreviousPathtracesSummary(m, response2, nil)
 			item2, err := searchPathTraceRetrivesAllPreviousPathtracesSummary(m, items2, vvName, vvID)
 			if err == nil && item2 != nil {
 				resourceMap := make(map[string]string)
@@ -3388,7 +3387,15 @@ func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interf
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenPathTraceRetrivesAllPreviousPathtracesSummaryItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting RetrivesAllPreviousPathtracesSummary search response",
+				err))
+			return diags
+		}
 
 	}
 	if selectedMethod == 2 {
@@ -3449,6 +3456,31 @@ func resourcePathTraceDelete(ctx context.Context, d *schema.ResourceData, m inte
 	vOffset, okOffset := resourceMap["offset"]
 	vOrder, okOrder := resourceMap["order"]
 	vSortBy, okSortBy := resourceMap["sort_by"]
+
+	queryParams1 := dnacentersdkgo.RetrivesAllPreviousPathtracesSummaryQueryParams
+	queryParams1.PeriodicRefresh = *stringToBooleanPtr(vPeriodicRefresh)
+	queryParams1.SourceIP = vSourceIP
+	queryParams1.DestIP = vDestIP
+	queryParams1.SourcePort = vSourcePort
+	queryParams1.DestPort = vDestPort
+	queryParams1.GtCreateTime = vGtCreateTime
+	queryParams1.LtCreateTime = vLtCreateTime
+	queryParams1.Protocol = vProtocol
+	queryParams1.Status = vStatus
+	queryParams1.TaskID = vTaskID
+	queryParams1.LastUpdateTime = vLastUpdateTime
+	queryParams1.Limit = vLimit
+	queryParams1.Offset = vOffset
+	queryParams1.Order = vOrder
+	queryParams1.SortBy = vSortBy
+	item, err := searchPathTraceRetrivesAllPreviousPathtracesSummary(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing RetrivesAllPreviousPathtracesSummary", err,
+			"Failure at RetrivesAllPreviousPathtracesSummary, unexpected response", ""))
+		return diags
+	}
+
 	vFlowAnalysisID, okFlowAnalysisID := resourceMap["flow_analysis_id"]
 
 	method1 := []bool{okPeriodicRefresh, okSourceIP, okDestIP, okSourcePort, okDestPort, okGtCreateTime, okLtCreateTime, okProtocol, okStatus, okTaskID, okLastUpdateTime, okLimit, okOffset, okOrder, okSortBy}

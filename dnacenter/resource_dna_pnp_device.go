@@ -2719,7 +2719,6 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	} else {
 		response2, _, err := client.DeviceOnboardingPnp.GetDeviceList2(nil)
 		if response2 != nil && err == nil {
-			items2 := getAllItemsDeviceOnboardingPnpGetDeviceList2(m, response2, nil)
 			item2, err := searchDeviceOnboardingPnpGetDeviceList2(m, items2, vvName, vvID)
 			if err == nil && item2 != nil {
 				resourceMap := make(map[string]string)
@@ -2932,6 +2931,37 @@ func resourcePnpDeviceUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	vMacAddress, okMacAddress := resourceMap["mac_address"]
 	vHostname, okHostname := resourceMap["hostname"]
 	vSiteName, okSiteName := resourceMap["site_name"]
+
+	queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams
+	queryParams1.Limit = *stringToIntPtr(vLimit)
+	queryParams1.Offset = *stringToIntPtr(vOffset)
+	queryParams1.Sort = interfaceToSliceString(vSort)
+	queryParams1.SortOrder = vSortOrder
+	queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
+	queryParams1.State = interfaceToSliceString(vState)
+	queryParams1.OnbState = interfaceToSliceString(vOnbState)
+	queryParams1.CmState = interfaceToSliceString(vCmState)
+	queryParams1.Name = interfaceToSliceString(vName)
+	queryParams1.Pid = interfaceToSliceString(vPid)
+	queryParams1.Source = interfaceToSliceString(vSource)
+	queryParams1.ProjectID = interfaceToSliceString(vProjectID)
+	queryParams1.WorkflowID = interfaceToSliceString(vWorkflowID)
+	queryParams1.ProjectName = interfaceToSliceString(vProjectName)
+	queryParams1.WorkflowName = interfaceToSliceString(vWorkflowName)
+	queryParams1.SmartAccountID = interfaceToSliceString(vSmartAccountID)
+	queryParams1.VirtualAccountID = interfaceToSliceString(vVirtualAccountID)
+	queryParams1.LastContact = *stringToBooleanPtr(vLastContact)
+	queryParams1.MacAddress = vMacAddress
+	queryParams1.Hostname = vHostname
+	queryParams1.SiteName = vSiteName
+	item, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDeviceList2", err,
+			"Failure at GetDeviceList2, unexpected response", ""))
+		return diags
+	}
+
 	vID, okID := resourceMap["id"]
 
 	method1 := []bool{okLimit, okOffset, okSort, okSortOrder, okSerialNumber, okState, okOnbState, okCmState, okName, okPid, okSource, okProjectID, okWorkflowID, okProjectName, okWorkflowName, okSmartAccountID, okVirtualAccountID, okLastContact, okMacAddress, okHostname, okSiteName}
@@ -2947,9 +2977,9 @@ func resourcePnpDeviceUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	if selectedMethod == 2 {
 		vvID = vID
 	}
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
-		request1 := expandRequestPnpDeviceUpdateDevice(ctx, "item.0", d)
+		request1 := expandRequestPnpDeviceUpdateDevice(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.DeviceOnboardingPnp.UpdateDevice(vvID, request1)
 		if err != nil || response1 == nil {
@@ -2999,6 +3029,37 @@ func resourcePnpDeviceDelete(ctx context.Context, d *schema.ResourceData, m inte
 	vMacAddress, okMacAddress := resourceMap["mac_address"]
 	vHostname, okHostname := resourceMap["hostname"]
 	vSiteName, okSiteName := resourceMap["site_name"]
+
+	queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams
+	queryParams1.Limit = *stringToIntPtr(vLimit)
+	queryParams1.Offset = *stringToIntPtr(vOffset)
+	queryParams1.Sort = interfaceToSliceString(vSort)
+	queryParams1.SortOrder = vSortOrder
+	queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
+	queryParams1.State = interfaceToSliceString(vState)
+	queryParams1.OnbState = interfaceToSliceString(vOnbState)
+	queryParams1.CmState = interfaceToSliceString(vCmState)
+	queryParams1.Name = interfaceToSliceString(vName)
+	queryParams1.Pid = interfaceToSliceString(vPid)
+	queryParams1.Source = interfaceToSliceString(vSource)
+	queryParams1.ProjectID = interfaceToSliceString(vProjectID)
+	queryParams1.WorkflowID = interfaceToSliceString(vWorkflowID)
+	queryParams1.ProjectName = interfaceToSliceString(vProjectName)
+	queryParams1.WorkflowName = interfaceToSliceString(vWorkflowName)
+	queryParams1.SmartAccountID = interfaceToSliceString(vSmartAccountID)
+	queryParams1.VirtualAccountID = interfaceToSliceString(vVirtualAccountID)
+	queryParams1.LastContact = *stringToBooleanPtr(vLastContact)
+	queryParams1.MacAddress = vMacAddress
+	queryParams1.Hostname = vHostname
+	queryParams1.SiteName = vSiteName
+	item, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDeviceList2", err,
+			"Failure at GetDeviceList2, unexpected response", ""))
+		return diags
+	}
+
 	vID, okID := resourceMap["id"]
 
 	method1 := []bool{okLimit, okOffset, okSort, okSortOrder, okSerialNumber, okState, okOnbState, okCmState, okName, okPid, okSource, okProjectID, okWorkflowID, okProjectName, okWorkflowName, okSmartAccountID, okVirtualAccountID, okLastContact, okMacAddress, okHostname, okSiteName}

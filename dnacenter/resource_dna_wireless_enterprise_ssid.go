@@ -240,7 +240,15 @@ func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenWirelessGetEnterpriseSSIDItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetEnterpriseSSID search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -255,14 +263,24 @@ func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.Resourc
 	resourceMap := separateResourceID(resourceID)
 	vSSIDName := resourceMap["ssid_name"]
 
+	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams
+	queryParams1.SSIDName = vSSIDName
+	item, err := searchWirelessGetEnterpriseSSID(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEnterpriseSSID", err,
+			"Failure at GetEnterpriseSSID, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx, "item.0", d)
+		request1 := expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Wireless.UpdateEnterpriseSSID(request1)
 		if err != nil || response1 == nil {
@@ -292,6 +310,16 @@ func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.Resourc
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSSIDName := resourceMap["ssid_name"]
+
+	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams
+	queryParams1.SSIDName = vSSIDName
+	item, err := searchWirelessGetEnterpriseSSID(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEnterpriseSSID", err,
+			"Failure at GetEnterpriseSSID, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

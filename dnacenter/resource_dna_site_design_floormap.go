@@ -151,9 +151,9 @@ func resourceSiteDesignFloormapUpdate(ctx context.Context, d *schema.ResourceDat
 	selectedMethod := 1
 	var vvID string
 	var vvName string
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
-		request1 := expandRequestSiteDesignFloormapUpdateFloormap(ctx, "item.0", d)
+		request1 := expandRequestSiteDesignFloormapUpdateFloormap(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		restyResp1, err := client.SiteDesign.UpdateFloormap(vvFloorID, request1)
 		if err != nil {

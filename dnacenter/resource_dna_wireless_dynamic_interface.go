@@ -120,7 +120,15 @@ func resourceWirelessDynamicInterfaceRead(ctx context.Context, d *schema.Resourc
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
+		//TODO FOR DNAC
+
+		vItem1 := flattenWirelessGetDynamicInterfaceItems(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDynamicInterface search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -139,6 +147,16 @@ func resourceWirelessDynamicInterfaceDelete(ctx context.Context, d *schema.Resou
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vInterfaceName := resourceMap["interface_name"]
+
+	queryParams1 := dnacentersdkgo.GetDynamicInterfaceQueryParams
+	queryParams1.InterfaceName = vInterfaceName
+	item, err := searchWirelessGetDynamicInterface(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDynamicInterface", err,
+			"Failure at GetDynamicInterface, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string

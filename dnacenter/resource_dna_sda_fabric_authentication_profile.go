@@ -171,14 +171,25 @@ func resourceSdaFabricAuthenticationProfileUpdate(ctx context.Context, d *schema
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
+	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams
+	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
+	queryParams1.AuthenticateTemplateName = vAuthenticateTemplateName
+	item, err := searchSdaGetDefaultAuthenticationProfileFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDefaultAuthenticationProfileFromSDAFabric", err,
+			"Failure at GetDefaultAuthenticationProfileFromSDAFabric, unexpected response", ""))
+		return diags
+	}
+
 	selectedMethod := 1
 	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestSdaFabricAuthenticationProfileUpdateDefaultAuthenticationProfileInSdaFabric(ctx, "item.0", d)
+		request1 := expandRequestSdaFabricAuthenticationProfileUpdateDefaultAuthenticationProfileInSdaFabric(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Sda.UpdateDefaultAuthenticationProfileInSdaFabric(request1)
 		if err != nil || response1 == nil {
@@ -209,6 +220,17 @@ func resourceSdaFabricAuthenticationProfileDelete(ctx context.Context, d *schema
 	resourceMap := separateResourceID(resourceID)
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
+
+	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams
+	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
+	queryParams1.AuthenticateTemplateName = vAuthenticateTemplateName
+	item, err := searchSdaGetDefaultAuthenticationProfileFromSDAFabric(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDefaultAuthenticationProfileFromSDAFabric", err,
+			"Failure at GetDefaultAuthenticationProfileFromSDAFabric, unexpected response", ""))
+		return diags
+	}
 
 	selectedMethod := 1
 	var vvID string
