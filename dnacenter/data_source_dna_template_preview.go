@@ -57,11 +57,11 @@ func dataSourceTemplatePreview() *schema.Resource {
 						"validation_errors": &schema.Schema{
 							Description: `Validation error in template content if any
 `,
-							Type: schema.TypeList,
+							Type:     schema.TypeList,
+							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
 						},
 					},
 				},
@@ -69,20 +69,20 @@ func dataSourceTemplatePreview() *schema.Resource {
 			"params": &schema.Schema{
 				Description: `Params to render preview
 `,
-				Type: schema.TypeList,
+				Type:     schema.TypeList,
+				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				Optional: true,
 			},
 			"resource_params": &schema.Schema{
 				Description: `Resource params to render preview
 `,
-				Type: schema.TypeList,
+				Type:     schema.TypeList,
+				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				Optional: true,
 			},
 			"template_id": &schema.Schema{
 				Description: `UUID of template to get template preview

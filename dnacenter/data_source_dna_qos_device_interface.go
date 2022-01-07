@@ -195,11 +195,11 @@ func dataSourceQosDeviceInterface() *schema.Resource {
 									"dmvpn_remote_sites_bw": &schema.Schema{
 										Description: `Dmvpn remote sites bandwidth
 `,
-										Type: schema.TypeList,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
+										Type:     schema.TypeList,
 										Computed: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeInt,
+										},
 									},
 
 									"download_bw": &schema.Schema{

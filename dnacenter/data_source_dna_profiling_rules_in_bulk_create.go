@@ -77,11 +77,11 @@ inserted.
 										},
 									},
 									"condition_group": &schema.Schema{
-										Type: schema.TypeList,
+										Type:     schema.TypeList,
+										Optional: true,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
-										Optional: true,
 									},
 									"operator": &schema.Schema{
 										Type:     schema.TypeString,

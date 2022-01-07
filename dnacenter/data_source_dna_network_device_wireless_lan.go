@@ -34,11 +34,11 @@ func dataSourceNetworkDeviceWirelessLan() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 
 						"admin_enabled_ports": &schema.Schema{
-							Type: schema.TypeList,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
+							Type:     schema.TypeList,
 							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeInt,
+							},
 						},
 
 						"ap_group_name": &schema.Schema{
