@@ -21,10 +21,15 @@ type Config struct {
 
 // NewClient returns a new Cisco DNA Center client.
 func (c *Config) NewClient() (*dnacentersdkgo.Client, error) {
-	return dnacentersdkgo.NewClientWithOptions(c.BaseURL,
+	client, err := dnacentersdkgo.NewClientWithOptions(c.BaseURL,
 		c.Username, c.Password,
 		c.Debug, c.SSLVerify,
 	)
+	if err != nil {
+		return client, err
+	}
+	client.RestyClient().SetLogger(createLogger())
+	return client, err
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
