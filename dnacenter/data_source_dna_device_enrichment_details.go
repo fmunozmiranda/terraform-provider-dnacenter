@@ -21,6 +21,18 @@ about the device and neighbor topology
 
 		ReadContext: dataSourceDeviceEnrichmentDetailsRead,
 		Schema: map[string]*schema.Schema{
+			"entity_type": &schema.Schema{
+				Description: `entity_type header parameter. Device enrichment details can be fetched based on either Device ID or Device MAC address or Device IP Address. This parameter value must either be device_id/mac_address/ip_address
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"entity_value": &schema.Schema{
+				Description: `entity_value header parameter. Contains the actual value for the entity type that has been defined
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
 
 			"items": &schema.Schema{
 				Type:     schema.TypeList,

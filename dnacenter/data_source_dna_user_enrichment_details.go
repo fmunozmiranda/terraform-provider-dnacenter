@@ -21,6 +21,18 @@ user and devices that the user is connected to
 
 		ReadContext: dataSourceUserEnrichmentDetailsRead,
 		Schema: map[string]*schema.Schema{
+			"entity_type": &schema.Schema{
+				Description: `entity_type header parameter. User enrichment details can be fetched based on either User ID or Client MAC address. This parameter value must either be network_user_id/mac_address
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"entity_value": &schema.Schema{
+				Description: `entity_value header parameter. Contains the actual value for the entity type that has been defined
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
 
 			"items": &schema.Schema{
 				Type:     schema.TypeList,

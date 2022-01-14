@@ -108,18 +108,18 @@ func dataSourcePnpDeviceClaim() *schema.Resource {
 						"json_array_response": &schema.Schema{
 							Description: `Json Array Response`,
 							Type:        schema.TypeList,
+							Computed:    true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
 						},
 						"json_response": &schema.Schema{
 							Description: `Json Response`,
 							Type:        schema.TypeList,
+							Computed:    true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
 						},
 						"message": &schema.Schema{
 							Description: `Message`,
