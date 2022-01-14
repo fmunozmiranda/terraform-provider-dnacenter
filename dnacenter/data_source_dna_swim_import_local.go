@@ -110,6 +110,13 @@ func dataSourceSwimImportLocalRead(ctx context.Context, d *schema.ResourceData, 
 			queryParams1.ThirdPartyApplicationType = vThirdPartyApplicationType.(string)
 		}
 
+		isDir, err := IsDirectory(vFilePath.(string))
+		if err != nil || isDir {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing File", err,
+				"Failure at File, Path is a directory", ""))
+			return diags
+		}
 		f, err := os.Open(vFilePath.(string))
 		if err != nil {
 			fmt.Println(err)

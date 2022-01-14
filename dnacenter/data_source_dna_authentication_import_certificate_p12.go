@@ -103,6 +103,15 @@ func dataSourceAuthenticationImportCertificateP12Read(ctx context.Context, d *sc
 			queryParams1.ListOfUsers = interfaceToSliceString(vListOfUsers)
 		}
 
+		isDir, err := IsDirectory(vP12FilePath.(string))
+		if err != nil || isDir {
+			fmt.Println(err)
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing ImportCertificateP12", err,
+				"Failure at ImportCertificateP12, unexpected response", ""))
+			return diags
+		}
+
 		f, err := os.Open(vP12FilePath.(string))
 		if err != nil {
 			fmt.Println(err)

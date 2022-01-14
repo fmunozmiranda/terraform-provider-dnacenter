@@ -3,6 +3,8 @@ package dnacenter
 import (
 	"fmt"
 	"net/url"
+	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"sort"
@@ -216,4 +218,16 @@ func getNextPageAndSizeParams(href string) (page int, size int, err error) {
 	}
 
 	return
+}
+
+func IsDirectory(path string) (bool, error) {
+	if filepath.IsAbs(path) {
+		fileInfo, err := os.Stat(path)
+		if err != nil {
+			return true, err
+		}
+		return fileInfo.IsDir(), err
+	} else {
+		return true, nil
+	}
 }

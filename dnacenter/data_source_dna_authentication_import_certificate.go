@@ -30,12 +30,12 @@ Upload the files to the **certFileUpload** and **pkFileUpload** form data fields
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"file_name": &schema.Schema{
+			"pk_file_name": &schema.Schema{
 				Description: `File name.`,
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"file_name2": &schema.Schema{
+			"cert_file_name": &schema.Schema{
 				Description: `File name.`,
 				Type:        schema.TypeString,
 				Required:    true,
@@ -88,8 +88,8 @@ func dataSourceAuthenticationImportCertificateRead(ctx context.Context, d *schem
 	vPkPassword, okPkPassword := d.GetOk("pk_password")
 	vListOfUsers, okListOfUsers := d.GetOk("list_of_users")
 	vCertFilePath := d.Get("cert_file_path")
-	vFileName := d.Get("file_name")
-	vFileName2 := d.Get("file_name2")
+	vPkFileName := d.Get("pk_file_name")
+	vCertFileName := d.Get("cert_file_name")
 	vPkFilePath := d.Get("pk_file_path")
 
 	selectedMethod := 1
@@ -104,38 +104,60 @@ func dataSourceAuthenticationImportCertificateRead(ctx context.Context, d *schem
 			queryParams1.ListOfUsers = interfaceToSliceString(vListOfUsers)
 		}
 
-		f, err := os.Open(vCertFilePath.(string))
-		if err != nil {
-			fmt.Println(err)
+		isDir, err := IsDirectory(vCertFilePath.(string))
+		if err != nil || isDir {
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing ImportCertificateP12", err,
-				"Failure at ImportCertificateP12, unexpected response", ""))
+				"Failure when executing CertFile", err,
+				"Failure at CertFile, Path is a directory", ""))
 			return diags
 		}
-		second_file, err := os.Open(vPkFilePath.(string))
+
+		isDir2, err := IsDirectory(vPkFilePath.(string))
+		if err != nil || isDir2 {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing PkFile", err,
+				"Failure at PkFile, Path is a directory", ""))
+			return diags
+		}
+
+		first_file, err := os.Open(vPkFilePath.(string))
 		if err != nil {
 			fmt.Println(err)
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing ImportCertificateP12", err,
-				"Failure at ImportCertificateP12, unexpected response", ""))
+				"Failure when executing PkFile", err,
+				"Failure at PkFile, unexpected response", ""))
+			return diags
+		}
+		second_file, err := os.Open(vCertFilePath.(string))
+		if err != nil {
+			fmt.Println(err)
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing CertFile", err,
+				"Failure at CertFile, unexpected response", ""))
 			return diags
 		}
 		defer func() {
-			if err = f.Close(); err != nil {
+			if err = first_file.Close(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+
+		defer func() {
+			if err = second_file.Close(); err != nil {
 				fmt.Println(err)
 			}
 		}()
 
 		var r io.Reader
 		var r2 io.Reader
-		r = f
+		r = first_file
 		r2 = second_file
 		response1, restyResp1, err := client.AuthenticationManagement.ImportCertificate(
 			&queryParams1,
 			&dnacentersdkgo.ImportCertificateMultipartFields{
-				PkFileUploadName:   vFileName.(string),
+				PkFileUploadName:   vPkFileName.(string),
 				PkFileUpload:       r,
-				CertFileUploadName: vFileName2.(string),
+				CertFileUploadName: vCertFileName.(string),
 				CertFileUpload:     r2,
 			},
 		)
@@ -145,8 +167,8 @@ func dataSourceAuthenticationImportCertificateRead(ctx context.Context, d *schem
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing ImportCertificate", err,
-				"Failure at ImportCertificate, unexpected response", ""))
+				"Failure when executing CertFile or PkFIle", err,
+				"Failure at CertFile or PkFIle, unexpected response", ""))
 			return diags
 		}
 
