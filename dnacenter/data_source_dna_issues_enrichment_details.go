@@ -21,6 +21,18 @@ impacted hosts and suggested actions for remediation
 
 		ReadContext: dataSourceIssuesEnrichmentDetailsRead,
 		Schema: map[string]*schema.Schema{
+			"entity_type": &schema.Schema{
+				Description: `entity_type header parameter. Issue enrichment details can be fetched based on either Issue ID or Client MAC address. This parameter value must either be issue_id/mac_address
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"entity_value": &schema.Schema{
+				Description: `entity_value header parameter. Contains the actual value for the entity type that has been defined
+`,
+				Type:     schema.TypeString,
+				Required: true,
+			},
 
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
