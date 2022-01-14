@@ -157,15 +157,3 @@ func stringToBooleanPtr(v string) *bool {
 	}
 	return nil
 }
-
-func interfaceToSliceInt(v interface{}) *[]int {
-	value, ok := v.([]interface{})
-	if !ok {
-		return nil
-	}
-	newValue := []int{}
-	for _, i := range value {
-		newValue = append(newValue, *interfaceToIntPtr(i))
-	}
-	return &newValue
-}
