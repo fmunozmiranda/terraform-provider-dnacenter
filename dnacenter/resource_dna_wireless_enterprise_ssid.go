@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -189,8 +188,18 @@ func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.Resourc
 	request1 := expandRequestWirelessEnterpriseSSIDCreateEnterpriseSSID(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vSSIDName, okSSIDName := resourceItem["ssid_name"]
+	vSSIDName := resourceItem["ssid_name"]
 	vvSSIDName := interfaceToString(vSSIDName)
+
+	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams{}
+	queryParams1.SSIDName = vvSSIDName
+	getResponse2, err := searchWirelessGetEnterpriseSSID(m, queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["ssid_name"] = vvSSIDName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Wireless.CreateEnterpriseSSID(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -215,7 +224,7 @@ func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceD
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSSIDName := resourceMap["ssid_name"]
+	vSSIDName, okSSIDName := resourceMap["ssid_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -263,7 +272,7 @@ func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.Resourc
 	resourceMap := separateResourceID(resourceID)
 	vSSIDName := resourceMap["ssid_name"]
 
-	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams
+	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams{}
 	queryParams1.SSIDName = vSSIDName
 	item, err := searchWirelessGetEnterpriseSSID(m, queryParams1)
 	if err != nil || item == nil {
@@ -273,13 +282,10 @@ func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.Resourc
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Wireless.UpdateEnterpriseSSID(request1)
@@ -311,8 +317,9 @@ func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.Resourc
 	resourceMap := separateResourceID(resourceID)
 	vSSIDName := resourceMap["ssid_name"]
 
-	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams
+	queryParams1 := dnacentersdkgo.GetEnterpriseSSIDQueryParams{}
 	queryParams1.SSIDName = vSSIDName
+	var vvSSIDName string
 	item, err := searchWirelessGetEnterpriseSSID(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -321,29 +328,7 @@ func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.Resourc
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Wireless.GetEnterpriseSSID(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsWirelessGetEnterpriseSSID(m, getResp1, nil)
-		item1, err := searchWirelessGetEnterpriseSSID(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vID != item1.ID {
-			vvID = item1.ID
-		} else {
-			vvID = vID
-		}
-	}
+	vvSSIDName = queryParams1.SSIDName
 	response1, restyResp1, err := client.Wireless.DeleteEnterpriseSSID(vvSSIDName)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
@@ -491,27 +476,33 @@ func expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx context.Context
 	return &request
 }
 
-func searchWirelessGetEnterpriseSSID(m interface{}, queryParams dnacentersdkgo.GetEnterpriseSSIDQueryParams) (*dnacentersdkgo.ResponseItemWirelessGetEnterpriseSSID, error) {
+func searchWirelessGetEnterpriseSSID(m interface{}, queryParams dnacentersdkgo.GetEnterpriseSSIDQueryParams) (*dnacentersdkgo.ResponseItemWirelessGetEnterpriseSSIDSSIDDetails, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemWirelessGetEnterpriseSSID
+	var foundItem *dnacentersdkgo.ResponseItemWirelessGetEnterpriseSSIDSSIDDetails
 	var ite *dnacentersdkgo.ResponseWirelessGetEnterpriseSSID
 	ite, _, err = client.Wireless.GetEnterpriseSSID(&queryParams)
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+
+	if ite == nil {
 		return foundItem, err
 	}
+
+	items := ite
+
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemWirelessGetEnterpriseSSID
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
+		itemsCopy2 := *item.SSIDDetails
+		for _, item := range itemsCopy2 {
+			if item.Name == queryParams.SSIDName {
+				var getItem *dnacentersdkgo.ResponseItemWirelessGetEnterpriseSSIDSSIDDetails
+				getItem = &item
+				foundItem = getItem
+				return foundItem, err
+			}
 		}
 	}
 	return foundItem, err

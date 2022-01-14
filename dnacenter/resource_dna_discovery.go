@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -608,22 +607,6 @@ ERROR: Different types for param passwordList schema.TypeList schema.TypeString`
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"snmp_ro_community": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"snmp_ro_community_desc": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"snmp_rw_community": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"snmp_rw_community_desc": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
 						"snmp_user_name": &schema.Schema{
 							Description: `SNMP username of the device
 `,
@@ -768,14 +751,11 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 				"Failure at GetDiscoveryByID, unexpected response", ""))
 			return diags
 		}
-		//Set value vvName = getResp.
-		if getResp.response != nil {
-			vvName = getResp.response.Name
-		}
+
 	}
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedID(ctx, "item.0", d)
+		request1 := expandRequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedID(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Discovery.UpdatesAnExistingDiscoveryBySpecifiedID(request1)
 		if err != nil || response1 == nil {
@@ -808,7 +788,6 @@ func resourceDiscoveryDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	selectedMethod := 1
 	var vvID string
-	var vvName string
 	if selectedMethod == 1 {
 		vvID = vID
 		getResp, _, err := client.Discovery.GetDiscoveryByID(vvID)

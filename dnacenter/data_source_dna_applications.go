@@ -301,6 +301,20 @@ func flattenApplicationPolicyGetApplicationsItems(items *dnacentersdkgo.Response
 	}
 	return respItems
 }
+func flattenApplicationPolicyGetApplicationsItem(item *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["id"] = item.ID
+	respItem["name"] = item.Name
+	respItem["network_applications"] = flattenApplicationPolicyGetApplicationsItemsNetworkApplications(item.NetworkApplications)
+	respItem["network_identity"] = flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(item.NetworkIDentity)
+	respItem["application_set"] = flattenApplicationPolicyGetApplicationsItemsApplicationSet(item.ApplicationSet)
+
+	return respItem
+}
 
 func flattenApplicationPolicyGetApplicationsItemsNetworkApplications(items *[]dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsNetworkApplications) []map[string]interface{} {
 	if items == nil {

@@ -72,7 +72,7 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 
 	var diags diag.Diagnostics
 
-	resourceItem := *getResourceItem(d.Get("parameters"))
+	//resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
@@ -97,9 +97,6 @@ func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m i
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetSNMPProperties")
@@ -120,7 +117,7 @@ func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m i
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenDiscoveryGetSNMPPropertiesItems(response1)
+		vItem1 := flattenDiscoveryGetSNMPPropertiesItems(response1.Response)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetSNMPProperties search response",
@@ -200,30 +197,4 @@ func expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItem(ctx context.Conte
 	}
 
 	return &request
-}
-
-func searchDiscoveryGetSNMPProperties(m interface{}, queryParams dnacentersdkgo.GetSNMPPropertiesQueryParams) (*dnacentersdkgo.ResponseItemDiscoveryGetSNMPProperties, error) {
-	client := m.(*dnacentersdkgo.Client)
-	var err error
-	var foundItem *dnacentersdkgo.ResponseItemDiscoveryGetSNMPProperties
-	var ite *dnacentersdkgo.ResponseDiscoveryGetSNMPProperties
-	ite, _, err = client.Discovery.GetSNMPProperties(&queryParams)
-	if err != nil {
-		return foundItem, err
-	}
-	items := ite
-	if items == nil {
-		return foundItem, err
-	}
-	itemsCopy := *items
-	for _, item := range itemsCopy {
-		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemDiscoveryGetSNMPProperties
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
-		}
-	}
-	return foundItem, err
 }

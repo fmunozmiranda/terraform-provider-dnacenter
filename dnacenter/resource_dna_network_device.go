@@ -2,8 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
-	"reflect"
 
 	"log"
 
@@ -286,7 +284,6 @@ func resourceNetworkDeviceDelete(ctx context.Context, d *schema.ResourceData, m 
 
 	selectedMethod := 1
 	var vvID string
-	var vvName string
 	if selectedMethod == 1 {
 		vvID = vID
 		getResp, _, err := client.Devices.GetDeviceByID(vvID)
@@ -295,7 +292,9 @@ func resourceNetworkDeviceDelete(ctx context.Context, d *schema.ResourceData, m 
 			return diags
 		}
 	}
-	response1, restyResp1, err := client.Devices.DeleteDeviceByID(vvID)
+	queryParams1 := dnacentersdkgo.DeleteDeviceByIDQueryParams{}
+	queryParams1.CleanConfig = true
+	response1, restyResp1, err := client.Devices.DeleteDeviceByID(vvID, &queryParams1)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

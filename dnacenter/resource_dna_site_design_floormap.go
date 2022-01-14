@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -71,8 +70,9 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 
 	vFloorID, okFloorID := resourceItem["floor_id"]
 	vvFloorID := interfaceToString(vFloorID)
+	var vvID string
 	if okFloorID && vvFloorID != "" {
-		getResponse1, _, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
+		getResponse1, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
 		if err == nil && getResponse1 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["floor_id"] = vvFloorID
@@ -95,6 +95,7 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 	if locationHeader, ok := headers["Location"]; ok && len(locationHeader) > 0 {
 		vvID = getLocationID(locationHeader[0])
 	}
+	log.Printf("[DEBUG]", vvID)
 	resourceMap := make(map[string]string)
 	resourceMap["floor_id"] = vvFloorID
 	d.SetId(joinResourceID(resourceMap))
@@ -126,7 +127,7 @@ func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData,
 
 		log.Printf("[DEBUG] Retrieved response %s", response1.String())
 
-		if err := d.Set("item", response1.String()); err != nil {
+		if err := d.Set("parameters", response1.String()); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting ListSpecifiedFloormaps response",
 				err))
@@ -147,12 +148,18 @@ func resourceSiteDesignFloormapUpdate(ctx context.Context, d *schema.ResourceDat
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vFloorID := resourceMap["floor_id"]
+	vvFloorID := vFloorID
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
+	item, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
+
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing ListSpecifiedFloormaps", err,
+			"Failure at ListSpecifiedFloormaps, unexpected response", ""))
+		return diags
+	}
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] ID used for update operation %s", vvID)
+		log.Printf("[DEBUG] ID used for update operation %s", vvFloorID)
 		request1 := expandRequestSiteDesignFloormapUpdateFloormap(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		restyResp1, err := client.SiteDesign.UpdateFloormap(vvFloorID, request1)
@@ -183,10 +190,16 @@ func resourceSiteDesignFloormapDelete(ctx context.Context, d *schema.ResourceDat
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vFloorID := resourceMap["floor_id"]
+	vvFloorID := vFloorID
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
+	item, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
+
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing ListSpecifiedFloormaps", err,
+			"Failure at ListSpecifiedFloormaps, unexpected response", ""))
+		return diags
+	}
 	restyResp1, err := client.SiteDesign.DeleteFloormap(vvFloorID)
 	if err != nil {
 		if restyResp1 != nil {

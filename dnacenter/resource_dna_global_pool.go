@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strconv"
+	"time"
 
 	"log"
 
@@ -130,8 +132,18 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 	request1 := expandRequestGlobalPoolCreateGlobalPool(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vID, okID := resourceItem["id"]
-	vvID := interfaceToString(vID)
+	vIpPoolName := resourceItem["ip_pool_name"]
+	vvIpPoolName := interfaceToString(vIpPoolName)
+	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
+
+	response1, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vvIpPoolName)
+
+	if err != nil || response1 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["ip_pool_name"] = vvIpPoolName
+		d.SetId(joinResourceID(resourceMap))
+	}
+
 	resp1, restyResp1, err := client.NetworkSettings.CreateGlobalPool(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -144,39 +156,28 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 		return diags
 	}
 	resourceMap := make(map[string]string)
-	resourceMap["id"] = vvID
+	resourceMap["ip_pool_name"] = vvIpPoolName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceGlobalPoolRead(ctx, d, m)
 }
 
 func resourceGlobalPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
+	vIpPoolName := resourceMap["ip_pool_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetGlobalPool")
 		queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
 
-		if okOffset {
-			queryParams1.Offset = vOffset
-		}
-		if okLimit {
-			queryParams1.Limit = vLimit
-		}
-
-		response1, restyResp1, err := client.NetworkSettings.GetGlobalPool(&queryParams1)
+		response1, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vIpPoolName)
 
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
+
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetGlobalPool", err,
 				"Failure at GetGlobalPool, unexpected response", ""))
@@ -187,8 +188,8 @@ func resourceGlobalPoolRead(ctx context.Context, d *schema.ResourceData, m inter
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenNetworkSettingsGetGlobalPoolItems(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		vItem1 := flattenNetworkSettingsGetGlobalPoolItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetGlobalPool search response",
 				err))
@@ -206,13 +207,10 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
+	vID := resourceMap["ip_pool_name"]
 
-	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams
-	queryParams1.Offset = vOffset
-	queryParams1.Limit = vLimit
-	item, err := searchNetworkSettingsGetGlobalPool(m, queryParams1)
+	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
+	item, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vID)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetGlobalPool", err,
@@ -220,13 +218,10 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestGlobalPoolUpdateGlobalPool(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.NetworkSettings.UpdateGlobalPool(request1)
@@ -256,13 +251,10 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
+	vID := resourceMap["ip_pool_name"]
 
-	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams
-	queryParams1.Offset = vOffset
-	queryParams1.Limit = vLimit
-	item, err := searchNetworkSettingsGetGlobalPool(m, queryParams1)
+	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
+	item, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vID)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetGlobalPool", err,
@@ -270,30 +262,7 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.NetworkSettings.GetGlobalPool(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsNetworkSettingsGetGlobalPool(m, getResp1, nil)
-		item1, err := searchNetworkSettingsGetGlobalPool(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vID != item1.ID {
-			vvID = item1.ID
-		} else {
-			vvID = vID
-		}
-	}
-	response1, restyResp1, err := client.NetworkSettings.DeleteGlobalIPPool(vvID)
+	response1, restyResp1, err := client.NetworkSettings.DeleteGlobalIPPool(vID)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -460,28 +429,32 @@ func expandRequestGlobalPoolUpdateGlobalPoolSettingsIPpool(ctx context.Context, 
 	return &request
 }
 
-func searchNetworkSettingsGetGlobalPool(m interface{}, queryParams dnacentersdkgo.GetGlobalPoolQueryParams) (*dnacentersdkgo.ResponseItemNetworkSettingsGetGlobalPool, error) {
+func searchNetworkSettingsGetGlobalPool(m interface{}, queryParams dnacentersdkgo.GetGlobalPoolQueryParams, vID string) (*dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemNetworkSettingsGetGlobalPool
-	var ite *dnacentersdkgo.ResponseNetworkSettingsGetGlobalPool
-	ite, _, err = client.NetworkSettings.GetGlobalPool(&queryParams)
-	if err != nil {
-		return foundItem, err
-	}
-	items := ite
-	if items == nil {
-		return foundItem, err
-	}
-	itemsCopy := *items
-	for _, item := range itemsCopy {
-		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemNetworkSettingsGetGlobalPool
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
+	var foundItem *dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse
+	offset := 1
+	queryParams.Offset = strconv.Itoa(offset)
+
+	//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
+	nResponse, _, err := client.NetworkSettings.GetGlobalPool(&queryParams)
+	maxPageSize := len(*nResponse.Response)
+	//maxPageSize := 10
+	for len(*nResponse.Response) > 0 {
+		time.Sleep(15 * time.Second)
+		for _, item := range *nResponse.Response {
+			if vID == item.IPPoolName {
+				foundItem = &item
+				fmt.Println(item.IPPoolName)
+				return foundItem, err
+			}
+			//allItems = append(allItems, &item)
 		}
+
+		queryParams.Limit = strconv.Itoa(maxPageSize)
+		offset += maxPageSize
+		queryParams.Offset = strconv.Itoa(offset)
+		nResponse, _, err = client.NetworkSettings.GetGlobalPool(&queryParams)
 	}
 	return foundItem, err
 }

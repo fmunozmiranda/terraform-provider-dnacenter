@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -216,20 +217,20 @@ func resourceApplicationsCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	vName := resourceItem["name"]
-	vvName := interfaceToString(vName)
 	vID := resourceItem["id"]
 	vvID := interfaceToString(vID)
+	vvName := interfaceToString(vName)
 
 	queryParams := dnacentersdkgo.GetApplicationsQueryParams{
 		Name: vvName,
 	}
 
-	item, err := searchApplicationPolicyGetApplications(m, queryParams)
+	item, err := searchApplicationPolicyGetApplications(m, queryParams, vvID)
 
 	if err != nil || item != nil {
 		resourceMap := make(map[string]string)
-		resourceMap["id"] = vvID
 		resourceMap["name"] = vvName
+		resourceMap["id"] = vvID
 		d.SetId(joinResourceID(resourceMap))
 		return resourceApplicationsRead(ctx, d, m)
 	}
@@ -251,35 +252,30 @@ func resourceApplicationsCreate(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["name"] = vvName
+	resourceMap["id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
 	return resourceApplicationsRead(ctx, d, m)
 }
 
 func resourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
+	vID := resourceMap["id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetApplications")
 		queryParams1 := dnacentersdkgo.GetApplicationsQueryParams{
-			Offset: *stringToFloat64Ptr(vOffset),
-			Limit:  *stringToFloat64Ptr(vLimit),
-			Name:   vName,
+			Name: vName,
 		}
-		response1, restyResp1, err := client.ApplicationPolicy.GetApplications(&queryParams1)
+		response1, err := searchApplicationPolicyGetApplications(m, queryParams1, vID)
 
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetApplications", err,
 				"Failure at GetApplications, unexpected response", ""))
@@ -288,7 +284,7 @@ func resourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m int
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItemName1 := flattenApplicationPolicyGetApplicationsItems(response1)
+		vItemName1 := flattenApplicationPolicyGetApplicationsItem(response1)
 		if err := d.Set("item", vItemName1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetAllowedProtocolByName response",
@@ -307,21 +303,18 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
+	vID := resourceMap["id"]
 
 	queryParams := dnacentersdkgo.GetApplicationsQueryParams{
-		Offset: *stringToFloat64Ptr(vOffset),
-		Limit:  *stringToFloat64Ptr(vLimit),
-		Name:   vName,
+		Name: vName,
 	}
 	//selectedMethod := 1
 	//var vvID string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 
-	item, err := searchApplicationPolicyGetApplications(m, queryParams)
+	item, err := searchApplicationPolicyGetApplications(m, queryParams, vID)
 
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -330,7 +323,7 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams)
 		request1 := expandRequestApplicationsEditApplication(ctx, "item.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
@@ -361,26 +354,16 @@ func resourceApplicationsDelete(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
-	var vID string
+	vID := resourceMap["id"]
 	selectedMethod := 1
 	// REVIEW: Add getAllItems and search function to get missing params
 	if selectedMethod == 1 {
 
-		getResp1, _, err := client.ApplicationPolicy.GetApplications(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-
 		queryParams := dnacentersdkgo.GetApplicationsQueryParams{
-			Offset: *stringToFloat64Ptr(vOffset),
-			Limit:  *stringToFloat64Ptr(vLimit),
-			Name:   vName,
+			Name: vName,
 		}
-		item1, err := searchApplicationPolicyGetApplications(m, queryParams)
+		item1, err := searchApplicationPolicyGetApplications(m, queryParams, vID)
 
 		if err != nil || item1 == nil {
 			// Assume that element it is already gone
@@ -819,29 +802,53 @@ func expandRequestApplicationsEditApplicationItemApplicationSet(ctx context.Cont
 	return &request
 }
 
-func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacentersdkgo.GetApplicationsQueryParams) (*dnacentersdkgo.ResponseItemApplicationPolicyGetApplications, error) {
+func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacentersdkgo.GetApplicationsQueryParams, vID string) (*dnacentersdkgo.ResponseItemApplicationPolicyGetApplications, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
 	var foundItem *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications
 	var ite *dnacentersdkgo.ResponseApplicationPolicyGetApplications
-	ite, _, err = client.ApplicationPolicy.GetApplications(&queryParams)
-	if err != nil {
-		return foundItem, err
-	}
-	items := ite
-	if items == nil {
-		return foundItem, err
-	}
 
-	itemsCopy := *items
-	for _, item := range itemsCopy {
-		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications
-			getItem = &item
-			foundItem = getItem
+	if queryParams.Name != "" {
+		ite, _, err = client.ApplicationPolicy.GetApplications(&queryParams)
+		if err != nil {
 			return foundItem, err
 		}
+		items := ite
+		if items == nil {
+			return foundItem, err
+		}
+		itemsCopy := *items
+		for _, item := range itemsCopy {
+			// Call get by _ method and set value to foundItem and return
+			if item.Name == queryParams.Name {
+				var getItem *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications
+				getItem = &item
+				foundItem = getItem
+				return foundItem, err
+			}
+		}
+	} else if vID != "" {
+		queryParams.Offset = 1
+		//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
+		nResponse, _, err := client.ApplicationPolicy.GetApplications(nil)
+		maxPageSize := len(*nResponse)
+		//maxPageSize := 10
+		for len(*nResponse) > 0 {
+			time.Sleep(15 * time.Second)
+			for _, item := range *nResponse {
+				if vID == item.ID {
+					foundItem = &item
+					fmt.Println(item.Name)
+					return foundItem, err
+				}
+				//allItems = append(allItems, &item)
+			}
+			queryParams.Limit = float64(maxPageSize)
+			queryParams.Offset += float64(maxPageSize)
+			nResponse, _, err = client.ApplicationPolicy.GetApplications(&queryParams)
+		}
+		return nil, err
 	}
+
 	return foundItem, err
 }

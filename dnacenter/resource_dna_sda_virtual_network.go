@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -68,7 +67,25 @@ func resourceSdaVirtualNetworkCreate(ctx context.Context, d *schema.ResourceData
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaVirtualNetworkAddVnInSdaFabric(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vVirtualNetworkName := resourceItem["virtual_network_name"]
+	vSiteNameHierarchy := resourceItem["site_name_hierarchy"]
+	vvVirtualNetworkName := interfaceToString(vVirtualNetworkName)
+	vvSiteNameHierarchy := interfaceToString(vSiteNameHierarchy)
 
+	queryParams1 := dnacentersdkgo.GetVnFromSdaFabricQueryParams{}
+
+	queryParams1.VirtualNetworkName = vvVirtualNetworkName
+
+	queryParams1.SiteNameHierarchy = vvSiteNameHierarchy
+
+	getResponse2, restyResp1, err := client.Sda.GetVnFromSdaFabric(&queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["virtual_network_name"] = vvVirtualNetworkName
+		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Sda.AddVnInSdaFabric(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -81,6 +98,8 @@ func resourceSdaVirtualNetworkCreate(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["virtual_network_name"] = vvVirtualNetworkName
+	resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaVirtualNetworkRead(ctx, d, m)
 }
@@ -146,10 +165,10 @@ func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData
 	vVirtualNetworkName := resourceMap["virtual_network_name"]
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
-	queryParams1 := dnacentersdkgo.GetVnFromSdaFabricQueryParams
+	queryParams1 := dnacentersdkgo.GetVnFromSdaFabricQueryParams{}
 	queryParams1.VirtualNetworkName = vVirtualNetworkName
 	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
-	item, err := searchSdaGetVNFromSDAFabric(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetVnFromSdaFabric(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetVNFromSDAFabric", err,
@@ -157,25 +176,11 @@ func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
+	queryParams2 := dnacentersdkgo.DeleteVnFromSdaFabricQueryParams{}
+	queryParams2.VirtualNetworkName = vVirtualNetworkName
+	queryParams2.SiteNameHierarchy = vSiteNameHierarchy
 
-		getResp1, _, err := client.Sda.GetVnFromSdaFabric(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetVnFromSdaFabric(m, getResp1, nil)
-		item1, err := searchSdaGetVnFromSdaFabric(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteVnFromSdaFabric()
+	response1, restyResp1, err := client.Sda.DeleteVnFromSdaFabric(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -68,6 +67,20 @@ func resourceSdaFabricSiteCreate(ctx context.Context, d *schema.ResourceData, m 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaFabricSiteAddSiteInSdaFabric(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vSiteNameHierarchy := resourceItem["site_name_hierarchy"]
+	vvSiteNameHierarchy := interfaceToString(vSiteNameHierarchy)
+
+	queryParams1 := dnacentersdkgo.GetSiteFromSdaFabricQueryParams{}
+
+	queryParams1.SiteNameHierarchy = vvSiteNameHierarchy
+
+	getResponse2, _, err := client.Sda.GetSiteFromSdaFabric(&queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 
 	resp1, restyResp1, err := client.Sda.AddSiteInSdaFabric(request1)
 	if err != nil || resp1 == nil {
@@ -81,6 +94,7 @@ func resourceSdaFabricSiteCreate(ctx context.Context, d *schema.ResourceData, m 
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaFabricSiteRead(ctx, d, m)
 }
@@ -142,35 +156,18 @@ func resourceSdaFabricSiteDelete(ctx context.Context, d *schema.ResourceData, m 
 	resourceMap := separateResourceID(resourceID)
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 
-	queryParams1 := dnacentersdkgo.GetSiteFromSdaFabricQueryParams
+	queryParams1 := dnacentersdkgo.GetSiteFromSdaFabricQueryParams{}
 	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
-	item, err := searchSdaGetSiteFromSDAFabric(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetSiteFromSdaFabric(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetSiteFromSDAFabric", err,
 			"Failure at GetSiteFromSDAFabric, unexpected response", ""))
 		return diags
 	}
-
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetSiteFromSdaFabric(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetSiteFromSdaFabric(m, getResp1, nil)
-		item1, err := searchSdaGetSiteFromSdaFabric(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteSiteFromSdaFabric()
+	queryParams2 := dnacentersdkgo.DeleteSiteFromSdaFabricQueryParams{}
+	queryParams2.SiteNameHierarchy = vSiteNameHierarchy
+	response1, restyResp1, err := client.Sda.DeleteSiteFromSdaFabric(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

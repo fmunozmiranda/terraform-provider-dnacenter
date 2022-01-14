@@ -2257,6 +2257,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 		if err == nil && item2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["project_id"] = vvProjectID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourceConfigurationTemplateProjectRead(ctx, d, m)
 		}
@@ -2274,6 +2275,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["project_id"] = vvProjectID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceConfigurationTemplateProjectRead(ctx, d, m)
 }
@@ -2320,8 +2322,23 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		item2, err := searchConfigurationTemplatesGetsAListOfProjects(m, queryParams1)
+		if err != nil && item2 == nil {
+			d.SetId("")
+			return diags
+		}
+		response2, restyResp2, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(item2.ID)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetsTheDetailsOfAGivenProject", err,
+				"Failure at GetsTheDetailsOfAGivenProject, unexpected response", ""))
+			return diags
+		}
 		//TODO Code Items for DNAC
-		vItem1 := flattenConfigurationTemplatesGetsAListOfProjectsItems(response1)
+		vItem1 := flattenConfigurationTemplatesGetsTheDetailsOfAGivenProjectItem(response2)
 		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetsTheDetailsOfAGivenProject response",
@@ -4775,10 +4792,11 @@ func searchConfigurationTemplatesGetsAListOfProjects(m interface{}, queryParams 
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+	if ite == nil {
 		return foundItem, err
 	}
+
+	items := ite
 
 	itemsCopy := *items
 	for _, item := range itemsCopy {

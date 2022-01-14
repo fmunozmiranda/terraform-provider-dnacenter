@@ -170,7 +170,7 @@ func resourceSensorCreate(ctx context.Context, d *schema.ResourceData, m interfa
 
 	var diags diag.Diagnostics
 
-	resourceItem := *getResourceItem(d.Get("parameters"))
+	//resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSensorCreateSensorTestTemplate(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
@@ -185,9 +185,7 @@ func resourceSensorCreate(ctx context.Context, d *schema.ResourceData, m interfa
 			"Failure when executing CreateSensorTestTemplate", err))
 		return diags
 	}
-	if vvName != resp1.Response.Name {
-		vvName = resp1.Response.Name
-	}
+
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSensorRead(ctx, d, m)
@@ -200,7 +198,7 @@ func resourceSensorRead(ctx context.Context, d *schema.ResourceData, m interface
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteID := resourceMap["site_id"]
+	vSiteID, okSiteID := resourceMap["site_id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -227,7 +225,7 @@ func resourceSensorRead(ctx context.Context, d *schema.ResourceData, m interface
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenSensorsSensorsItems(response1)
+		vItem1 := flattenSensorsSensorsItems(response1.Response)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting Sensors search response",
@@ -253,7 +251,7 @@ func resourceSensorDelete(ctx context.Context, d *schema.ResourceData, m interfa
 	resourceMap := separateResourceID(resourceID)
 	vSiteID := resourceMap["site_id"]
 
-	queryParams1 := dnacentersdkgo.SensorsQueryParams
+	queryParams1 := dnacentersdkgo.SensorsQueryParams{}
 	queryParams1.SiteID = vSiteID
 	item, err := searchSensorsSensors(m, queryParams1)
 	if err != nil || item == nil {
@@ -263,25 +261,9 @@ func resourceSensorDelete(ctx context.Context, d *schema.ResourceData, m interfa
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sensors.Sensors(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSensorsSensors(m, getResp1, nil)
-		item1, err := searchSensorsSensors(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sensors.DeleteSensorTest()
+	queryParams2 := dnacentersdkgo.DeleteSensorTestQueryParams{}
+	queryParams2.TemplateName = vSiteID //review
+	response1, restyResp1, err := client.Sensors.DeleteSensorTest(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -510,24 +492,31 @@ func expandRequestSensorCreateSensorTestTemplateApCoverage(ctx context.Context, 
 	return &request
 }
 
-func searchSensorsSensors(m interface{}, queryParams dnacentersdkgo.SensorsQueryParams) (*dnacentersdkgo.ResponseItemSensorsSensors, error) {
+func searchSensorsSensors(m interface{}, queryParams dnacentersdkgo.SensorsQueryParams) (*dnacentersdkgo.ResponseSensorsSensorsResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemSensorsSensors
+	var foundItem *dnacentersdkgo.ResponseSensorsSensorsResponse
 	var ite *dnacentersdkgo.ResponseSensorsSensors
 	ite, _, err = client.Sensors.Sensors(&queryParams)
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+
+	if ite == nil {
 		return foundItem, err
 	}
-	itemsCopy := *items
+
+	if ite.Response == nil {
+		return foundItem, err
+	}
+
+	items := ite
+
+	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemSensorsSensors
+		if item.SerialNumber == queryParams.SiteID { //review askkk!!!
+			var getItem *dnacentersdkgo.ResponseSensorsSensorsResponse
 			getItem = &item
 			foundItem = getItem
 			return foundItem, err

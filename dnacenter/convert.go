@@ -98,6 +98,21 @@ func interfaceToSliceString(v interface{}) []string {
 	return newValue
 }
 
+func interfaceToSliceInt(v interface{}) *[]int {
+	value, ok := v.([]interface{})
+	if !ok {
+		return nil
+	}
+	newValue := []int{}
+	for _, i := range value {
+		value := interfaceToIntPtr(i)
+		if value != nil {
+			newValue = append(newValue, *value)
+		}
+	}
+	return &newValue
+}
+
 func interfaceToString(v interface{}) string {
 	return fmt.Sprint(v)
 }

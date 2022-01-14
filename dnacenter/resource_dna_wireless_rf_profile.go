@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -231,8 +230,18 @@ func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData
 	request1 := expandRequestWirelessRfProfileCreateOrUpdateRfProfile(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vRfProfileName, okRfProfileName := resourceItem["rf_profile_name"]
+	vRfProfileName := resourceItem["rf_profile_name"]
 	vvRfProfileName := interfaceToString(vRfProfileName)
+
+	queryParams1 := dnacentersdkgo.RetrieveRfProfilesQueryParams{}
+	queryParams1.RfProfileName = vvRfProfileName
+	getResponse2, err := searchWirelessRetrieveRfProfiles(m, queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["rf_profile_name"] = vvRfProfileName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Wireless.CreateOrUpdateRfProfile(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -257,7 +266,7 @@ func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vRfProfileName := resourceMap["rf_profile_name"]
+	vRfProfileName, okRfProfileName := resourceMap["rf_profile_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -284,7 +293,7 @@ func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, 
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenWirelessRetrieveRfProfilesItems(response1)
+		vItem1 := flattenWirelessRetrieveRfProfilesItems(response1.Response)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting RetrieveRfProfiles search response",
@@ -310,9 +319,10 @@ func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData
 	resourceMap := separateResourceID(resourceID)
 	vRfProfileName := resourceMap["rf_profile_name"]
 
-	queryParams1 := dnacentersdkgo.RetrieveRfProfilesQueryParams
+	queryParams1 := dnacentersdkgo.RetrieveRfProfilesQueryParams{}
 	queryParams1.RfProfileName = vRfProfileName
-	item, err := searchWirelessRetrieveRFProfiles(m, queryParams1)
+	item, err := searchWirelessRetrieveRfProfiles(m, queryParams1)
+	var vvRfProfileName string
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing RetrieveRFProfiles", err,
@@ -320,29 +330,7 @@ func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Wireless.RetrieveRfProfiles(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsWirelessRetrieveRfProfiles(m, getResp1, nil)
-		item1, err := searchWirelessRetrieveRfProfiles(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vName != item1.Name {
-			vvName = item1.Name
-		} else {
-			vvName = vName
-		}
-	}
+	vvRfProfileName = queryParams1.RfProfileName
 	response1, restyResp1, err := client.Wireless.DeleteRfProfiles(vvRfProfileName)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
@@ -466,24 +454,30 @@ func expandRequestWirelessRfProfileCreateOrUpdateRfProfileRadioTypeBProperties(c
 	return &request
 }
 
-func searchWirelessRetrieveRfProfiles(m interface{}, queryParams dnacentersdkgo.RetrieveRfProfilesQueryParams) (*dnacentersdkgo.ResponseItemWirelessRetrieveRfProfiles, error) {
+func searchWirelessRetrieveRfProfiles(m interface{}, queryParams dnacentersdkgo.RetrieveRfProfilesQueryParams) (*dnacentersdkgo.ResponseWirelessRetrieveRfProfilesResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemWirelessRetrieveRfProfiles
+	var foundItem *dnacentersdkgo.ResponseWirelessRetrieveRfProfilesResponse
 	var ite *dnacentersdkgo.ResponseWirelessRetrieveRfProfiles
 	ite, _, err = client.Wireless.RetrieveRfProfiles(&queryParams)
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+
+	if ite == nil {
 		return foundItem, err
 	}
-	itemsCopy := *items
+	if ite.Response == nil {
+		return foundItem, err
+	}
+
+	items := ite
+
+	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemWirelessRetrieveRfProfiles
+		if item.Name == queryParams.RfProfileName {
+			var getItem *dnacentersdkgo.ResponseWirelessRetrieveRfProfilesResponse
 			getItem = &item
 			foundItem = getItem
 			return foundItem, err

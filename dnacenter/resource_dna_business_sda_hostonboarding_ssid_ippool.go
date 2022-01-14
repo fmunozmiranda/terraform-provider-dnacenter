@@ -103,6 +103,7 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 		d.SetId(joinResourceID(resourceMap))
 		return resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx, d, m)
 	}
+
 	resp1, restyResp1, err := client.FabricWireless.AddSSIDToIPPoolMapping(request1)
 
 	if err != nil || resp1 == nil {

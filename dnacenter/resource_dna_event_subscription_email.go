@@ -150,11 +150,22 @@ func resourceEventSubscriptionEmailCreate(ctx context.Context, d *schema.Resourc
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
+	vEventIDs := interfaceToString(resourceItem["event_ids"])
 	request1 := expandRequestEventSubscriptionEmailCreateEmailEventSubscription(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	queryParams1 := dnacentersdkgo.GetEmailEventSubscriptionsQueryParams{}
+	queryParams1.EventIDs = vEventIDs
+	item, err := searchEventManagementGetEmailEventSubscriptions(m, queryParams1)
+
+	if err != nil || item != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["event_ids"] = vEventIDs
+		d.SetId(joinResourceID(resourceMap))
+		return resourceApplicationsRead(ctx, d, m)
+	}
 
 	resp1, restyResp1, err := client.EventManagement.CreateEmailEventSubscription(request1)
-	if err != nil || resp1 == nil {
+	if err != nil || resp1 != nil {
 		if restyResp1 != nil {
 			diags = append(diags, diagErrorWithResponse(
 				"Failure when executing CreateEmailEventSubscription", err, restyResp1.String()))
@@ -186,22 +197,11 @@ func resourceEventSubscriptionEmailRead(ctx context.Context, d *schema.ResourceD
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetEmailEventSubscriptions")
 		queryParams1 := dnacentersdkgo.GetEmailEventSubscriptionsQueryParams{}
-
-		if okEventIDs {
-			queryParams1.EventIDs = vEventIDs
-		}
-		if okOffset {
-			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-		}
-		if okLimit {
-			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-		}
-		if okSortBy {
-			queryParams1.SortBy = vSortBy
-		}
-		if okOrder {
-			queryParams1.Order = vOrder
-		}
+		queryParams1.EventIDs = vEventIDs
+		queryParams1.Offset = *stringToFloat64Ptr(vOffset)
+		queryParams1.Limit = *stringToFloat64Ptr(vLimit)
+		queryParams1.SortBy = vSortBy
+		queryParams1.Order = vOrder
 
 		response1, restyResp1, err := client.EventManagement.GetEmailEventSubscriptions(&queryParams1)
 
@@ -244,7 +244,7 @@ func resourceEventSubscriptionEmailUpdate(ctx context.Context, d *schema.Resourc
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
 
-	queryParams1 := dnacentersdkgo.GetEmailEventSubscriptionsQueryParams
+	queryParams1 := dnacentersdkgo.GetEmailEventSubscriptionsQueryParams{}
 	queryParams1.EventIDs = vEventIDs
 	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
 	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
@@ -258,13 +258,9 @@ func resourceEventSubscriptionEmailUpdate(ctx context.Context, d *schema.Resourc
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestEventSubscriptionEmailUpdateEmailEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateEmailEventSubscription(request1)
@@ -571,14 +567,14 @@ func searchEventManagementGetEmailEventSubscriptions(m interface{}, queryParams 
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+	if ite == nil {
 		return foundItem, err
 	}
+	items := ite
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
+		if item.SubscriptionID == queryParams.EventIDs {
 			var getItem *dnacentersdkgo.ResponseItemEventManagementGetEmailEventSubscriptions
 			getItem = &item
 			foundItem = getItem

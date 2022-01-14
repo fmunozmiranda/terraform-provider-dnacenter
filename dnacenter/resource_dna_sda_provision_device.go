@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -70,6 +69,19 @@ func resourceSdaProvisionDeviceCreate(ctx context.Context, d *schema.ResourceDat
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaProvisionDeviceProvisionWiredDevice(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vDeviceManagementIPAddress := resourceItem["device_management_ip_address"]
+	vvDeviceManagementIPAddress := interfaceToString(vDeviceManagementIPAddress)
+	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams{}
+
+	queryParams1.DeviceManagementIPAddress = vvDeviceManagementIPAddress
+
+	getResponse2, _, err := client.Sda.GetProvisionedWiredDevice(&queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 
 	resp1, restyResp1, err := client.Sda.ProvisionWiredDevice(request1)
 	if err != nil || resp1 == nil {
@@ -83,6 +95,7 @@ func resourceSdaProvisionDeviceCreate(ctx context.Context, d *schema.ResourceDat
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaProvisionDeviceRead(ctx, d, m)
 }
@@ -139,9 +152,9 @@ func resourceSdaProvisionDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
-	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams
+	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams{}
 	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
-	item, err := searchSdaGetProvisionedWiredDevice(m, queryParams1)
+	item, _, err := client.Sda.GetProvisionedWiredDevice(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetProvisionedWiredDevice", err,
@@ -149,8 +162,6 @@ func resourceSdaProvisionDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
 	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
@@ -187,9 +198,9 @@ func resourceSdaProvisionDeviceDelete(ctx context.Context, d *schema.ResourceDat
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
-	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams
+	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams{}
 	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
-	item, err := searchSdaGetProvisionedWiredDevice(m, queryParams1)
+	item, _, err := client.Sda.GetProvisionedWiredDevice(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetProvisionedWiredDevice", err,
@@ -197,25 +208,9 @@ func resourceSdaProvisionDeviceDelete(ctx context.Context, d *schema.ResourceDat
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetProvisionedWiredDevice(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetProvisionedWiredDevice(m, getResp1, nil)
-		item1, err := searchSdaGetProvisionedWiredDevice(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteProvisionedWiredDevice()
+	queryParams2 := dnacentersdkgo.DeleteProvisionedWiredDeviceQueryParams{}
+	queryParams2.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	response1, restyResp1, err := client.Sda.DeleteProvisionedWiredDevice(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -62,7 +61,20 @@ func resourceSdaFabricCreate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaFabricAddFabric(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vFabricName := resourceItem["fabric_name"]
+	vvFabricName := interfaceToString(vFabricName)
 
+	queryParams1 := dnacentersdkgo.GetSdaFabricInfoQueryParams{}
+
+	queryParams1.FabricName = vvFabricName
+
+	getResponse2, _, err := client.Sda.GetSdaFabricInfo(&queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["fabric_name"] = vvFabricName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Sda.AddFabric(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -75,6 +87,7 @@ func resourceSdaFabricCreate(ctx context.Context, d *schema.ResourceData, m inte
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["fabric_name"] = vvFabricName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaFabricRead(ctx, d, m)
 }
@@ -136,9 +149,9 @@ func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := separateResourceID(resourceID)
 	vFabricName := resourceMap["fabric_name"]
 
-	queryParams1 := dnacentersdkgo.GetSdaFabricInfoQueryParams
+	queryParams1 := dnacentersdkgo.GetSdaFabricInfoQueryParams{}
 	queryParams1.FabricName = vFabricName
-	item, err := searchSdaGetSDAFabricInfo(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetSdaFabricInfo(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetSDAFabricInfo", err,
@@ -146,25 +159,9 @@ func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m inte
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetSdaFabricInfo(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetSdaFabricInfo(m, getResp1, nil)
-		item1, err := searchSdaGetSdaFabricInfo(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteSdaFabric()
+	queryParams2 := dnacentersdkgo.DeleteSdaFabricQueryParams{}
+	queryParams2.FabricName = vFabricName
+	response1, restyResp1, err := client.Sda.DeleteSdaFabric(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

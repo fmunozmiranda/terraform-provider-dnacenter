@@ -128,7 +128,7 @@ func resourceEventSubscriptionRestCreate(ctx context.Context, d *schema.Resource
 
 	var diags diag.Diagnostics
 
-	resourceItem := *getResourceItem(d.Get("parameters"))
+	//resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestEventSubscriptionRestCreateRestWebhookEventSubscription(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
@@ -155,11 +155,11 @@ func resourceEventSubscriptionRestRead(ctx context.Context, d *schema.ResourceDa
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
+	vEventIDs, okEventIDs := resourceMap["event_ids"]
+	vOffset, okOffset := resourceMap["offset"]
+	vLimit, okLimit := resourceMap["limit"]
+	vSortBy, okSortBy := resourceMap["sort_by"]
+	vOrder, okOrder := resourceMap["order"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -223,7 +223,7 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
 
-	queryParams1 := dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams
+	queryParams1 := dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams{}
 	queryParams1.EventIDs = vEventIDs
 	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
 	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
@@ -237,13 +237,9 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestEventSubscriptionRestUpdateRestWebhookEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateRestWebhookEventSubscription(request1)
@@ -532,14 +528,15 @@ func searchEventManagementGetRestWebhookEventSubscriptions(m interface{}, queryP
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+	if ite == nil {
 		return foundItem, err
 	}
+
+	items := ite
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
+		if item.SubscriptionID == queryParams.EventIDs {
 			var getItem *dnacentersdkgo.ResponseItemEventManagementGetRestWebhookEventSubscriptions
 			getItem = &item
 			foundItem = getItem

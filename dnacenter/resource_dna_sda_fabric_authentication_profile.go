@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -94,9 +93,25 @@ func resourceSdaFabricAuthenticationProfileCreate(ctx context.Context, d *schema
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
+
 	request1 := expandRequestSdaFabricAuthenticationProfileDeployAuthenticationTemplateInSdaFabric(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vSiteNameHierarchy := resourceItem["site_name_hierarchy"]
+	vvSiteNameHierarchy := interfaceToString(vSiteNameHierarchy)
+	vAuthenticateTemplateName := resourceItem["authenticate_template_name"]
+	vvAuthenticateTemplateName := interfaceToString(vAuthenticateTemplateName)
 
+	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams{}
+	queryParams1.SiteNameHierarchy = vvSiteNameHierarchy
+	queryParams1.AuthenticateTemplateName = vvAuthenticateTemplateName
+	getResponse2, _, err := client.Sda.GetDefaultAuthenticationProfileFromSdaFabric(&queryParams1)
+	if err == nil && getResponse2 != nil && getResponse2.SiteNameHierarchy != "" {
+		resourceMap := make(map[string]string)
+		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
+		resourceMap["authenticate_template_name"] = vvAuthenticateTemplateName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Sda.DeployAuthenticationTemplateInSdaFabric(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -109,6 +124,8 @@ func resourceSdaFabricAuthenticationProfileCreate(ctx context.Context, d *schema
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
+	resourceMap["authenticate_template_name"] = vvAuthenticateTemplateName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaFabricAuthenticationProfileRead(ctx, d, m)
 }
@@ -120,7 +137,7 @@ func resourceSdaFabricAuthenticationProfileRead(ctx context.Context, d *schema.R
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
+	vSiteNameHierarchy, okAuthenticateTemplateName := resourceMap["site_name_hierarchy"]
 	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
 	selectedMethod := 1
@@ -171,20 +188,22 @@ func resourceSdaFabricAuthenticationProfileUpdate(ctx context.Context, d *schema
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
-	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams
+	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams{}
 	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 	queryParams1.AuthenticateTemplateName = vAuthenticateTemplateName
-	item, err := searchSdaGetDefaultAuthenticationProfileFromSDAFabric(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetDefaultAuthenticationProfileFromSdaFabric(&queryParams1)
+
 	if err != nil || item == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		}
 		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetDefaultAuthenticationProfileFromSDAFabric", err,
-			"Failure at GetDefaultAuthenticationProfileFromSDAFabric, unexpected response", ""))
+			"Failure when executing GetDefaultAuthenticationProfileFromSdaFabric", err,
+			"Failure at GetDefaultAuthenticationProfileFromSdaFabric, unexpected response", ""))
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
+	vvName := item.SiteNameHierarchy
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
@@ -221,36 +240,24 @@ func resourceSdaFabricAuthenticationProfileDelete(ctx context.Context, d *schema
 	vSiteNameHierarchy := resourceMap["site_name_hierarchy"]
 	vAuthenticateTemplateName := resourceMap["authenticate_template_name"]
 
-	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams
+	queryParams1 := dnacentersdkgo.GetDefaultAuthenticationProfileFromSdaFabricQueryParams{}
 	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 	queryParams1.AuthenticateTemplateName = vAuthenticateTemplateName
-	item, err := searchSdaGetDefaultAuthenticationProfileFromSDAFabric(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetDefaultAuthenticationProfileFromSdaFabric(&queryParams1)
+
 	if err != nil || item == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		}
 		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetDefaultAuthenticationProfileFromSDAFabric", err,
-			"Failure at GetDefaultAuthenticationProfileFromSDAFabric, unexpected response", ""))
+			"Failure when executing GetDefaultAuthenticationProfileFromSdaFabric", err,
+			"Failure at GetDefaultAuthenticationProfileFromSdaFabric, unexpected response", ""))
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetDefaultAuthenticationProfileFromSdaFabric(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetDefaultAuthenticationProfileFromSdaFabric(m, getResp1, nil)
-		item1, err := searchSdaGetDefaultAuthenticationProfileFromSdaFabric(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteDefaultAuthenticationProfileFromSdaFabric()
+	queryParams2 := dnacentersdkgo.DeleteDefaultAuthenticationProfileFromSdaFabricQueryParams{}
+	queryParams2.SiteNameHierarchy = item.SiteNameHierarchy
+	response1, restyResp1, err := client.Sda.DeleteDefaultAuthenticationProfileFromSdaFabric(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

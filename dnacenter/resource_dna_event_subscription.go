@@ -138,7 +138,7 @@ func resourceEventSubscriptionCreate(ctx context.Context, d *schema.ResourceData
 
 	var diags diag.Diagnostics
 
-	resourceItem := *getResourceItem(d.Get("parameters"))
+	//resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestEventSubscriptionCreateEventSubscriptions(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
@@ -165,11 +165,7 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
+	vEventIDs, okEventIDs := resourceMap["event_ids"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -178,18 +174,6 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 
 		if okEventIDs {
 			queryParams1.EventIDs = vEventIDs
-		}
-		if okOffset {
-			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-		}
-		if okLimit {
-			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-		}
-		if okSortBy {
-			queryParams1.SortBy = vSortBy
-		}
-		if okOrder {
-			queryParams1.Order = vOrder
 		}
 
 		response1, restyResp1, err := client.EventManagement.GetEventSubscriptions(&queryParams1)
@@ -228,17 +212,10 @@ func resourceEventSubscriptionUpdate(ctx context.Context, d *schema.ResourceData
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
 
-	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams
+	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 	queryParams1.EventIDs = vEventIDs
-	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-	queryParams1.SortBy = vSortBy
-	queryParams1.Order = vOrder
+
 	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -247,13 +224,9 @@ func resourceEventSubscriptionUpdate(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestEventSubscriptionUpdateEventSubscriptions(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateEventSubscriptions(request1)
@@ -284,17 +257,9 @@ func resourceEventSubscriptionDelete(ctx context.Context, d *schema.ResourceData
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
 
-	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams
+	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 	queryParams1.EventIDs = vEventIDs
-	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-	queryParams1.SortBy = vSortBy
-	queryParams1.Order = vOrder
 	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -303,25 +268,10 @@ func resourceEventSubscriptionDelete(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.EventManagement.GetEventSubscriptions(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsEventManagementGetEventSubscriptions(m, getResp1, nil)
-		item1, err := searchEventManagementGetEventSubscriptions(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.EventManagement.DeleteEventSubscriptions()
+	queryParams2 := dnacentersdkgo.DeleteEventSubscriptionsQueryParams{}
+	queryParams2.Subscriptions = item.Name
+	response1, restyResp1, err := client.EventManagement.DeleteEventSubscriptions(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -621,19 +571,24 @@ func searchEventManagementGetEventSubscriptions(m interface{}, queryParams dnace
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+	if ite == nil {
 		return foundItem, err
 	}
+
+	items := ite
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemEventManagementGetEventSubscriptions
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
+		itemCpy2 := *item.SubscriptionEndpoints
+		for _, item2 := range itemCpy2 {
+			if item2.ID == queryParams.EventIDs {
+				var getItem *dnacentersdkgo.ResponseItemEventManagementGetEventSubscriptions
+				getItem = &item
+				foundItem = getItem
+				return foundItem, err
+			}
 		}
+
 	}
 	return foundItem, err
 }

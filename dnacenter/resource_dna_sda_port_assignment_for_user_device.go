@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -102,9 +101,28 @@ func resourceSdaPortAssignmentForUserDeviceCreate(ctx context.Context, d *schema
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
+	vDeviceManagementIPAddress := resourceItem["device_management_ip_address"]
+	vInterfaceName := resourceItem["interface_name"]
+	vvDeviceManagementIPAddress := interfaceToString(vDeviceManagementIPAddress)
+	vvInterfaceName := interfaceToString(vInterfaceName)
 	request1 := expandRequestSdaPortAssignmentForUserDeviceAddPortAssignmentForUserDeviceInSdaFabric(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
+	queryParams1 := dnacentersdkgo.GetPortAssignmentForUserDeviceInSdaFabricQueryParams{}
+
+	queryParams1.DeviceManagementIPAddress = vvDeviceManagementIPAddress
+
+	queryParams1.InterfaceName = vvInterfaceName
+
+	getResponse2, _, err := client.Sda.GetPortAssignmentForUserDeviceInSdaFabric(&queryParams1)
+
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
+		resourceMap["interface_name"] = vvInterfaceName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Sda.AddPortAssignmentForUserDeviceInSdaFabric(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -117,6 +135,8 @@ func resourceSdaPortAssignmentForUserDeviceCreate(ctx context.Context, d *schema
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
+	resourceMap["interface_name"] = vvInterfaceName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaPortAssignmentForUserDeviceRead(ctx, d, m)
 }
@@ -182,10 +202,10 @@ func resourceSdaPortAssignmentForUserDeviceDelete(ctx context.Context, d *schema
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 	vInterfaceName := resourceMap["interface_name"]
 
-	queryParams1 := dnacentersdkgo.GetPortAssignmentForUserDeviceInSdaFabricQueryParams
+	queryParams1 := dnacentersdkgo.GetPortAssignmentForUserDeviceInSdaFabricQueryParams{}
 	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
 	queryParams1.InterfaceName = vInterfaceName
-	item, err := searchSdaGetPortAssignmentForUserDeviceInSDAFabric(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetPortAssignmentForUserDeviceInSdaFabric(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetPortAssignmentForUserDeviceInSDAFabric", err,
@@ -193,25 +213,10 @@ func resourceSdaPortAssignmentForUserDeviceDelete(ctx context.Context, d *schema
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetPortAssignmentForUserDeviceInSdaFabric(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetPortAssignmentForUserDeviceInSdaFabric(m, getResp1, nil)
-		item1, err := searchSdaGetPortAssignmentForUserDeviceInSdaFabric(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeletePortAssignmentForUserDeviceInSdaFabric()
+	queryParams2 := dnacentersdkgo.DeletePortAssignmentForUserDeviceInSdaFabricQueryParams{}
+	queryParams2.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	queryParams2.InterfaceName = vInterfaceName
+	response1, restyResp1, err := client.Sda.DeletePortAssignmentForUserDeviceInSdaFabric(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

@@ -492,17 +492,6 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 			d.SetId(joinResourceID(resourceMap))
 			return resourceReportsRead(ctx, d, m)
 		}
-	} else {
-		response2, _, err := client.Reports.GetListOfScheduledReports(nil)
-		if response2 != nil && err == nil {
-			item2, err := searchReportsGetListOfScheduledReports(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["report_id"] = vvReportID
-				d.SetId(joinResourceID(resourceMap))
-				return resourceReportsRead(ctx, d, m)
-			}
-		}
 	}
 	resp1, restyResp1, err := client.Reports.CreateOrScheduleAReport(request1)
 	if err != nil || resp1 == nil {
@@ -617,59 +606,20 @@ func resourceReportsDelete(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vViewGroupID, okViewGroupID := resourceMap["view_group_id"]
-	vViewID, okViewID := resourceMap["view_id"]
 
-	queryParams1 := dnacentersdkgo.GetListOfScheduledReportsQueryParams
-	queryParams1.ViewGroupID = vViewGroupID
-	queryParams1.ViewID = vViewID
-	item, err := searchReportsGetListOfScheduledReports(m, queryParams1)
-	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetListOfScheduledReports", err,
-			"Failure at GetListOfScheduledReports, unexpected response", ""))
+	vReportID := resourceMap["report_id"]
+
+	var vvID string
+	// REVIEW: Add getAllItems and search function to get missing params
+
+	vvID = vReportID
+	getResp, _, err := client.Reports.GetAScheduledReport(vvID)
+	if err != nil || getResp == nil {
+		// Assume that element it is already gone
 		return diags
 	}
 
-	vReportID, okReportID := resourceMap["report_id"]
-
-	method1 := []bool{okViewGroupID, okViewID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okReportID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Reports.GetListOfScheduledReports(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsReportsGetListOfScheduledReports(m, getResp1, nil)
-		item1, err := searchReportsGetListOfScheduledReports(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vID != item1.ID {
-			vvID = item1.ID
-		} else {
-			vvID = vID
-		}
-	}
-	if selectedMethod == 2 {
-		vvID = vID
-		getResp, _, err := client.Reports.GetAScheduledReport(vvReportID)
-		if err != nil || getResp == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Reports.DeleteAScheduledReport(vvReportID)
+	response1, restyResp1, err := client.Reports.DeleteAScheduledReport(vvID)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -937,30 +887,4 @@ func expandRequestReportsCreateOrScheduleAReportViewFormat(ctx context.Context, 
 	}
 
 	return &request
-}
-
-func searchReportsGetListOfScheduledReports(m interface{}, queryParams dnacentersdkgo.GetListOfScheduledReportsQueryParams) (*dnacentersdkgo.ResponseItemReportsGetListOfScheduledReports, error) {
-	client := m.(*dnacentersdkgo.Client)
-	var err error
-	var foundItem *dnacentersdkgo.ResponseItemReportsGetListOfScheduledReports
-	var ite *dnacentersdkgo.ResponseReportsGetListOfScheduledReports
-	ite, _, err = client.Reports.GetListOfScheduledReports(&queryParams)
-	if err != nil {
-		return foundItem, err
-	}
-	items := ite
-	if items == nil {
-		return foundItem, err
-	}
-	itemsCopy := *items
-	for _, item := range itemsCopy {
-		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemReportsGetListOfScheduledReports
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
-		}
-	}
-	return foundItem, err
 }

@@ -293,8 +293,8 @@ func resourcePnpGlobalSettingsRead(ctx context.Context, d *schema.ResourceData, 
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
+	//resourceID := d.Id()
+	//resourceMap := separateResourceID(resourceID)
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -332,16 +332,10 @@ func resourcePnpGlobalSettingsUpdate(ctx context.Context, d *schema.ResourceData
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+	if d.HasChange("item") {
+		log.Printf("[DEBUG] Name used for update operation %s")
 		request1 := expandRequestPnpGlobalSettingsUpdatePnpGlobalSettings(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.DeviceOnboardingPnp.UpdatePnpGlobalSettings(request1)

@@ -264,11 +264,15 @@ func searchApplicationPolicyGetApplicationSets(m interface{}, queryParams dnacen
 	var ite *dnacentersdkgo.ResponseApplicationPolicyGetApplicationSets
 	ite, _, err = client.ApplicationPolicy.GetApplicationSets(&queryParams)
 
-	items := ite.Response
-	if items == nil {
+	if ite == nil {
 		return foundItem, err
 	}
 
+	if ite.Response == nil {
+		return foundItem, err
+	}
+
+	items := ite.Response
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return

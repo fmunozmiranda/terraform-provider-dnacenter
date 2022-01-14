@@ -150,8 +150,18 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 	request1 := expandRequestWirelessProfileCreateWirelessProfile(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vWirelessProfileName, okWirelessProfileName := resourceItem["wireless_profile_name"]
+	vWirelessProfileName := resourceItem["wireless_profile_name"]
 	vvWirelessProfileName := interfaceToString(vWirelessProfileName)
+
+	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
+	queryParams1.ProfileName = vvWirelessProfileName
+	getResponse2, err := searchWirelessGetWirelessProfile(m, queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["wireless_profile_name"] = vvWirelessProfileName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Wireless.CreateWirelessProfile(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -176,7 +186,7 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vProfileName := resourceMap["profile_name"]
+	vProfileName, okProfileName := resourceMap["wireless_profile_name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -222,9 +232,9 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vProfileName := resourceMap["profile_name"]
+	vProfileName := resourceMap["wireless_profile_name"]
 
-	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams
+	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
 	queryParams1.ProfileName = vProfileName
 	item, err := searchWirelessGetWirelessProfile(m, queryParams1)
 	if err != nil || item == nil {
@@ -234,13 +244,10 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestWirelessProfileUpdateWirelessProfile(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Wireless.UpdateWirelessProfile(request1)
@@ -272,9 +279,10 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 	resourceMap := separateResourceID(resourceID)
 	vProfileName := resourceMap["profile_name"]
 
-	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams
+	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
 	queryParams1.ProfileName = vProfileName
 	item, err := searchWirelessGetWirelessProfile(m, queryParams1)
+	var vvWirelessProfileName string
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetWirelessProfile", err,
@@ -282,29 +290,8 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
+	vvWirelessProfileName = queryParams1.ProfileName
 
-		getResp1, _, err := client.Wireless.GetWirelessProfile(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsWirelessGetWirelessProfile(m, getResp1, nil)
-		item1, err := searchWirelessGetWirelessProfile(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vName != item1.Name {
-			vvName = item1.Name
-		} else {
-			vvName = vName
-		}
-	}
 	response1, restyResp1, err := client.Wireless.DeleteWirelessProfile(vvWirelessProfileName)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
@@ -517,14 +504,17 @@ func searchWirelessGetWirelessProfile(m interface{}, queryParams dnacentersdkgo.
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+
+	if ite == nil {
 		return foundItem, err
 	}
+
+	items := ite
+
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
+		if item.ProfileDetails.Name == queryParams.ProfileName {
 			var getItem *dnacentersdkgo.ResponseItemWirelessGetWirelessProfile
 			getItem = &item
 			foundItem = getItem

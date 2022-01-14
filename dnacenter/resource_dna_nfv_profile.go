@@ -341,9 +341,7 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vName := resourceMap["name"]
+	vName, okName := resourceMap["name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -351,12 +349,6 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 		vvID := vID
 		queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams{}
 
-		if okOffset {
-			queryParams1.Offset = vOffset
-		}
-		if okLimit {
-			queryParams1.Limit = vLimit
-		}
 		if okName {
 			queryParams1.Name = vName
 		}
@@ -377,7 +369,7 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenSiteDesignGetNfvProfileItems(response1)
+		vItem1 := flattenSiteDesignGetNfvProfileItems(response1.Response)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetNfvProfile search response",
@@ -397,15 +389,11 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
 
-	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams
-	queryParams1.Offset = vOffset
-	queryParams1.Limit = vLimit
+	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams{}
 	queryParams1.Name = vName
-	item, err := searchSiteDesignGetNFVProfile(m, queryParams1)
+	item, err := searchSiteDesignGetNfvProfile(m, queryParams1, &vID)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetNFVProfile", err,
@@ -415,7 +403,6 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 
 	selectedMethod := 1
 	var vvID string
-	var vvName string
 	if selectedMethod == 1 {
 		vvID = vID
 	}
@@ -423,7 +410,7 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestNfvProfileUpdateNfvProfile(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-		response1, restyResp1, err := client.SiteDesign.UpdateNfvProfile(vvID, request1)
+		response1, restyResp1, err := client.SiteDesign.UpdateNfvProfile(vvID, request1, nil)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
@@ -451,15 +438,11 @@ func resourceNfvProfileDelete(ctx context.Context, d *schema.ResourceData, m int
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 	vName := resourceMap["name"]
 
-	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams
-	queryParams1.Offset = vOffset
-	queryParams1.Limit = vLimit
+	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams{}
 	queryParams1.Name = vName
-	item, err := searchSiteDesignGetNFVProfile(m, queryParams1)
+	item, err := searchSiteDesignGetNfvProfile(m, queryParams1, &vID)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetNFVProfile", err,
@@ -467,18 +450,9 @@ func resourceNfvProfileDelete(ctx context.Context, d *schema.ResourceData, m int
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	if selectedMethod == 1 {
-		vvID = vID
-		getResp, _, err := client.SiteDesign.GetNfvProfile(vvID)
-		if err != nil || getResp == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.SiteDesign.DeleteNfvProfile(vvID)
+	queryParams2 := dnacentersdkgo.DeleteNfvProfileQueryParams{}
+	queryParams1.Name = vName
+	response1, restyResp1, err := client.SiteDesign.DeleteNfvProfile(vID, &queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -1198,24 +1172,34 @@ func expandRequestNfvProfileUpdateNfvProfileDeviceCustomTemplate(ctx context.Con
 	return &request
 }
 
-func searchSiteDesignGetNfvProfile(m interface{}, queryParams dnacentersdkgo.GetNfvProfileQueryParams) (*dnacentersdkgo.ResponseItemSiteDesignGetNfvProfile, error) {
+func searchSiteDesignGetNfvProfile(m interface{}, queryParams dnacentersdkgo.GetNfvProfileQueryParams, id *string) (*dnacentersdkgo.ResponseSiteDesignGetNfvProfileResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemSiteDesignGetNfvProfile
+	var foundItem *dnacentersdkgo.ResponseSiteDesignGetNfvProfileResponse
 	var ite *dnacentersdkgo.ResponseSiteDesignGetNfvProfile
-	ite, _, err = client.SiteDesign.GetNfvProfile(&queryParams)
+	if id == nil {
+		return nil, err
+	}
+	ite, _, err = client.SiteDesign.GetNfvProfile(*id, &queryParams)
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+
+	if ite == nil {
 		return foundItem, err
 	}
-	itemsCopy := *items
+
+	if ite.Response == nil {
+		return foundItem, err
+	}
+
+	items := ite
+
+	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemSiteDesignGetNfvProfile
+		if item.ID == *id {
+			var getItem *dnacentersdkgo.ResponseSiteDesignGetNfvProfileResponse
 			getItem = &item
 			foundItem = getItem
 			return foundItem, err

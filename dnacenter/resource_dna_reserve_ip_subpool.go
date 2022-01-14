@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -210,11 +209,11 @@ func resourceReserveIPSubpoolCreate(ctx context.Context, d *schema.ResourceData,
 	request1 := expandRequestReserveIPSubpoolReserveIPSubpool(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vSiteID, okSiteID := resourceItem["site_id"]
+	vSiteID := resourceItem["site_id"]
 	vvSiteID := interfaceToString(vSiteID)
-	vID, okID := resourceItem["id"]
+	vID := resourceItem["id"]
 	vvID := interfaceToString(vID)
-	resp1, restyResp1, err := client.NetworkSettings.ReserveIPSubpool(request1)
+	resp1, restyResp1, err := client.NetworkSettings.ReserveIPSubpool(vvSiteID, request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
 			diags = append(diags, diagErrorWithResponse(
@@ -239,9 +238,7 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vSiteID := resourceMap["site_id"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
+	vSiteID, okSiteID := resourceMap["site_id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -250,12 +247,6 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 
 		if okSiteID {
 			queryParams1.SiteID = vSiteID
-		}
-		if okOffset {
-			queryParams1.Offset = vOffset
-		}
-		if okLimit {
-			queryParams1.Limit = vLimit
 		}
 
 		response1, restyResp1, err := client.NetworkSettings.GetReserveIPSubpool(&queryParams1)
@@ -274,7 +265,7 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenNetworkSettingsGetReserveIPSubpoolItems(response1)
+		vItem1 := flattenNetworkSettingsGetReserveIPSubpoolItems(response1.Response)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetReserveIPSubpool search response",
@@ -294,13 +285,9 @@ func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData,
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSiteID := resourceMap["site_id"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 
-	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams
+	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams{}
 	queryParams1.SiteID = vSiteID
-	queryParams1.Offset = vOffset
-	queryParams1.Limit = vLimit
 	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -309,16 +296,16 @@ func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData,
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
+	var vvSiteID string
+	vvSiteID = item.SiteID
+	//vvSiteID= item.
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] ID used for update operation %s", vvID)
+		log.Printf("[DEBUG] ID used for update operation %s", vvSiteID)
 		request1 := expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vvSiteID, request1)
+		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vvSiteID, request1, nil) //Preguntar ese ID DE QUERY
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
@@ -346,13 +333,9 @@ func resourceReserveIPSubpoolDelete(ctx context.Context, d *schema.ResourceData,
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSiteID := resourceMap["site_id"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
 
-	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams
+	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams{}
 	queryParams1.SiteID = vSiteID
-	queryParams1.Offset = vOffset
-	queryParams1.Limit = vLimit
 	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -361,29 +344,11 @@ func resourceReserveIPSubpoolDelete(ctx context.Context, d *schema.ResourceData,
 		return diags
 	}
 
-	selectedMethod := 1
 	var vvID string
-	var vvName string
 	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
 
-		getResp1, _, err := client.NetworkSettings.GetReserveIPSubpool(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsNetworkSettingsGetReserveIPSubpool(m, getResp1, nil)
-		item1, err := searchNetworkSettingsGetReserveIPSubpool(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		if vID != item1.ID {
-			vvID = item1.ID
-		} else {
-			vvID = vID
-		}
-	}
+	vvID = item.ID
+
 	response1, restyResp1, err := client.NetworkSettings.ReleaseReserveIPSubpool(vvID)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
@@ -525,24 +490,30 @@ func expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx context.Context, ke
 	return &request
 }
 
-func searchNetworkSettingsGetReserveIPSubpool(m interface{}, queryParams dnacentersdkgo.GetReserveIPSubpoolQueryParams) (*dnacentersdkgo.ResponseItemNetworkSettingsGetReserveIPSubpool, error) {
+func searchNetworkSettingsGetReserveIPSubpool(m interface{}, queryParams dnacentersdkgo.GetReserveIPSubpoolQueryParams) (*dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemNetworkSettingsGetReserveIPSubpool
+	var foundItem *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse
 	var ite *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpool
 	ite, _, err = client.NetworkSettings.GetReserveIPSubpool(&queryParams)
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+
+	if ite == nil {
 		return foundItem, err
 	}
-	itemsCopy := *items
+
+	if ite.Response == nil {
+		return foundItem, err
+	}
+
+	items := ite
+	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
-			var getItem *dnacentersdkgo.ResponseItemNetworkSettingsGetReserveIPSubpool
+		if item.SiteID == queryParams.SiteID {
+			var getItem *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse
 			getItem = &item
 			foundItem = getItem
 			return foundItem, err

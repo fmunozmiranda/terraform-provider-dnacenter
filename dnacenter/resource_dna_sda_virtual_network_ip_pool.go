@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -126,7 +125,24 @@ func resourceSdaVirtualNetworkIPPoolCreate(ctx context.Context, d *schema.Resour
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaVirtualNetworkIPPoolAddIPPoolInSdaVirtualNetwork(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vIPPoolName := resourceItem["ip_pool_name"]
+	vVirtualNetworkName := resourceItem["virtual_network_name"]
+	vvIPPoolName := interfaceToString(vIPPoolName)
+	vvVirtualNetworkName := interfaceToString(vVirtualNetworkName)
+	queryParams1 := dnacentersdkgo.GetIPPoolFromSdaVirtualNetworkQueryParams{}
 
+	queryParams1.IPPoolName = vvIPPoolName
+
+	queryParams1.VirtualNetworkName = vvVirtualNetworkName
+
+	getResponse2, _, err := client.Sda.GetIPPoolFromSdaVirtualNetwork(&queryParams1)
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["ip_pool_name"] = vvIPPoolName
+		resourceMap["virtual_network_name"] = vvVirtualNetworkName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Sda.AddIPPoolInSdaVirtualNetwork(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -139,6 +155,8 @@ func resourceSdaVirtualNetworkIPPoolCreate(ctx context.Context, d *schema.Resour
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["ip_pool_name"] = vvIPPoolName
+	resourceMap["virtual_network_name"] = vvVirtualNetworkName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaVirtualNetworkIPPoolRead(ctx, d, m)
 }
@@ -204,10 +222,10 @@ func resourceSdaVirtualNetworkIPPoolDelete(ctx context.Context, d *schema.Resour
 	vIPPoolName := resourceMap["ip_pool_name"]
 	vVirtualNetworkName := resourceMap["virtual_network_name"]
 
-	queryParams1 := dnacentersdkgo.GetIPPoolFromSdaVirtualNetworkQueryParams
+	queryParams1 := dnacentersdkgo.GetIPPoolFromSdaVirtualNetworkQueryParams{}
 	queryParams1.IPPoolName = vIPPoolName
 	queryParams1.VirtualNetworkName = vVirtualNetworkName
-	item, err := searchSdaGetIPPoolFromSDAVirtualNetwork(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetIPPoolFromSdaVirtualNetwork(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetIPPoolFromSDAVirtualNetwork", err,
@@ -215,25 +233,11 @@ func resourceSdaVirtualNetworkIPPoolDelete(ctx context.Context, d *schema.Resour
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetIPPoolFromSdaVirtualNetwork(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetIPPoolFromSdaVirtualNetwork(m, getResp1, nil)
-		item1, err := searchSdaGetIPPoolFromSdaVirtualNetwork(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteIPPoolFromSdaVirtualNetwork()
+	queryParams2 := dnacentersdkgo.DeleteIPPoolFromSdaVirtualNetworkQueryParams{}
+	queryParams2.IPPoolName = vIPPoolName
+	queryParams2.VirtualNetworkName = vVirtualNetworkName
+	response1, restyResp1, err := client.Sda.DeleteIPPoolFromSdaVirtualNetwork(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

@@ -128,7 +128,7 @@ func resourceEventSubscriptionSyslogCreate(ctx context.Context, d *schema.Resour
 
 	var diags diag.Diagnostics
 
-	resourceItem := *getResourceItem(d.Get("parameters"))
+	//resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscription(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
@@ -155,11 +155,7 @@ func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
+	vEventIDs, okEventIDs := resourceMap["event_ids"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -168,18 +164,6 @@ func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.Resource
 
 		if okEventIDs {
 			queryParams1.EventIDs = vEventIDs
-		}
-		if okOffset {
-			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-		}
-		if okLimit {
-			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-		}
-		if okSortBy {
-			queryParams1.SortBy = vSortBy
-		}
-		if okOrder {
-			queryParams1.Order = vOrder
 		}
 
 		response1, restyResp1, err := client.EventManagement.GetSyslogEventSubscriptions(&queryParams1)
@@ -223,7 +207,7 @@ func resourceEventSubscriptionSyslogUpdate(ctx context.Context, d *schema.Resour
 	vSortBy := resourceMap["sort_by"]
 	vOrder := resourceMap["order"]
 
-	queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams
+	queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams{}
 	queryParams1.EventIDs = vEventIDs
 	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
 	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
@@ -237,13 +221,9 @@ func resourceEventSubscriptionSyslogUpdate(ctx context.Context, d *schema.Resour
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.EventManagement.UpdateSyslogEventSubscription(request1)
@@ -532,14 +512,15 @@ func searchEventManagementGetSyslogEventSubscriptions(m interface{}, queryParams
 	if err != nil {
 		return foundItem, err
 	}
-	items := ite
-	if items == nil {
+	if ite == nil {
 		return foundItem, err
 	}
+
+	items := ite
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.Name == queryParams.Name {
+		if item.Name == queryParams.EventIDs {
 			var getItem *dnacentersdkgo.ResponseItemEventManagementGetSyslogEventSubscriptions
 			getItem = &item
 			foundItem = getItem

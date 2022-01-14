@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"log"
@@ -68,6 +67,21 @@ func resourceSdaFabricEdgeDeviceCreate(ctx context.Context, d *schema.ResourceDa
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaFabricEdgeDeviceAddEdgeDeviceInSdaFabric(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vDeviceManagementIPAddress := resourceItem["device_management_ip_address"]
+	vvDeviceManagementIPAddress := interfaceToString(vDeviceManagementIPAddress)
+
+	queryParams1 := dnacentersdkgo.GetEdgeDeviceFromSdaFabricQueryParams{}
+
+	queryParams1.DeviceManagementIPAddress = vvDeviceManagementIPAddress
+
+	getResponse2, _, err := client.Sda.GetEdgeDeviceFromSdaFabric(&queryParams1)
+
+	if err == nil && getResponse2 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
+		d.SetId(joinResourceID(resourceMap))
+		return resourceReportsRead(ctx, d, m)
+	}
 
 	resp1, restyResp1, err := client.Sda.AddEdgeDeviceInSdaFabric(request1)
 	if err != nil || resp1 == nil {
@@ -81,6 +95,7 @@ func resourceSdaFabricEdgeDeviceCreate(ctx context.Context, d *schema.ResourceDa
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSdaFabricEdgeDeviceRead(ctx, d, m)
 }
@@ -142,9 +157,9 @@ func resourceSdaFabricEdgeDeviceDelete(ctx context.Context, d *schema.ResourceDa
 	resourceMap := separateResourceID(resourceID)
 	vDeviceManagementIPAddress := resourceMap["device_management_ip_address"]
 
-	queryParams1 := dnacentersdkgo.GetEdgeDeviceFromSdaFabricQueryParams
+	queryParams1 := dnacentersdkgo.GetEdgeDeviceFromSdaFabricQueryParams{}
 	queryParams1.DeviceManagementIPAddress = vDeviceManagementIPAddress
-	item, err := searchSdaGetEdgeDeviceFromSDAFabric(m, queryParams1)
+	item, restyResp1, err := client.Sda.GetEdgeDeviceFromSdaFabric(&queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetEdgeDeviceFromSDAFabric", err,
@@ -152,25 +167,9 @@ func resourceSdaFabricEdgeDeviceDelete(ctx context.Context, d *schema.ResourceDa
 		return diags
 	}
 
-	selectedMethod := 1
-	var vvID string
-	var vvName string
-	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
-
-		getResp1, _, err := client.Sda.GetEdgeDeviceFromSdaFabric(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-		items1 := getAllItemsSdaGetEdgeDeviceFromSdaFabric(m, getResp1, nil)
-		item1, err := searchSdaGetEdgeDeviceFromSdaFabric(m, items1, vName, vID)
-		if err != nil || item1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
-	}
-	response1, restyResp1, err := client.Sda.DeleteEdgeDeviceFromSdaFabric()
+	queryParams2 := dnacentersdkgo.DeleteEdgeDeviceFromSdaFabricQueryParams{}
+	queryParams2.DeviceManagementIPAddress = vDeviceManagementIPAddress
+	response1, restyResp1, err := client.Sda.DeleteEdgeDeviceFromSdaFabric(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())

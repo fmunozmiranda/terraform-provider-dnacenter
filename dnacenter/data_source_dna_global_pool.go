@@ -269,6 +269,33 @@ func flattenNetworkSettingsGetGlobalPoolItems(items *[]dnacentersdkgo.ResponseNe
 	}
 	return respItems
 }
+func flattenNetworkSettingsGetGlobalPoolItem(item *dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["ip_pool_name"] = item.IPPoolName
+	respItem["dhcp_server_ips"] = item.DhcpServerIPs
+	respItem["gateways"] = item.Gateways
+	respItem["create_time"] = item.CreateTime
+	respItem["last_update_time"] = item.LastUpdateTime
+	respItem["total_ip_address_count"] = item.TotalIPAddressCount
+	respItem["used_ip_address_count"] = item.UsedIPAddressCount
+	respItem["parent_uuid"] = item.ParentUUID
+	respItem["owner"] = item.Owner
+	respItem["shared"] = item.Shared
+	respItem["overlapping"] = item.Overlapping
+	respItem["configure_external_dhcp"] = item.ConfigureExternalDhcp
+	respItem["used_percentage"] = item.UsedPercentage
+	respItem["client_options"] = flattenNetworkSettingsGetGlobalPoolItemsClientOptions(item.ClientOptions)
+	respItem["dns_server_ips"] = item.DNSServerIPs
+	respItem["context"] = flattenNetworkSettingsGetGlobalPoolItemsContext(item.Context)
+	respItem["ipv6"] = item.IPv6
+	respItem["id"] = item.ID
+	respItem["ip_pool_cidr"] = item.IPPoolCidr
+
+	return respItem
+}
 
 func flattenNetworkSettingsGetGlobalPoolItemsClientOptions(item *dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponseClientOptions) interface{} {
 	if item == nil {

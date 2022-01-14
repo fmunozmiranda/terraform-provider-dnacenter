@@ -619,6 +619,31 @@ func flattenPolicyGetListOfProfilingRulesItems(items *[]dnacentersdkgo.ResponseP
 	return respItems
 }
 
+func flattenPolicyGetProfilingRulesItem(item *dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRules) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["rule_id"] = item.RuleID
+	respItem["rule_name"] = item.RuleName
+	respItem["rule_type"] = item.RuleType
+	respItem["rule_version"] = item.RuleVersion
+	respItem["rule_priority"] = item.RulePriority
+	respItem["source_priority"] = item.SourcePriority
+	respItem["is_deleted"] = boolPtrToString(item.IsDeleted)
+	respItem["last_modified_by"] = item.LastModifiedBy
+	respItem["last_modified_on"] = item.LastModifiedOn
+	respItem["plugin_id"] = item.PluginID
+	respItem["cluster_id"] = item.ClusterID
+	respItem["rejected"] = boolPtrToString(item.Rejected)
+	respItem["result"] = flattenPolicyGetListOfProfilingRulesItemsResult(item.Result)
+	respItem["condition_groups"] = flattenPolicyGetListOfProfilingRulesItemsConditionGroups(item.ConditionGroups)
+	respItem["used_attributes"] = item.UsedAttributes
+
+	return respItem
+}
+
 func flattenPolicyGetListOfProfilingRulesItemsResult(item *dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRulesResult) []map[string]interface{} {
 	if item == nil {
 		return nil
