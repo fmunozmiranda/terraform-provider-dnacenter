@@ -72,9 +72,23 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 
 	var diags diag.Diagnostics
 
-	//resourceItem := *getResourceItem(d.Get("parameters"))
+	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vInstanceTenantId := resourceItem["instance_tenant_id"]
+	vSystemPropertyName := resourceItem["system_property_name"]
+	vvInstanceTenantId := interfaceToString(vInstanceTenantId)
+	vvSystemPropertyName := interfaceToString(vSystemPropertyName)
+
+	item, err := searchDiscoveryGetSNMPProperties(m, vvInstanceTenantId, vvSystemPropertyName)
+
+	if item != nil || err != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["instance_tenant_id"] = vvInstanceTenantId
+		resourceMap["system_property_name"] = vvSystemPropertyName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceSNMPPropertiesRead(ctx, d, m)
+	}
 
 	resp1, restyResp1, err := client.Discovery.CreateUpdateSNMPProperties(request1)
 	if err != nil || resp1 == nil {
@@ -88,25 +102,25 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["instance_tenant_id"] = vvInstanceTenantId
+	resourceMap["system_property_name"] = vvSystemPropertyName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceSNMPPropertiesRead(ctx, d, m)
 }
 
 func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
-
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vInstanceTenantId := resourceMap["instance_tenant_id"]
+	vSystemPropertyName := resourceMap["system_property_name"]
 	var diags diag.Diagnostics
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetSNMPProperties")
 
-		response1, restyResp1, err := client.Discovery.GetSNMPProperties()
-
+		response1, err := searchDiscoveryGetSNMPProperties(m, vInstanceTenantId, vSystemPropertyName)
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetSNMPProperties", err,
 				"Failure at GetSNMPProperties, unexpected response", ""))
@@ -117,7 +131,7 @@ func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m i
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenDiscoveryGetSNMPPropertiesItems(response1.Response)
+		vItem1 := flattenDiscoveryGetSNMPPropertiesItem(response1)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetSNMPProperties search response",
@@ -197,4 +211,30 @@ func expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItem(ctx context.Conte
 	}
 
 	return &request
+}
+
+func searchDiscoveryGetSNMPProperties(m interface{}, vID string, vName string) (*dnacentersdkgo.ResponseDiscoveryGetSNMPPropertiesResponse, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseDiscoveryGetSNMPPropertiesResponse
+	var ite *dnacentersdkgo.ResponseDiscoveryGetSNMPProperties
+	ite, _, err = client.Discovery.GetSNMPProperties()
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items.Response
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.InstanceTenantID == vID && item.SystemPropertyName == vName {
+			var getItem *dnacentersdkgo.ResponseDiscoveryGetSNMPPropertiesResponse
+			getItem = &item
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
 }

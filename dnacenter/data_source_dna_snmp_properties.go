@@ -111,3 +111,17 @@ func flattenDiscoveryGetSNMPPropertiesItems(items *[]dnacentersdkgo.ResponseDisc
 	}
 	return respItems
 }
+
+func flattenDiscoveryGetSNMPPropertiesItem(item *dnacentersdkgo.ResponseDiscoveryGetSNMPPropertiesResponse) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["id"] = item.ID
+	respItem["instance_tenant_id"] = item.InstanceTenantID
+	respItem["instance_uuid"] = item.InstanceUUID
+	respItem["int_value"] = item.IntValue
+	respItem["system_property_name"] = item.SystemPropertyName
+	return respItem
+}
