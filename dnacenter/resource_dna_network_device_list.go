@@ -212,140 +212,14 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vHostname, okHostname := resourceMap["hostname"]
-	vManagementIPAddress, okManagementIPAddress := resourceMap["management_ip_address"]
-	vMacAddress, okMacAddress := resourceMap["mac_address"]
-	vLocationName, okLocationName := resourceMap["location_name"]
-	vSerialNumber, okSerialNumber := resourceMap["serial_number"]
-	vLocation, okLocation := resourceMap["location"]
-	vFamily, okFamily := resourceMap["family"]
-	vType, okType := resourceMap["type"]
-	vSeries, okSeries := resourceMap["series"]
-	vCollectionStatus, okCollectionStatus := resourceMap["collection_status"]
-	vCollectionInterval, okCollectionInterval := resourceMap["collection_interval"]
-	vNotSyncedForMinutes, okNotSyncedForMinutes := resourceMap["not_synced_for_minutes"]
-	vErrorCode, okErrorCode := resourceMap["error_code"]
-	vErrorDescription, okErrorDescription := resourceMap["error_description"]
-	vSoftwareVersion, okSoftwareVersion := resourceMap["software_version"]
-	vSoftwareType, okSoftwareType := resourceMap["software_type"]
-	vPlatformID, okPlatformID := resourceMap["platform_id"]
-	vRole, okRole := resourceMap["role"]
-	vReachabilityStatus, okReachabilityStatus := resourceMap["reachability_status"]
-	vUpTime, okUpTime := resourceMap["up_time"]
-	vAssociatedWlcIP, okAssociatedWlcIP := resourceMap["associated_wlc_ip"]
-	vLicensename, okLicensename := resourceMap["license_name"]
-	vLicensetype, okLicensetype := resourceMap["license_type"]
-	vLicensestatus, okLicensestatus := resourceMap["license_status"]
-	vModulename, okModulename := resourceMap["module_name"]
-	vModuleequpimenttype, okModuleequpimenttype := resourceMap["module_equpimenttype"]
-	vModuleservicestate, okModuleservicestate := resourceMap["module_servicestate"]
-	vModulevendorequipmenttype, okModulevendorequipmenttype := resourceMap["module_vendorequipmenttype"]
-	vModulepartnumber, okModulepartnumber := resourceMap["module_partnumber"]
-	vModuleoperationstatecode, okModuleoperationstatecode := resourceMap["module_operationstatecode"]
-	vID, okID := resourceMap["id"]
-	vDeviceSupportLevel, okDeviceSupportLevel := resourceMap["device_support_level"]
+
+	vSerialNumber := resourceMap["serial_number"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceList")
 		queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-
-		if okHostname {
-			queryParams1.Hostname = interfaceToSliceString(vHostname)
-		}
-		if okManagementIPAddress {
-			queryParams1.ManagementIPAddress = interfaceToSliceString(vManagementIPAddress)
-		}
-		if okMacAddress {
-			queryParams1.MacAddress = interfaceToSliceString(vMacAddress)
-		}
-		if okLocationName {
-			queryParams1.LocationName = interfaceToSliceString(vLocationName)
-		}
-		if okSerialNumber {
-			queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
-		}
-		if okLocation {
-			queryParams1.Location = interfaceToSliceString(vLocation)
-		}
-		if okFamily {
-			queryParams1.Family = interfaceToSliceString(vFamily)
-		}
-		if okType {
-			queryParams1.Type = interfaceToSliceString(vType)
-		}
-		if okSeries {
-			queryParams1.Series = interfaceToSliceString(vSeries)
-		}
-		if okCollectionStatus {
-			queryParams1.CollectionStatus = interfaceToSliceString(vCollectionStatus)
-		}
-		if okCollectionInterval {
-			queryParams1.CollectionInterval = interfaceToSliceString(vCollectionInterval)
-		}
-		if okNotSyncedForMinutes {
-			queryParams1.NotSyncedForMinutes = interfaceToSliceString(vNotSyncedForMinutes)
-		}
-		if okErrorCode {
-			queryParams1.ErrorCode = interfaceToSliceString(vErrorCode)
-		}
-		if okErrorDescription {
-			queryParams1.ErrorDescription = interfaceToSliceString(vErrorDescription)
-		}
-		if okSoftwareVersion {
-			queryParams1.SoftwareVersion = interfaceToSliceString(vSoftwareVersion)
-		}
-		if okSoftwareType {
-			queryParams1.SoftwareType = interfaceToSliceString(vSoftwareType)
-		}
-		if okPlatformID {
-			queryParams1.PlatformID = interfaceToSliceString(vPlatformID)
-		}
-		if okRole {
-			queryParams1.Role = interfaceToSliceString(vRole)
-		}
-		if okReachabilityStatus {
-			queryParams1.ReachabilityStatus = interfaceToSliceString(vReachabilityStatus)
-		}
-		if okUpTime {
-			queryParams1.UpTime = interfaceToSliceString(vUpTime)
-		}
-		if okAssociatedWlcIP {
-			queryParams1.AssociatedWlcIP = interfaceToSliceString(vAssociatedWlcIP)
-		}
-		if okLicensename {
-			queryParams1.Licensename = interfaceToSliceString(vLicensename)
-		}
-		if okLicensetype {
-			queryParams1.Licensetype = interfaceToSliceString(vLicensetype)
-		}
-		if okLicensestatus {
-			queryParams1.Licensestatus = interfaceToSliceString(vLicensestatus)
-		}
-		if okModulename {
-			queryParams1.Modulename = interfaceToSliceString(vModulename)
-		}
-		if okModuleequpimenttype {
-			queryParams1.Moduleequpimenttype = interfaceToSliceString(vModuleequpimenttype)
-		}
-		if okModuleservicestate {
-			queryParams1.Moduleservicestate = interfaceToSliceString(vModuleservicestate)
-		}
-		if okModulevendorequipmenttype {
-			queryParams1.Modulevendorequipmenttype = interfaceToSliceString(vModulevendorequipmenttype)
-		}
-		if okModulepartnumber {
-			queryParams1.Modulepartnumber = interfaceToSliceString(vModulepartnumber)
-		}
-		if okModuleoperationstatecode {
-			queryParams1.Moduleoperationstatecode = interfaceToSliceString(vModuleoperationstatecode)
-		}
-		if okID {
-			queryParams1.ID = vID
-		}
-		if okDeviceSupportLevel {
-			queryParams1.DeviceSupportLevel = vDeviceSupportLevel
-		}
+		queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
 
 		response1, restyResp1, err := client.Devices.GetDeviceList(&queryParams1)
 
@@ -382,72 +256,10 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vHostname := resourceMap["hostname"]
-	vManagementIPAddress := resourceMap["management_ip_address"]
-	vMacAddress := resourceMap["mac_address"]
-	vLocationName := resourceMap["location_name"]
 	vSerialNumber := resourceMap["serial_number"]
-	vLocation := resourceMap["location"]
-	vFamily := resourceMap["family"]
-	vType := resourceMap["type"]
-	vSeries := resourceMap["series"]
-	vCollectionStatus := resourceMap["collection_status"]
-	vCollectionInterval := resourceMap["collection_interval"]
-	vNotSyncedForMinutes := resourceMap["not_synced_for_minutes"]
-	vErrorCode := resourceMap["error_code"]
-	vErrorDescription := resourceMap["error_description"]
-	vSoftwareVersion := resourceMap["software_version"]
-	vSoftwareType := resourceMap["software_type"]
-	vPlatformID := resourceMap["platform_id"]
-	vRole := resourceMap["role"]
-	vReachabilityStatus := resourceMap["reachability_status"]
-	vUpTime := resourceMap["up_time"]
-	vAssociatedWlcIP := resourceMap["associated_wlc_ip"]
-	vLicensename := resourceMap["license_name"]
-	vLicensetype := resourceMap["license_type"]
-	vLicensestatus := resourceMap["license_status"]
-	vModulename := resourceMap["module_name"]
-	vModuleequpimenttype := resourceMap["module_equpimenttype"]
-	vModuleservicestate := resourceMap["module_servicestate"]
-	vModulevendorequipmenttype := resourceMap["module_vendorequipmenttype"]
-	vModulepartnumber := resourceMap["module_partnumber"]
-	vModuleoperationstatecode := resourceMap["module_operationstatecode"]
-	vID := resourceMap["id"]
-	vDeviceSupportLevel := resourceMap["device_support_level"]
 
 	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-	queryParams1.Hostname = interfaceToSliceString(vHostname)
-	queryParams1.ManagementIPAddress = interfaceToSliceString(vManagementIPAddress)
-	queryParams1.MacAddress = interfaceToSliceString(vMacAddress)
-	queryParams1.LocationName = interfaceToSliceString(vLocationName)
 	queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
-	queryParams1.Location = interfaceToSliceString(vLocation)
-	queryParams1.Family = interfaceToSliceString(vFamily)
-	queryParams1.Type = interfaceToSliceString(vType)
-	queryParams1.Series = interfaceToSliceString(vSeries)
-	queryParams1.CollectionStatus = interfaceToSliceString(vCollectionStatus)
-	queryParams1.CollectionInterval = interfaceToSliceString(vCollectionInterval)
-	queryParams1.NotSyncedForMinutes = interfaceToSliceString(vNotSyncedForMinutes)
-	queryParams1.ErrorCode = interfaceToSliceString(vErrorCode)
-	queryParams1.ErrorDescription = interfaceToSliceString(vErrorDescription)
-	queryParams1.SoftwareVersion = interfaceToSliceString(vSoftwareVersion)
-	queryParams1.SoftwareType = interfaceToSliceString(vSoftwareType)
-	queryParams1.PlatformID = interfaceToSliceString(vPlatformID)
-	queryParams1.Role = interfaceToSliceString(vRole)
-	queryParams1.ReachabilityStatus = interfaceToSliceString(vReachabilityStatus)
-	queryParams1.UpTime = interfaceToSliceString(vUpTime)
-	queryParams1.AssociatedWlcIP = interfaceToSliceString(vAssociatedWlcIP)
-	queryParams1.Licensename = interfaceToSliceString(vLicensename)
-	queryParams1.Licensetype = interfaceToSliceString(vLicensetype)
-	queryParams1.Licensestatus = interfaceToSliceString(vLicensestatus)
-	queryParams1.Modulename = interfaceToSliceString(vModulename)
-	queryParams1.Moduleequpimenttype = interfaceToSliceString(vModuleequpimenttype)
-	queryParams1.Moduleservicestate = interfaceToSliceString(vModuleservicestate)
-	queryParams1.Modulevendorequipmenttype = interfaceToSliceString(vModulevendorequipmenttype)
-	queryParams1.Modulepartnumber = interfaceToSliceString(vModulepartnumber)
-	queryParams1.Moduleoperationstatecode = interfaceToSliceString(vModuleoperationstatecode)
-	queryParams1.ID = vID
-	queryParams1.DeviceSupportLevel = vDeviceSupportLevel
 	item, err := searchDevicesGetDeviceList(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -458,8 +270,8 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vID)
+	if d.HasChange("item") {
+		log.Printf("[DEBUG] Name used for update operation %s", vSerialNumber)
 		request1 := expandRequestNetworkDeviceListSyncDevices2(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Devices.SyncDevices2(request1)
@@ -765,7 +577,7 @@ func searchDevicesGetDeviceList(m interface{}, queryParams dnacentersdkgo.GetDev
 	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.ID == queryParams.ID {
+		if item.SerialNumber == queryParams.SerialNumber[0] {
 			var getItem *dnacentersdkgo.ResponseDevicesGetDeviceListResponse
 			getItem = &item
 			foundItem = getItem
