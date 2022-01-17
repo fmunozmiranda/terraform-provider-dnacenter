@@ -591,6 +591,44 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItems(items *[]dn
 	return respItems
 }
 
+func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponse) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["id"] = item.ID
+	respItem["instance_id"] = item.InstanceID
+	respItem["display_name"] = item.DisplayName
+	respItem["instance_created_on"] = item.InstanceCreatedOn
+	respItem["instance_updated_on"] = item.InstanceUpdatedOn
+	respItem["instance_version"] = item.InstanceVersion
+	respItem["create_time"] = item.CreateTime
+	respItem["deployed"] = boolPtrToString(item.Deployed)
+	respItem["description"] = item.Description
+	respItem["is_seeded"] = boolPtrToString(item.IsSeeded)
+	respItem["is_stale"] = boolPtrToString(item.IsStale)
+	respItem["last_update_time"] = item.LastUpdateTime
+	respItem["name"] = item.Name
+	respItem["namespace"] = item.Namespace
+	respItem["provisioning_state"] = item.ProvisioningState
+	respItem["qualifier"] = item.Qualifier
+	respItem["resource_version"] = item.ResourceVersion
+	respItem["target_id_list"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsTargetIDList(item.TargetIDList)
+	respItem["type"] = item.Type
+	respItem["cfs_change_info"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsCfsChangeInfo(item.CfsChangeInfo)
+	respItem["custom_provisions"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsCustomProvisions(item.CustomProvisions)
+	respItem["gen_id"] = item.GenID
+	respItem["internal"] = boolPtrToString(item.Internal)
+	respItem["is_deleted"] = boolPtrToString(item.IsDeleted)
+	respItem["ise_reserved"] = boolPtrToString(item.IseReserved)
+	respItem["pushed"] = boolPtrToString(item.Pushed)
+	respItem["clause"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsClause(item.Clause)
+	respItem["contract_classifier"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsContractClassifier(item.ContractClassifier)
+
+	return respItem
+}
+
 func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsTargetIDList(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponseTargetIDList) []interface{} {
 	if items == nil {
 		return nil

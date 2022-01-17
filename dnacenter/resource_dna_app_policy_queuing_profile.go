@@ -183,9 +183,20 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 	request1 := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileArray(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
-	vID := resourceItem["id"]
+	vName := resourceItem["name"]
 
-	vvID := interfaceToString(vID)
+	vvName := interfaceToString(vName)
+
+	queryParams1 := dnacentersdkgo.GetApplicationPolicyQueuingProfileQueryParams{}
+	queryParams1.Name = vvName
+	item, err := searchApplicationPolicyGetApplicationPolicyQueuingProfile(m, queryParams1)
+	if err != nil || item != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["name"] = vvName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceAppPolicyQueuingProfileRead(ctx, d, m)
+	}
+
 	resp1, restyResp1, err := client.ApplicationPolicy.CreateApplicationPolicyQueuingProfile(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -198,44 +209,44 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 		return diags
 	}
 	resourceMap := make(map[string]string)
-	resourceMap["id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceAppPolicyQueuingProfileRead(ctx, d, m)
 }
 
 func resourceAppPolicyQueuingProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vName, okName := resourceMap["name"]
+	vName := resourceMap["name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetApplicationPolicyQueuingProfile")
+
 		queryParams1 := dnacentersdkgo.GetApplicationPolicyQueuingProfileQueryParams{}
-
-		if okName {
-			queryParams1.Name = vName
-		}
-
-		response1, restyResp1, err := client.ApplicationPolicy.GetApplicationPolicyQueuingProfile(&queryParams1)
-
-		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
+		queryParams1.Name = vName
+		item, err := searchApplicationPolicyGetApplicationPolicyQueuingProfile(m, queryParams1)
+		if err != nil || item == nil {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetApplicationPolicyQueuingProfile", err,
 				"Failure at GetApplicationPolicyQueuingProfile, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*item))
 
 		//TODO Code Items for DNAC
+
+		vItem1 := flattenApplicationPolicyGetApplicationPolicyQueuingProfileItem(item)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetApplicationPolicyQueuingProfile search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -248,20 +259,25 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vName, okName := resourceMap["name"]
+	vName := resourceMap["name"]
 
 	//selectedMethod := 1
 	//var vvID string
-	var vvName string
 
-	if okName {
-		vvName = vName
+	queryParams1 := dnacentersdkgo.GetApplicationPolicyQueuingProfileQueryParams{}
+	queryParams1.Name = vName
+	item, err := searchApplicationPolicyGetApplicationPolicyQueuingProfile(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetApplicationPolicyQueuingProfile", err,
+			"Failure at GetApplicationPolicyQueuingProfile, unexpected response", ""))
+		return diags
 	}
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "item.0", d)
+		log.Printf("[DEBUG] Name used for update operation %s", vName)
+		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateApplicationPolicyQueuingProfile(request1)
 		if err != nil || response1 == nil {
@@ -283,13 +299,43 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 }
 
 func resourceAppPolicyQueuingProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	//client := m.(*dnacentersdkgo.Client)
+	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
+	var vvID string
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vName := resourceMap["name"]
 
-	//resourceID := d.Id()
-	//resourceMap := separateResourceID(resourceID)
-	//TODO
+	queryParams1 := dnacentersdkgo.GetApplicationPolicyQueuingProfileQueryParams{}
+	queryParams1.Name = vName
+	item, err := searchApplicationPolicyGetApplicationPolicyQueuingProfile(m, queryParams1)
+	if err != nil || item == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetApplicationPolicyQueuingProfile", err,
+			"Failure at GetApplicationPolicyQueuingProfile, unexpected response", ""))
+		return diags
+	}
+
+	vvID = item.ID
+	response1, restyResp1, err := client.ApplicationPolicy.DeleteApplicationPolicyQueuingProfile(vvID)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteApplicationPolicyQueuingProfile", err, restyResp1.String(),
+				"Failure at DeleteApplicationPolicyQueuingProfile, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteApplicationPolicyQueuingProfile", err,
+			"Failure at DeleteApplicationPolicyQueuingProfile, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
 
 	return diags
 }
@@ -712,4 +758,30 @@ func expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileCl
 	}
 
 	return &request
+}
+
+func searchApplicationPolicyGetApplicationPolicyQueuingProfile(m interface{}, queryParams dnacentersdkgo.GetApplicationPolicyQueuingProfileQueryParams) (*dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponse, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponse
+	var ite *dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfile
+	ite, _, err = client.ApplicationPolicy.GetApplicationPolicyQueuingProfile(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items.Response
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponse
+			getItem = &item
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
 }
