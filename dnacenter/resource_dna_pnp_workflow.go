@@ -430,49 +430,20 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vLimit, okLimit := resourceMap["limit"]
-	vOffset, okOffset := resourceMap["offset"]
-	vSort, okSort := resourceMap["sort"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
-	vType, okType := resourceMap["type"]
 	vName, okName := resourceMap["name"]
 	vID, okID := resourceMap["id"]
 
-	method1 := []bool{okLimit, okOffset, okSort, okSortOrder, okType, okName}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	if selectedMethod == 1 {
+	if okName && vName != "" {
 		log.Printf("[DEBUG] Selected method 1: GetWorkflows")
 		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
 
-		if okLimit {
-			queryParams1.Limit = *stringToIntPtr(vLimit)
-		}
-		if okOffset {
-			queryParams1.Offset = *stringToIntPtr(vOffset)
-		}
-		if okSort {
-			queryParams1.Sort = interfaceToSliceString(vSort)
-		}
-		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder
-		}
-		if okType {
-			queryParams1.Type = interfaceToSliceString(vType)
-		}
 		if okName {
 			queryParams1.Name = interfaceToSliceString(vName)
 		}
 
-		response1, restyResp1, err := client.DeviceOnboardingPnp.GetWorkflows(&queryParams1)
+		response1, err := searchDeviceOnboardingPnpGetWorkflows(m, queryParams1)
 
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetWorkflows", err,
 				"Failure at GetWorkflows, unexpected response", ""))
@@ -481,9 +452,20 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(response1.TypeID)
+
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetWorkflowByID", err,
+				"Failure at GetWorkflowByID, unexpected response", ""))
+			return diags
+		}
 		//TODO FOR DNAC
 
-		vItem1 := flattenDeviceOnboardingPnpGetWorkflowsItems(response1)
+		vItem1 := flattenDeviceOnboardingPnpGetWorkflowByIDItem(response2)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetWorkflows search response",
@@ -492,7 +474,7 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 		}
 
 	}
-	if selectedMethod == 2 {
+	if okID && vID != "" {
 		log.Printf("[DEBUG] Selected method 2: GetWorkflowByID")
 		vvID := vID
 
