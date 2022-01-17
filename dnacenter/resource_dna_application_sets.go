@@ -47,16 +47,6 @@ func resourceApplicationSets() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 						},
-						"offset": &schema.Schema{
-							Description: `offset`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"limit": &schema.Schema{
-							Description: `Name`,
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
 						"id": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
@@ -75,8 +65,23 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 
 	var diags diag.Diagnostics
 
-	//resourceItem := *getResourceItem(d.Get("parameters")) TO DO, veririficar que el objeto fue creado realmente, para consultarlo y sacar su id...
+	resourceItem := *getResourceItem(d.Get("parameters"))
 
+	vName := resourceItem["name"]
+
+	vvName := interfaceToString(vName)
+
+	queryParams1 := dnacentersdkgo.GetApplicationSetsQueryParams{}
+
+	queryParams1.Name = vvName
+
+	item, err := searchApplicationPolicyGetApplicationSets(m, queryParams1)
+	if err != nil || item != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["name"] = vvName
+		d.SetId(joinResourceID(resourceMap))
+		return resourceApplicationSetsRead(ctx, d, m)
+	}
 	request1 := expandRequestApplicationSetsCreateApplicationSet(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
@@ -92,42 +97,28 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceApplicationSetsRead(ctx, d, m)
 }
 
 func resourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
-
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset, okOffset := resourceMap["offset"]
-	vLimit, okLimit := resourceMap["limit"]
-	vName, okName := resourceMap["name"]
+	vName := resourceMap["name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetApplicationSets")
 		queryParams1 := dnacentersdkgo.GetApplicationSetsQueryParams{}
 
-		if okOffset {
-			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-		}
-		if okLimit {
-			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-		}
-		if okName {
-			queryParams1.Name = vName
-		}
+		queryParams1.Name = vName
 
-		response1, restyResp1, err := client.ApplicationPolicy.GetApplicationSets(&queryParams1)
+		response1, err := searchApplicationPolicyGetApplicationSets(m, queryParams1)
 
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetApplicationSets", err,
 				"Failure at GetApplicationSets, unexpected response", ""))
@@ -137,6 +128,13 @@ func resourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		//TODO Code Items for DNAC
+		vItem1 := flattenApplicationPolicyGetApplicationSetsItem(response1)
+		if err := d.Set("parameters", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetApplicationSets search response",
+				err))
+			return diags
+		}
 
 	}
 	return diags
@@ -153,29 +151,14 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vOffset, okOffset := resourceMap["offset"]
-	vLimit, okLimit := resourceMap["limit"]
-	vName, okName := resourceMap["name"]
-	vID, okID := resourceMap["id"]
-
+	vName := resourceMap["name"]
+	var vID string
 	selectedMethod := 1
 	queryParams1 := dnacentersdkgo.GetApplicationSetsQueryParams{}
 
-	if okOffset {
-		queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-	}
-	if okLimit {
-		queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-	}
-	if okName {
-		queryParams1.Name = vName
-	}
+	queryParams1.Name = vName
 
 	queryParams2 := dnacentersdkgo.DeleteApplicationSetQueryParams{}
-
-	if okID {
-		queryParams2.ID = vID
-	}
 
 	// REVIEW: Add getAllItems and search function to get missing params
 	if selectedMethod == 1 {
@@ -185,7 +168,10 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 			// Assume that element it is already gone
 			return diags
 		}
+		vID = item1.ID
 	}
+
+	queryParams2.ID = vID
 	response1, restyResp1, err := client.ApplicationPolicy.DeleteApplicationSet(&queryParams2)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {

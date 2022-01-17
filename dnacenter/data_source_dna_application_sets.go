@@ -147,6 +147,19 @@ func flattenApplicationPolicyGetApplicationSetsItems(items *[]dnacentersdkgo.Res
 	return respItems
 }
 
+func flattenApplicationPolicyGetApplicationSetsItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponse) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["id"] = item.ID
+	respItem["identity_source"] = flattenApplicationPolicyGetApplicationSetsItemsIDentitySource(item.IDentitySource)
+	respItem["name"] = item.Name
+
+	return respItem
+}
+
 func flattenApplicationPolicyGetApplicationSetsItemsIDentitySource(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationSetsResponseIDentitySource) []map[string]interface{} {
 	if item == nil {
 		return nil
