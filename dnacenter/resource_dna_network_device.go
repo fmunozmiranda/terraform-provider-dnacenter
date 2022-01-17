@@ -222,7 +222,6 @@ func resourceNetworkDeviceCreate(ctx context.Context, d *schema.ResourceData, m 
 	// TODO: Add the path params to `item` schema
 	//       & return it individually
 	resourceMap["id"] = interfaceToString(resourceItem["id"])
-	resourceMap["name"] = interfaceToString(resourceItem["name"])
 	d.SetId(joinResourceID(resourceMap))
 	return diags
 }
