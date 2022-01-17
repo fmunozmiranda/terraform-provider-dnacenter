@@ -546,25 +546,43 @@ func resourceEndpointAnalyticsProfilingRulesUpdate(ctx context.Context, d *schem
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vRuleID := resourceMap["rule_id"]
+	vRuleName := resourceMap["rule_name"]
 
 	var vvRuleID string
 
 	vvRuleID = vRuleID
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	response2, restyResp2, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
+	if vvRuleID != "" {
+		response2, restyResp2, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
 
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDetailsOfASingleProfilingRule", err,
+				"Failure at GetDetailsOfASingleProfilingRule, unexpected response", ""))
+			return diags
 		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetDetailsOfASingleProfilingRule", err,
-			"Failure at GetDetailsOfASingleProfilingRule, unexpected response", ""))
-		return diags
+
 	}
 
-	if d.HasChange("parameters") {
+	if vRuleName != "" {
+		queryParams1 := dnacentersdkgo.GetListOfProfilingRulesQueryParams{}
+
+		response1, err := searchPolicyGetListOfProfilingRules(m, queryParams1, vRuleName)
+
+		if err != nil || response1 == nil {
+
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetListOfProfilingRules", err,
+				"Failure at GetListOfProfilingRules, unexpected response", ""))
+			return diags
+		}
+	}
+
+	if d.HasChange("item") {
 		request1 := expandRequestEndpointAnalyticsProfilingRulesUpdateAnExistingProfilingRule(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		restyResp1, err := client.Policy.UpdateAnExistingProfilingRule(vRuleID, request1)
@@ -932,7 +950,7 @@ func expandRequestEndpointAnalyticsProfilingRulesUpdateAnExistingProfilingRuleCo
 	return &request
 }
 
-func searchPolicyGetListOfProfilingRules(m interface{}, queryParams dnacentersdkgo.GetListOfProfilingRulesQueryParams, vID string) (*dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRules, error) {
+func searchPolicyGetListOfProfilingRules(m interface{}, queryParams dnacentersdkgo.GetListOfProfilingRulesQueryParams, vName string) (*dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRules, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
 	var foundItem *dnacentersdkgo.ResponsePolicyGetListOfProfilingRulesProfilingRules
@@ -945,7 +963,7 @@ func searchPolicyGetListOfProfilingRules(m interface{}, queryParams dnacentersdk
 	for len(*nResponse.ProfilingRules) > 0 {
 		time.Sleep(15 * time.Second)
 		for _, item := range *nResponse.ProfilingRules {
-			if vID == item.RuleName {
+			if vName == item.RuleName {
 				foundItem = &item
 				fmt.Println(item.RuleName)
 				return foundItem, err
