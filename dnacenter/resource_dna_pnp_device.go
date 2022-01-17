@@ -2707,6 +2707,7 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	vID, okID := resourceItem["id"]
+	vName, okName := resourceItem["name"]
 	vvID := interfaceToString(vID)
 	if okID && vvID != "" {
 		getResponse2, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
@@ -2716,18 +2717,11 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			d.SetId(joinResourceID(resourceMap))
 			return resourcePnpDeviceRead(ctx, d, m)
 		}
-	} /*else {
-		response2, _, err := client.DeviceOnboardingPnp.GetDeviceList2(nil)
-		if response2 != nil && err == nil {
-			item2, err := searchDeviceOnboardingPnpGetDeviceList2(m, items2, vvName, vvID)
-			if err == nil && item2 != nil {
-				resourceMap := make(map[string]string)
-				resourceMap["id"] = vvID
-				d.SetId(joinResourceID(resourceMap))
-				return resourcePnpDeviceRead(ctx, d, m)
-			}
-		}
-	}*/
+	}
+
+	if vName != "" && okName {
+
+	}
 	resp1, restyResp1, err := client.DeviceOnboardingPnp.AddDevice(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -6088,7 +6082,7 @@ func expandRequestPnpDeviceUpdateDeviceWorkflowParametersConfigListConfigParamet
 
 	//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
 	nResponse, _, err := client.DeviceOnboardingPnp.GetDeviceList2(&queryParams)
-	maxPageSize := len(*nResponse.Response)
+	maxPageSize := len(*nResponse)
 	//maxPageSize := 10
 	for len(*nResponse.Response) > 0 {
 		time.Sleep(15 * time.Second)
@@ -6108,3 +6102,5 @@ func expandRequestPnpDeviceUpdateDeviceWorkflowParametersConfigListConfigParamet
 	}
 	return foundItem, err
 }*/
+
+//ISSUE Pnp Device- ISSUE waiting for : [{}]  we have: {}
