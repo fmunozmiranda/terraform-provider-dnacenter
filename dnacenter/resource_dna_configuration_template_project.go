@@ -2288,10 +2288,9 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vName, okName := resourceMap["name"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
 	vProjectID, okProjectID := resourceMap["project_id"]
 
-	method1 := []bool{okName, okSortOrder}
+	method1 := []bool{okName}
 	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
 	method2 := []bool{okProjectID}
 	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
@@ -2304,10 +2303,6 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 		if okName {
 			queryParams1.Name = vName
 		}
-		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder
-		}
-
 		response1, restyResp1, err := client.ConfigurationTemplates.GetsAListOfProjects(&queryParams1)
 
 		if err != nil || response1 == nil {
