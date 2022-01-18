@@ -2398,9 +2398,9 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 		//Set value vvName = getResp.
 	}
 
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		//log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestConfigurationTemplateProjectUpdateProject(ctx, "item.0", d)
+		request1 := expandRequestConfigurationTemplateProjectUpdateProject(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ConfigurationTemplates.UpdateProject(request1)
 		if err != nil || response1 == nil {
