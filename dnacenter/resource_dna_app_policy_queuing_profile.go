@@ -37,7 +37,483 @@ func resourceAppPolicyQueuingProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//{'data': {'parameters': {'Optional': 'true', 'Type': 'schema.TypeList', 'Description': 'Array of RequestApplicationPolicyCreateApplicationPolicyQueuingProfile', 'Elem': {'Schema': {'clause': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'instanceId': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'Instance id\n'}, 'interfaceSpeedBandwidthClauses': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'instanceId': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'Instance id\n'}, 'interfaceSpeed': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Interface speed\n'}, 'tcBandwidthSettings': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'trafficClass': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Traffic Class\n'}, 'instanceId': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'Instance id\n'}, 'bandwidthPercentage': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'Bandwidth percentage\n'}}}}}}}, 'type': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Type\n'}, 'isCommonBetweenAllInterfaceSpeeds': {'Optional': 'true', 'Type': 'schema.TypeBool', 'Description': 'Is common between all interface speeds\n'}, 'tcDscpSettings': {'Optional': 'true', 'Type': 'schema.TypeList', 'Elem': {'Schema': {'trafficClass': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Traffic Class\n'}, 'instanceId': {'Optional': 'true', 'Type': 'schema.TypeInt', 'Description': 'Instance id\n'}, 'dscp': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Dscp value\n'}}}}}}}, 'name': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Queueing profile name\n'}, 'description': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Free test description\n'}, 'id': {'Optional': 'true', 'Type': 'schema.TypeString', 'Description': 'Id of Queueing profile\n'}}}}}, 'metadata': {'item': {'operation_id': [['CreateApplicationPolicyQueuingProfile', 'UpdateApplicationPolicyQueuingProfile']], 'new_flat_structure': [[{'RequestApplicationPolicyCreateApplicationPolicyQueuingProfile': {'type': 'array', 'data': [{'name': '', 'type': '[]RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfile', 'description': 'Array of RequestApplicationPolicyCreateApplicationPolicyQueuingProfile'}], 'epType': 'json', 'isRef': True, 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfile': {'type': 'obj', 'data': [{'name': 'description', 'description': 'Free test description\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'name', 'description': 'Queueing profile name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'clause', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClause'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClause': {'type': 'obj', 'data': [{'name': 'type', 'description': 'Type\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'isCommonBetweenAllInterfaceSpeeds', 'description': 'Is common between all interface speeds\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'interfaceSpeedBandwidthClauses', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses'}, {'name': 'tcDscpSettings', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseTcDscpSettings'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses': {'type': 'obj', 'data': [{'name': 'interfaceSpeed', 'description': 'Interface speed\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'tcBandwidthSettings', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings': {'type': 'obj', 'data': [{'name': 'bandwidthPercentage', 'description': 'Bandwidth percentage\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'trafficClass', 'description': 'Traffic Class\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyCreateApplicationPolicyQueuingProfileClauseTcDscpSettings': {'type': 'obj', 'data': [{'name': 'dscp', 'description': 'Dscp value\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'trafficClass', 'description': 'Traffic Class\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}, {'RequestApplicationPolicyUpdateApplicationPolicyQueuingProfile': {'type': 'array', 'data': [{'name': '', 'type': '[]RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfile', 'description': 'Array of RequestApplicationPolicyUpdateApplicationPolicyQueuingProfile'}], 'epType': 'json', 'isRef': True, 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfile': {'type': 'obj', 'data': [{'name': 'id', 'description': 'Id of Queueing profile\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'description', 'description': 'Free test description\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'name', 'description': 'Queueing profile name\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'clause', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClause'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClause': {'type': 'obj', 'data': [{'name': 'instanceId', 'description': 'Instance id\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'type', 'description': 'Type\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'isCommonBetweenAllInterfaceSpeeds', 'description': 'Is common between all interface speeds\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'bool'}, {'name': 'interfaceSpeedBandwidthClauses', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses'}, {'name': 'tcDscpSettings', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClauses': {'type': 'obj', 'data': [{'name': 'instanceId', 'description': 'Instance id\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'interfaceSpeed', 'description': 'Interface speed\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'tcBandwidthSettings', 'description': None, 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': '[]RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseInterfaceSpeedBandwidthClausesTcBandwidthSettings': {'type': 'obj', 'data': [{'name': 'instanceId', 'description': 'Instance id\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'bandwidthPercentage', 'description': 'Bandwidth percentage\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'trafficClass', 'description': 'Traffic Class\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}, 'RequestItemApplicationPolicyUpdateApplicationPolicyQueuingProfileClauseTcDscpSettings': {'type': 'obj', 'data': [{'name': 'instanceId', 'description': 'Instance id\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'int'}, {'name': 'dscp', 'description': 'Dscp value\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}, {'name': 'trafficClass', 'description': 'Traffic Class\n', 'has_rename': None, 'alt_name': None, 'endpoint_name': None, 'type': 'string'}], 'epType': 'json', 'has_rename': None, 'alt_name': None, 'endpoint_name': None}}]], 'flatten_structure_key': [['RequestApplicationPolicyCreateApplicationPolicyQueuingProfile', 'RequestApplicationPolicyUpdateApplicationPolicyQueuingProfile']], 'access_list': [[[], []]]}}}
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"cfs_change_info": &schema.Schema{
+							Description: `Cfs change info
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"clause": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `Display name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"id": &schema.Schema{
+										Description: `Id
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"instance_created_on": &schema.Schema{
+										Description: `Instance created on
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"instance_id": &schema.Schema{
+										Description: `Instance id
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"instance_updated_on": &schema.Schema{
+										Description: `Instance updated on
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"instance_version": &schema.Schema{
+										Description: `Instance version
+`,
+										Type:     schema.TypeFloat,
+										Computed: true,
+									},
+
+									"interface_speed_bandwidth_clauses": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"display_name": &schema.Schema{
+													Description: `Display name
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"id": &schema.Schema{
+													Description: `Id
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"instance_created_on": &schema.Schema{
+													Description: `Instance created on
+`,
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+
+												"instance_id": &schema.Schema{
+													Description: `Instance id
+`,
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+
+												"instance_updated_on": &schema.Schema{
+													Description: `Instance updated on
+`,
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+
+												"instance_version": &schema.Schema{
+													Description: `Instance version
+`,
+													Type:     schema.TypeFloat,
+													Computed: true,
+												},
+
+												"interface_speed": &schema.Schema{
+													Description: `Interface speed
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"tc_bandwidth_settings": &schema.Schema{
+													Type:     schema.TypeList,
+													Computed: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"bandwidth_percentage": &schema.Schema{
+																Description: `Bandwidth percentage
+`,
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+
+															"display_name": &schema.Schema{
+																Description: `Display name
+`,
+																Type:     schema.TypeString,
+																Computed: true,
+															},
+
+															"id": &schema.Schema{
+																Description: `Id
+`,
+																Type:     schema.TypeString,
+																Computed: true,
+															},
+
+															"instance_created_on": &schema.Schema{
+																Description: `Instance created on
+`,
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+
+															"instance_id": &schema.Schema{
+																Description: `Instance id
+`,
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+
+															"instance_updated_on": &schema.Schema{
+																Description: `Instance updated on
+`,
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+
+															"instance_version": &schema.Schema{
+																Description: `Instance version
+`,
+																Type:     schema.TypeFloat,
+																Computed: true,
+															},
+
+															"traffic_class": &schema.Schema{
+																Description: `Traffic Class
+`,
+																Type:     schema.TypeString,
+																Computed: true,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+
+									"is_common_between_all_interface_speeds": &schema.Schema{
+										Description: `Is common between all interface speeds
+`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"priority": &schema.Schema{
+										Description: `Priority
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"tc_dscp_settings": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"display_name": &schema.Schema{
+													Description: `Display name
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"dscp": &schema.Schema{
+													Description: `Dscp value
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"id": &schema.Schema{
+													Description: `Id
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"instance_created_on": &schema.Schema{
+													Description: `Instance created on
+`,
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+
+												"instance_id": &schema.Schema{
+													Description: `Instance id
+`,
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+
+												"instance_updated_on": &schema.Schema{
+													Description: `Instance updated on
+`,
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+
+												"instance_version": &schema.Schema{
+													Description: `Instance version
+`,
+													Type:     schema.TypeFloat,
+													Computed: true,
+												},
+
+												"traffic_class": &schema.Schema{
+													Description: `Traffic Class
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+											},
+										},
+									},
+
+									"type": &schema.Schema{
+										Description: `Type
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+
+						"contract_classifier": &schema.Schema{
+							Description: `Contract classifier
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"create_time": &schema.Schema{
+							Description: `Create time
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"custom_provisions": &schema.Schema{
+							Description: `Custom provisions
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"deployed": &schema.Schema{
+							Description: `Deployed
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"description": &schema.Schema{
+							Description: `Free test description
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"display_name": &schema.Schema{
+							Description: `Display name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"gen_id": &schema.Schema{
+							Description: `Gen id
+`,
+							Type:     schema.TypeFloat,
+							Computed: true,
+						},
+
+						"id": &schema.Schema{
+							Description: `Id of Queueing profile
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"instance_created_on": &schema.Schema{
+							Description: `Instance created on
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"instance_id": &schema.Schema{
+							Description: `Instance id
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"instance_updated_on": &schema.Schema{
+							Description: `Instance updated on
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"instance_version": &schema.Schema{
+							Description: `Instance version
+`,
+							Type:     schema.TypeFloat,
+							Computed: true,
+						},
+
+						"internal": &schema.Schema{
+							Description: `Internal
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"is_deleted": &schema.Schema{
+							Description: `Is deleted
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"is_seeded": &schema.Schema{
+							Description: `Is seeded
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"is_stale": &schema.Schema{
+							Description: `Is stale
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"ise_reserved": &schema.Schema{
+							Description: `Is reserved
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"last_update_time": &schema.Schema{
+							Description: `Last update time
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Queueing profile name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"namespace": &schema.Schema{
+							Description: `Namespace
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"provisioning_state": &schema.Schema{
+							Description: `Provisioning State
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"pushed": &schema.Schema{
+							Description: `Pushed
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"qualifier": &schema.Schema{
+							Description: `Qualifier
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"resource_version": &schema.Schema{
+							Description: `Resource version
+`,
+							Type:     schema.TypeFloat,
+							Computed: true,
+						},
+
+						"target_id_list": &schema.Schema{
+							Description: `Target id list
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"type": &schema.Schema{
+							Description: `Type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplicationPolicyQueuingProfile`,
 				Type:        schema.TypeList,
@@ -165,7 +641,7 @@ func resourceAppPolicyQueuingProfile() *schema.Resource {
 							Description: `Queueing profile name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 					},
 				},
@@ -275,7 +751,7 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 	}
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vName)
 		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
