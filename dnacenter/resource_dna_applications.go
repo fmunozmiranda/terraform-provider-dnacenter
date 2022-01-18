@@ -38,6 +38,197 @@ func resourceApplications() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"application_set": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"id_ref": &schema.Schema{
+										Description: `Id Ref`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
+						"id": &schema.Schema{
+							Description: `Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"network_applications": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"app_protocol": &schema.Schema{
+										Description: `App Protocol`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"application_sub_type": &schema.Schema{
+										Description: `Application Sub Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"application_type": &schema.Schema{
+										Description: `Application Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"category_id": &schema.Schema{
+										Description: `Category Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"display_name": &schema.Schema{
+										Description: `Display Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"dscp": &schema.Schema{
+										Description: `Dscp`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"engine_id": &schema.Schema{
+										Description: `Engine Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"help_string": &schema.Schema{
+										Description: `Help String`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"ignore_conflict": &schema.Schema{
+										Description: `Ignore Conflict`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"long_description": &schema.Schema{
+										Description: `Long Description`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"name": &schema.Schema{
+										Description: `Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"popularity": &schema.Schema{
+										Description: `Popularity`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"rank": &schema.Schema{
+										Description: `Rank`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"server_name": &schema.Schema{
+										Description: `Server Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"traffic_class": &schema.Schema{
+										Description: `Traffic Class`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"url": &schema.Schema{
+										Description: `Url`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
+						"network_identity": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `Display Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"lower_port": &schema.Schema{
+										Description: `Lower Port`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"ports": &schema.Schema{
+										Description: `Ports`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"protocol": &schema.Schema{
+										Description: `Protocol`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"upper_port": &schema.Schema{
+										Description: `Upper Port`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplication`,
 				Type:        schema.TypeList,
@@ -68,7 +259,7 @@ func resourceApplications() *schema.Resource {
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
-							Optional:    true,
+							Required:    true,
 						},
 						"network_applications": &schema.Schema{
 							Type:     schema.TypeList,
@@ -325,7 +516,7 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams)
-		request1 := expandRequestApplicationsEditApplication(ctx, "item.0", d)
+		request1 := expandRequestApplicationsEditApplication(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.EditApplication(request1)
 		if err != nil || response1 == nil {
