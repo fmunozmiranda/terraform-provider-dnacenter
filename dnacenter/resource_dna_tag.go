@@ -238,19 +238,9 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vName, okName := resourceMap["name"]
-	vAdditionalInfonameSpace, okAdditionalInfonameSpace := resourceMap["additional_info_name_space"]
-	vAdditionalInfoattributes, okAdditionalInfoattributes := resourceMap["additional_info_attributes"]
-	vLevel, okLevel := resourceMap["level"]
-	vOffset, okOffset := resourceMap["offset"]
-	vLimit, okLimit := resourceMap["limit"]
-	vSize, okSize := resourceMap["size"]
-	vField, okField := resourceMap["field"]
-	vSortBy, okSortBy := resourceMap["sort_by"]
-	vOrder, okOrder := resourceMap["order"]
-	vSystemTag, okSystemTag := resourceMap["system_tag"]
 	vID, okID := resourceMap["id"]
 
-	method1 := []bool{okName, okAdditionalInfonameSpace, okAdditionalInfoattributes, okLevel, okOffset, okLimit, okSize, okField, okSortBy, okOrder, okSystemTag}
+	method1 := []bool{okName}
 	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
 	method2 := []bool{okID}
 	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
@@ -263,43 +253,10 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 		if okName {
 			queryParams1.Name = vName
 		}
-		if okAdditionalInfonameSpace {
-			queryParams1.AdditionalInfonameSpace = vAdditionalInfonameSpace
-		}
-		if okAdditionalInfoattributes {
-			queryParams1.AdditionalInfoattributes = vAdditionalInfoattributes
-		}
-		if okLevel {
-			queryParams1.Level = vLevel
-		}
-		if okOffset {
-			queryParams1.Offset = vOffset
-		}
-		if okLimit {
-			queryParams1.Limit = vLimit
-		}
-		if okSize {
-			queryParams1.Size = vSize
-		}
-		if okField {
-			queryParams1.Field = vField
-		}
-		if okSortBy {
-			queryParams1.SortBy = vSortBy
-		}
-		if okOrder {
-			queryParams1.Order = vOrder
-		}
-		if okSystemTag {
-			queryParams1.SystemTag = vSystemTag
-		}
 
-		response1, restyResp1, err := client.Tag.GetTag(&queryParams1)
+		response1, err := searchTagGetTag(m, queryParams1)
 
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetTag", err,
 				"Failure at GetTag, unexpected response", ""))
@@ -309,11 +266,22 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
 		//TODO FOR DNAC
+		response2, restyResp2, err := client.Tag.GetTagByID(response1.ID)
 
-		vItem1 := flattenTagGetTagItems(response1.Response)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTagByID", err,
+				"Failure at GetTagByID, unexpected response", ""))
+			return diags
+		}
+
+		vItem2 := flattenTagGetTagByIDItem(response2.Response)
+		if err := d.Set("item", vItem2); err != nil {
 			diags = append(diags, diagError(
-				"Failure when setting GetTag search response",
+				"Failure when setting GetTagByID response",
 				err))
 			return diags
 		}
@@ -688,4 +656,30 @@ func expandRequestTagUpdateTagDynamicRulesRulesItems(ctx context.Context, key st
 	}
 
 	return &request
+}
+
+func searchTagGetTag(m interface{}, queryParams dnacentersdkgo.GetTagQueryParams) (*dnacentersdkgo.ResponseTagGetTagResponse, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseTagGetTagResponse
+	var ite *dnacentersdkgo.ResponseTagGetTag
+	ite, _, err = client.Tag.GetTag(&queryParams)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items.Response
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == queryParams.Name {
+			var getItem *dnacentersdkgo.ResponseTagGetTagResponse
+			getItem = &item
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
 }
