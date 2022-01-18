@@ -663,6 +663,8 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
+	vName, okName := resourceItem["name"]
+	vvName := interfaceToString(vName)
 	if okID && vvID != "" {
 		getResponse1, _, err := client.Discovery.GetDiscoveryByID(vvID)
 		if err == nil && getResponse1 != nil {
@@ -672,6 +674,18 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return resourceDiscoveryRead(ctx, d, m)
 		}
 	}
+
+	if okName && vvName != "" {
+		getResponse1, err := searchDiscovery(m, vvName)
+		if err == nil && getResponse1 != nil {
+			resourceMap := make(map[string]string)
+			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
+			d.SetId(joinResourceID(resourceMap))
+			return resourceDiscoveryRead(ctx, d, m)
+		}
+	}
+
 	resp1, restyResp1, err := client.Discovery.StartDiscovery(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -685,6 +699,7 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceDiscoveryRead(ctx, d, m)
 }
@@ -697,9 +712,9 @@ func resourceDiscoveryRead(ctx context.Context, d *schema.ResourceData, m interf
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
+	vName := resourceMap["name"]
 
-	selectedMethod := 1
-	if selectedMethod == 1 {
+	if vID != "" {
 		log.Printf("[DEBUG] Selected method 1: GetDiscoveryByID")
 		vvID := vID
 
@@ -727,6 +742,38 @@ func resourceDiscoveryRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diags
 
 	}
+
+	if vName != "" {
+		response1, err := searchDiscovery(m, vName)
+		if err != nil || response1 == nil {
+
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDiscoveryByID", err,
+				"Failure at GetDiscoveryByID, unexpected response", ""))
+			return diags
+		}
+
+		vID = response1.ID
+		response2, restyResp1, err := client.Discovery.GetDiscoveryByID(vID)
+
+		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDiscoveryByID", err,
+				"Failure at GetDiscoveryByID, unexpected response", ""))
+			return diags
+		}
+		vItem1 := flattenDiscoveryGetDiscoveryByIDItem(response2.Response)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDiscoveryByID response",
+				err))
+			return diags
+		}
+		return diags
+	}
 	return diags
 }
 
@@ -738,11 +785,11 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
+	vName := resourceMap["name"]
 
-	selectedMethod := 1
 	var vvID string
 	var vvName string
-	if selectedMethod == 1 {
+	if vID != "" {
 		vvID = vID
 		getResp, _, err := client.Discovery.GetDiscoveryByID(vvID)
 		if err != nil || getResp == nil {
@@ -752,6 +799,16 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 
+		if vName != "" {
+			getResp, err := searchDiscovery(m, vName)
+			if err != nil || getResp == nil {
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetDiscoveryByID", err,
+					"Failure at GetDiscoveryByID, unexpected response", ""))
+				return diags
+			}
+
+		}
 	}
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
@@ -785,12 +842,20 @@ func resourceDiscoveryDelete(ctx context.Context, d *schema.ResourceData, m inte
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
+	vName := resourceMap["name"]
 
-	selectedMethod := 1
 	var vvID string
-	if selectedMethod == 1 {
+	if vID != "" {
 		vvID = vID
 		getResp, _, err := client.Discovery.GetDiscoveryByID(vvID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+
+	if vName != "" {
+		getResp, err := searchDiscovery(m, vName)
 		if err != nil || getResp == nil {
 			// Assume that element it is already gone
 			return diags
@@ -1155,4 +1220,27 @@ func expandRequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedIDHTTPWriteCrede
 	}
 
 	return &request
+}
+
+func searchDiscovery(m interface{}, vName string) (*dnacentersdkgo.ResponseDiscoveryGetDiscoveriesByRangeResponse, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseDiscoveryGetDiscoveriesByRangeResponse
+	if vName != "" {
+		totalDiscovery, _, err := client.Discovery.GetCountOfAllDiscoveryJobs()
+		if err != nil || totalDiscovery == nil {
+			return foundItem, err
+		}
+		response, _, err := client.Discovery.GetDiscoveriesByRange(1, *totalDiscovery.Response)
+		if err != nil || response == nil {
+			return foundItem, err
+		}
+
+		for _, item := range *response.Response {
+			if vName == item.Name {
+				return &item, err
+			}
+		}
+	}
+	return foundItem, err
 }
