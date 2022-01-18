@@ -582,7 +582,7 @@ func resourceEndpointAnalyticsProfilingRulesUpdate(ctx context.Context, d *schem
 		}
 	}
 
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		request1 := expandRequestEndpointAnalyticsProfilingRulesUpdateAnExistingProfilingRule(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		restyResp1, err := client.Policy.UpdateAnExistingProfilingRule(vRuleID, request1)
