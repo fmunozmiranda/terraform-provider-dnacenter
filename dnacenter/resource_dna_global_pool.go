@@ -39,6 +39,161 @@ func resourceGlobalPool() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"client_options": &schema.Schema{
+							Description: `Client Options`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"configure_external_dhcp": &schema.Schema{
+							Description: `Configure External Dhcp`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"context": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"context_key": &schema.Schema{
+										Description: `Context Key`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"context_value": &schema.Schema{
+										Description: `Context Value`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"owner": &schema.Schema{
+										Description: `Owner`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
+						"create_time": &schema.Schema{
+							Description: `Create Time`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"dhcp_server_ips": &schema.Schema{
+							Description: `Dhcp Server Ips`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"dns_server_ips": &schema.Schema{
+							Description: `Dns Server Ips`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"gateways": &schema.Schema{
+							Description: `Gateways`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"id": &schema.Schema{
+							Description: `Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"ip_pool_cidr": &schema.Schema{
+							Description: `Ip Pool Cidr`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"ip_pool_name": &schema.Schema{
+							Description: `Ip Pool Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"ipv6": &schema.Schema{
+							Description: `Ipv6`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"last_update_time": &schema.Schema{
+							Description: `Last Update Time`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"overlapping": &schema.Schema{
+							Description: `Overlapping`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"owner": &schema.Schema{
+							Description: `Owner`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"parent_uuid": &schema.Schema{
+							Description: `Parent Uuid`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"shared": &schema.Schema{
+							Description: `Shared`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"total_ip_address_count": &schema.Schema{
+							Description: `Total Ip Address Count`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"used_ip_address_count": &schema.Schema{
+							Description: `Used Ip Address Count`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"used_percentage": &schema.Schema{
+							Description: `Used Percentage`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
