@@ -37,6 +37,104 @@ func resourceEventSubscription() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"filter": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"event_ids": &schema.Schema{
+										Description: `Event Ids`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"subscription_endpoints": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"instance_id": &schema.Schema{
+										Description: `Instance Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"subscription_details": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"connector_type": &schema.Schema{
+													Description: `Connector Type`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"method": &schema.Schema{
+													Description: `Method`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"name": &schema.Schema{
+													Description: `Name`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"url": &schema.Schema{
+													Description: `Url`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+
+						"version": &schema.Schema{
+							Description: `Version`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestEventManagementCreateEventSubscriptions`,
 				Type:        schema.TypeList,

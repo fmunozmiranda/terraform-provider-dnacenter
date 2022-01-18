@@ -35,6 +35,197 @@ func resourceEventSubscriptionEmail() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"filter": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"categories": &schema.Schema{
+										Description: `Categories`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"domains_subdomains": &schema.Schema{
+										Description: `Domains Subdomains`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"event_ids": &schema.Schema{
+										Description: `Event Ids`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"others": &schema.Schema{
+										Description: `Others`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"severities": &schema.Schema{
+										Description: `Severities`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"sources": &schema.Schema{
+										Description: `Sources`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"types": &schema.Schema{
+										Description: `Types`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+
+						"is_private": &schema.Schema{
+							Description: `Is Private`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"subscription_endpoints": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"connector_type": &schema.Schema{
+										Description: `Connector Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"instance_id": &schema.Schema{
+										Description: `Instance Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"subscription_details": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"connector_type": &schema.Schema{
+													Description: `Connector Type`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"description": &schema.Schema{
+													Description: `Description`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"from_email_address": &schema.Schema{
+													Description: `From Email Address`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"instance_id": &schema.Schema{
+													Description: `Instance Id`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"name": &schema.Schema{
+													Description: `Name`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"subject": &schema.Schema{
+													Description: `Subject`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"to_email_addresses": &schema.Schema{
+													Description: `To Email Addresses`,
+													Type:        schema.TypeList,
+													Computed:    true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+
+						"subscription_id": &schema.Schema{
+							Description: `Subscription Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"tenant_id": &schema.Schema{
+							Description: `Tenant Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"version": &schema.Schema{
+							Description: `Version`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestEventManagementCreateEmailEventSubscription`,
 				Type:        schema.TypeList,

@@ -35,6 +35,269 @@ func resourceEventSubscriptionRest() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"filter": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"categories": &schema.Schema{
+										Description: `Categories`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"domains_subdomains": &schema.Schema{
+										Description: `Domains Subdomains`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"event_ids": &schema.Schema{
+										Description: `Event Ids`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"others": &schema.Schema{
+										Description: `Others`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"severities": &schema.Schema{
+										Description: `Severities`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"sources": &schema.Schema{
+										Description: `Sources`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"types": &schema.Schema{
+										Description: `Types`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
+
+						"is_private": &schema.Schema{
+							Description: `Is Private`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"subscription_endpoints": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"connector_type": &schema.Schema{
+										Description: `Connector Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"instance_id": &schema.Schema{
+										Description: `Instance Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"subscription_details": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"base_path": &schema.Schema{
+													Description: `Base Path`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"body": &schema.Schema{
+													Description: `Body`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"connect_timeout": &schema.Schema{
+													Description: `Connect Timeout`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"connector_type": &schema.Schema{
+													Description: `Connector Type`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"description": &schema.Schema{
+													Description: `Description`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"headers": &schema.Schema{
+													Type:     schema.TypeList,
+													Computed: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"string": &schema.Schema{
+																Description: `String`,
+																Type:        schema.TypeString,
+																Computed:    true,
+															},
+														},
+													},
+												},
+
+												"instance_id": &schema.Schema{
+													Description: `Instance Id`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"method": &schema.Schema{
+													Description: `Method`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"name": &schema.Schema{
+													Description: `Name`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"path_params": &schema.Schema{
+													Type:     schema.TypeList,
+													Computed: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"string": &schema.Schema{
+																Description: `String`,
+																Type:        schema.TypeString,
+																Computed:    true,
+															},
+														},
+													},
+												},
+
+												"query_params": &schema.Schema{
+													Type:     schema.TypeList,
+													Computed: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"string": &schema.Schema{
+																Description: `String`,
+																Type:        schema.TypeString,
+																Computed:    true,
+															},
+														},
+													},
+												},
+
+												"read_timeout": &schema.Schema{
+													Description: `Read Timeout`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"resource": &schema.Schema{
+													Description: `Resource`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"trust_cert": &schema.Schema{
+													Description: `Trust Cert`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"url": &schema.Schema{
+													Description: `Url`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+
+						"subscription_id": &schema.Schema{
+							Description: `Subscription Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"tenant_id": &schema.Schema{
+							Description: `Tenant Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"version": &schema.Schema{
+							Description: `Version`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestEventManagementCreateRestWebhookEventSubscription`,
 				Type:        schema.TypeList,
