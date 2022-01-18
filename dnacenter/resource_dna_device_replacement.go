@@ -36,6 +36,84 @@ func resourceDeviceReplacement() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"creation_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"family": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"faulty_device_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"faulty_device_name": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"faulty_device_platform": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"faulty_device_serial_number": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"neighbour_device_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"network_readiness_task_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"replacement_device_platform": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"replacement_device_serial_number": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"replacement_status": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"replacement_time": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"workflow_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestDeviceReplacementMarkDeviceForReplacement`,
 				Type:        schema.TypeList,
@@ -112,27 +190,16 @@ func resourceDeviceReplacementCreate(ctx context.Context, d *schema.ResourceData
 	resourceMap := make(map[string]string)
 	var diags diag.Diagnostics
 
-	vFaultyDeviceName := resourceItem["faulty_device_name"]
 	vFaultyDeviceID := resourceItem["faulty_device_id"]
-	vFaultyDevicePlatform := resourceItem["faulty_device_platform"]
-	vReplacementDevicePlatform := resourceItem["replacement_device_platform"]
 	vFaultyDeviceSerialNumber := resourceItem["faulty_device_serial_number"]
 	vReplacementDeviceSerialNumber := resourceItem["replacement_device_serial_number"]
 
-	vvFaultyDeviceName := interfaceToString(vFaultyDeviceName)
 	vvFaultyDeviceID := interfaceToString(vFaultyDeviceID)
-	vvFaultyDevicePlatform := interfaceToString(vFaultyDevicePlatform)
-	vvReplacementDevicePlatform := interfaceToString(vReplacementDevicePlatform)
 	vvFaultyDeviceSerialNumber := interfaceToString(vFaultyDeviceSerialNumber)
 	vvReplacementDeviceSerialNumber := interfaceToString(vReplacementDeviceSerialNumber)
 
 	log.Printf("[DEBUG] Selected method 1: ReturnListOfReplacementDevicesWithReplacementDetails")
 	queryParams1 := dnacentersdkgo.ReturnListOfReplacementDevicesWithReplacementDetailsQueryParams{}
-	queryParams1.FaultyDeviceName = vvFaultyDeviceName
-
-	queryParams1.FaultyDevicePlatform = vvFaultyDevicePlatform
-
-	queryParams1.ReplacementDevicePlatform = vvReplacementDevicePlatform
 
 	queryParams1.FaultyDeviceSerialNumber = vvFaultyDeviceSerialNumber
 
@@ -142,9 +209,6 @@ func resourceDeviceReplacementCreate(ctx context.Context, d *schema.ResourceData
 
 	if err != nil || item != nil {
 		resourceMap := make(map[string]string)
-		resourceMap["faulty_device_name"] = vvFaultyDeviceName
-		resourceMap["faulty_deve_platform"] = vvFaultyDevicePlatform
-		resourceMap["replacement_vice_platform"] = vvReplacementDevicePlatform
 		resourceMap["faulty_device_serial_number"] = vvFaultyDeviceSerialNumber
 		resourceMap["replacement_devicserial_number"] = vvReplacementDeviceSerialNumber
 		resourceMap["faulty_device_id"] = vvFaultyDeviceID
@@ -166,9 +230,6 @@ func resourceDeviceReplacementCreate(ctx context.Context, d *schema.ResourceData
 			"Failure when executing MarkDeviceForReplacement", err))
 		return diags
 	}
-	resourceMap["faulty_device_name"] = interfaceToString(vvFaultyDeviceName)
-	resourceMap["faulty_deve_platform"] = interfaceToString(vvFaultyDevicePlatform)
-	resourceMap["replacement_vice_platform"] = interfaceToString(vvReplacementDevicePlatform)
 	resourceMap["faulty_device_serial_number"] = interfaceToString(vvFaultyDeviceSerialNumber)
 	resourceMap["replacement_devicserial_number"] = interfaceToString(vvReplacementDeviceSerialNumber)
 	resourceMap["faulty_device_id"] = vvFaultyDeviceID
@@ -182,8 +243,6 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFaultyDeviceName, okFaultyDeviceName := resourceMap["faulty_device_name"]
-	vFaultyDevicePlatform, okFaultyDevicePlatform := resourceMap["faulty_device_platform"]
 	vReplacementDevicePlatform, okReplacementDevicePlatform := resourceMap["replacement_device_platform"]
 	vFaultyDeviceSerialNumber, okFaultyDeviceSerialNumber := resourceMap["faulty_device_serial_number"]
 	vFaultyDeviceID := resourceMap["faulty_device_id"]
@@ -193,12 +252,6 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Selected method 1: ReturnListOfReplacementDevicesWithReplacementDetails")
 		queryParams1 := dnacentersdkgo.ReturnListOfReplacementDevicesWithReplacementDetailsQueryParams{}
 
-		if okFaultyDeviceName {
-			queryParams1.FaultyDeviceName = vFaultyDeviceName
-		}
-		if okFaultyDevicePlatform {
-			queryParams1.FaultyDevicePlatform = vFaultyDevicePlatform
-		}
 		if okReplacementDevicePlatform {
 			queryParams1.ReplacementDevicePlatform = vReplacementDevicePlatform
 		}
@@ -237,9 +290,6 @@ func resourceDeviceReplacementUpdate(ctx context.Context, d *schema.ResourceData
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vFaultyDeviceName := resourceMap["faulty_device_name"]
-	vFaultyDevicePlatform := resourceMap["faulty_device_platform"]
-	vReplacementDevicePlatform := resourceMap["replacement_device_platform"]
 	vFaultyDeviceSerialNumber := resourceMap["faulty_device_serial_number"]
 	vReplacementDeviceSerialNumber := resourceMap["replacement_device_serial_number"]
 	vFaultyDeviceID := resourceMap["faulty_device_id"]
@@ -247,9 +297,6 @@ func resourceDeviceReplacementUpdate(ctx context.Context, d *schema.ResourceData
 	log.Printf("[DEBUG] Selected method 1: ReturnListOfReplacementDevicesWithReplacementDetails")
 	queryParams1 := dnacentersdkgo.ReturnListOfReplacementDevicesWithReplacementDetailsQueryParams{}
 
-	queryParams1.FaultyDeviceName = vFaultyDeviceName
-	queryParams1.FaultyDevicePlatform = vFaultyDevicePlatform
-	queryParams1.ReplacementDevicePlatform = vReplacementDevicePlatform
 	queryParams1.FaultyDeviceSerialNumber = vFaultyDeviceSerialNumber
 	queryParams1.ReplacementDeviceSerialNumber = vReplacementDeviceSerialNumber
 
@@ -471,8 +518,8 @@ func searchDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetails
 	var err error
 	var foundItem *dnacentersdkgo.ResponseDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetailsResponse
 	var ite *dnacentersdkgo.ResponseDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetails
-	if queryParams.FaultyDeviceName != "" && queryParams.FaultyDeviceSerialNumber != "" && queryParams.FaultyDevicePlatform != "" &&
-		queryParams.ReplacementDeviceSerialNumber != "" && queryParams.ReplacementDevicePlatform != "" {
+	if queryParams.FaultyDeviceSerialNumber != "" &&
+		queryParams.ReplacementDeviceSerialNumber != "" {
 		ite, _, err = client.DeviceReplacement.ReturnListOfReplacementDevicesWithReplacementDetails(&queryParams)
 		if err != nil {
 			return foundItem, err
@@ -496,11 +543,8 @@ func searchDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetails
 			}
 		}
 	} else if vID != "" {
-		queryParams.FaultyDeviceName = ""
 		queryParams.FaultyDeviceSerialNumber = ""
-		queryParams.FaultyDevicePlatform = ""
 		queryParams.ReplacementDeviceSerialNumber = ""
-		queryParams.ReplacementDevicePlatform = ""
 		queryParams.Offset = 1
 
 		//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
