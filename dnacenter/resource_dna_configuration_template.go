@@ -2216,7 +2216,7 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 		}
 	}
 
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestConfigurationTemplateUpdateTemplate(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
