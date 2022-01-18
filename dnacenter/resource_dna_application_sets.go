@@ -35,6 +35,47 @@ func resourceApplicationSets() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"id": &schema.Schema{
+							Description: `Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"identity_source": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"type": &schema.Schema{
+										Description: `Type`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplicationSet`,
 				Type:        schema.TypeList,
@@ -45,7 +86,7 @@ func resourceApplicationSets() *schema.Resource {
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
-							Optional:    true,
+							Required:    true,
 						},
 						"id": &schema.Schema{
 							Description: `Name`,
@@ -129,7 +170,7 @@ func resourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, m 
 
 		//TODO Code Items for DNAC
 		vItem1 := flattenApplicationPolicyGetApplicationSetsItem(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetApplicationSets search response",
 				err))
