@@ -185,10 +185,23 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 
 	var diags diag.Diagnostics
 
-	//resourceItem := *getResourceItem(d.Get("parameters"))
+	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestNetworkDeviceListAddDevice2(ctx, "parameters.0", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	vSerialNumber := resourceItem["serial_number"]
+	vvSerialNumber := interfaceToString(vSerialNumber)
 
+	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
+	queryParams1.SerialNumber = interfaceToSliceString(vvSerialNumber)
+
+	response1, _, err := client.Devices.GetDeviceList(&queryParams1)
+
+	if err != nil || response1 != nil {
+		resourceMap := make(map[string]string)
+		resourceMap["serial_number"] = vvSerialNumber
+		d.SetId(joinResourceID(resourceMap))
+		return resourceNetworkDeviceListRead(ctx, d, m)
+	}
 	resp1, restyResp1, err := client.Devices.AddDevice2(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -201,6 +214,7 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["serial_number"] = vvSerialNumber
 	d.SetId(joinResourceID(resourceMap))
 	return resourceNetworkDeviceListRead(ctx, d, m)
 }
@@ -238,7 +252,7 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 		//TODO FOR DNAC
 
 		vItem1 := flattenDevicesGetDeviceListItems(response1.Response)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetDeviceList search response",
 				err))
@@ -270,7 +284,7 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	if d.HasChange("item") {
+	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vSerialNumber)
 		request1 := expandRequestNetworkDeviceListSyncDevices2(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
