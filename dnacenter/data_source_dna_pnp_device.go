@@ -226,11 +226,8 @@ Pagination and sorting are also supported by this endpoint
 
 						"day_zero_config_preview": &schema.Schema{
 							Description: `Day Zero Config Preview`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"device_info": &schema.Schema{
@@ -1920,11 +1917,8 @@ Pagination and sorting are also supported by this endpoint
 
 						"day_zero_config_preview": &schema.Schema{
 							Description: `Day Zero Config Preview`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"device_info": &schema.Schema{

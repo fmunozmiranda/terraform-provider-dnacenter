@@ -71,11 +71,8 @@ func dataSourceReserveIPSubpool() *schema.Resource {
 
 									"client_options": &schema.Schema{
 										Description: `Client Options`,
-										Type:        schema.TypeList,
+										Type:        schema.TypeString,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"configure_external_dhcp": &schema.Schema{

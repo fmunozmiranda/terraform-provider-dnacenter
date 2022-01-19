@@ -391,11 +391,8 @@ func dataSourceConfigurationTemplate() *schema.Resource {
 															"selection_values": &schema.Schema{
 																Description: `Selection values
 `,
-																Type:     schema.TypeList,
+																Type:     schema.TypeString,
 																Computed: true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 														},
 													},
@@ -618,11 +615,8 @@ func dataSourceConfigurationTemplate() *schema.Resource {
 															"selection_values": &schema.Schema{
 																Description: `Selection values
 `,
-																Type:     schema.TypeList,
+																Type:     schema.TypeString,
 																Computed: true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 														},
 													},
@@ -963,11 +957,8 @@ func dataSourceConfigurationTemplate() *schema.Resource {
 												"selection_values": &schema.Schema{
 													Description: `Selection values
 `,
-													Type:     schema.TypeList,
+													Type:     schema.TypeString,
 													Computed: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 											},
 										},
@@ -1211,11 +1202,8 @@ func dataSourceConfigurationTemplate() *schema.Resource {
 												"selection_values": &schema.Schema{
 													Description: `Selection values
 `,
-													Type:     schema.TypeList,
+													Type:     schema.TypeString,
 													Computed: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 											},
 										},
@@ -1694,7 +1682,7 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemContainingTempl
 	respItem["default_selected_values"] = item.DefaultSelectedValues
 	respItem["id"] = item.ID
 	respItem["selection_type"] = item.SelectionType
-	respItem["selection_values"] = flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemContainingTemplatesRollbackTemplateParamsSelectionSelectionValues(item.SelectionValues)
+	respItem["selection_values"] = item.SelectionValues
 
 	return []map[string]interface{}{
 		respItem,
