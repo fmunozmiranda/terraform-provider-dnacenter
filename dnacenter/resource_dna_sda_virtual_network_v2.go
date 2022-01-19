@@ -36,6 +36,66 @@ func resourceSdaVirtualNetworkV2() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"execution_status_url": &schema.Schema{
+							Description: `Execution Status Url`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"is_guest_virtual_network": &schema.Schema{
+							Description: `Is Guest Virtual Network`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"scalable_group_names": &schema.Schema{
+							Description: `Scalable Group Names`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"status": &schema.Schema{
+							Description: `Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"task_id": &schema.Schema{
+							Description: `Task Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"task_status_url": &schema.Schema{
+							Description: `Task Status Url`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"virtual_network_name": &schema.Schema{
+							Description: `Virtual Network Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
