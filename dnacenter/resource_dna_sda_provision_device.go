@@ -36,6 +36,56 @@ func resourceSdaProvisionDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"device_management_ip_address": &schema.Schema{
+							Description: `Device Management Ip Address`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"execution_status_url": &schema.Schema{
+							Description: `Execution Status Url`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"site_name_hierarchy": &schema.Schema{
+							Description: `Site Name Hierarchy`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"status": &schema.Schema{
+							Description: `Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"task_id": &schema.Schema{
+							Description: `Task Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"task_status_url": &schema.Schema{
+							Description: `Task Status Url`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
