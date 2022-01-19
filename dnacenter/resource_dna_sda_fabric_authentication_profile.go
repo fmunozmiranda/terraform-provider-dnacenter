@@ -36,6 +36,32 @@ func resourceSdaFabricAuthenticationProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"authenticate_template_id": &schema.Schema{
+							Description: `Authenticate Template Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"authenticate_template_name": &schema.Schema{
+							Description: `Authenticate Template Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"site_name_hierarchy": &schema.Schema{
+							Description: `Site Name Hierarchy`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
