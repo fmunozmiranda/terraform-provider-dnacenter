@@ -34,6 +34,198 @@ func resourceWirelessRfProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"channel_width": &schema.Schema{
+							Description: `Channel Width
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"default_rf_profile": &schema.Schema{
+							Description: `is default radio profile
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"enable_brown_field": &schema.Schema{
+							Description: `is brownfield enabled
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"enable_custom": &schema.Schema{
+							Description: `is Custom Enable
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"enable_radio_type_a": &schema.Schema{
+							Description: `Enable Radio Type A
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"enable_radio_type_b": &schema.Schema{
+							Description: `Enable Radio Type B
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"name": &schema.Schema{
+							Description: `radio profile name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"radio_type_a_properties": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"data_rates": &schema.Schema{
+										Description: `Data Rates
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"mandatory_data_rates": &schema.Schema{
+										Description: `Mandatory Data Rates
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"max_power_level": &schema.Schema{
+										Description: `Max Power Level
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"min_power_level": &schema.Schema{
+										Description: `Min Power Level
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"parent_profile": &schema.Schema{
+										Description: `Parent Profile name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"power_threshold_v1": &schema.Schema{
+										Description: `Power Threshold V1
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"radio_channels": &schema.Schema{
+										Description: `Radio Channels
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"rx_sop_threshold": &schema.Schema{
+										Description: `Rx Sop Threshold
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+
+						"radio_type_b_properties": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"data_rates": &schema.Schema{
+										Description: `Data Rates
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"mandatory_data_rates": &schema.Schema{
+										Description: `Mandatory Data Rates
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"max_power_level": &schema.Schema{
+										Description: `Max Power Level
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"min_power_level": &schema.Schema{
+										Description: `Min Power Level
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"parent_profile": &schema.Schema{
+										Description: `Parent Profile name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"power_threshold_v1": &schema.Schema{
+										Description: `Power Threshold V1
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"radio_channels": &schema.Schema{
+										Description: `Radio Channels
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"rx_sop_threshold": &schema.Schema{
+										Description: `Rx Sop Threshold
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,

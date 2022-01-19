@@ -38,6 +38,102 @@ should be provided.
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"profile_details": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"name": &schema.Schema{
+										Description: `Profile Name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"sites": &schema.Schema{
+										Description: `array of site name hierarchies(eg: ["Global/aaa/zzz", "Global/aaa/zzz"])
+`,
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"ssid_details": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"enable_fabric": &schema.Schema{
+													Description: `true if fabric is enabled else false
+`,
+													// Type:        schema.TypeBool,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"flex_connect": &schema.Schema{
+													Type:     schema.TypeList,
+													Computed: true,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+
+															"enable_flex_connect": &schema.Schema{
+																Description: `true if flex connect is enabled else false
+`,
+																// Type:        schema.TypeBool,
+																Type:     schema.TypeString,
+																Computed: true,
+															},
+
+															"local_to_vlan": &schema.Schema{
+																Description: `Local To VLAN ID
+`,
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+														},
+													},
+												},
+
+												"interface_name": &schema.Schema{
+													Description: `Interface Name
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"name": &schema.Schema{
+													Description: `SSID Name
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+
+												"type": &schema.Schema{
+													Description: `SSID Type(enum: Enterprise/Guest)
+`,
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -214,7 +310,7 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 		//TODO FOR DNAC
 
 		vItem1 := flattenWirelessGetWirelessProfileItems(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetWirelessProfile search response",
 				err))

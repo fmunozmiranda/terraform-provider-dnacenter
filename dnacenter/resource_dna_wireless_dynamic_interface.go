@@ -34,6 +34,28 @@ func resourceWirelessDynamicInterface() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"interface_name": &schema.Schema{
+							Description: `dynamic interface name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"vlan_id": &schema.Schema{
+							Description: `Vlan id
+`,
+							Type:     schema.TypeFloat,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,

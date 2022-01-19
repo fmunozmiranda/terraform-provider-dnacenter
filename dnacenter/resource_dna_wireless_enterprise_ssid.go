@@ -36,6 +36,154 @@ func resourceWirelessEnterpriseSSID() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"group_uuid": &schema.Schema{
+							Description: `Group Uuid
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"inherited_group_name": &schema.Schema{
+							Description: `Inherited Group Name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"inherited_group_uuid": &schema.Schema{
+							Description: `Inherited Group Uuid
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"instance_uuid": &schema.Schema{
+							Description: `Instance Uuid
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"ssid_details": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"auth_server": &schema.Schema{
+										Description: `Auth Server
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"enable_broadcast_ssi_d": &schema.Schema{
+										Description: `Enable Broadcast SSID
+`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"enable_fast_lane": &schema.Schema{
+										Description: `Enable Fast Lane
+`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"enable_mac_filtering": &schema.Schema{
+										Description: `Enable MAC Filtering
+`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"fast_transition": &schema.Schema{
+										Description: `Fast Transition
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"is_enabled": &schema.Schema{
+										Description: `Is Enabled
+`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"is_fabric": &schema.Schema{
+										Description: `Is Fabric
+`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"name": &schema.Schema{
+										Description: `SSID Name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"passphrase": &schema.Schema{
+										Description: `Passphrase
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"radio_policy": &schema.Schema{
+										Description: `Radio Policy
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"security_level": &schema.Schema{
+										Description: `Security Level
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"traffic_type": &schema.Schema{
+										Description: `Traffic Type
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"wlan_type": &schema.Schema{
+										Description: `Wlan Type
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+
+						"version": &schema.Schema{
+							Description: `Version
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
