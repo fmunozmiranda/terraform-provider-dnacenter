@@ -34,6 +34,53 @@ func resourceSdaFabricControlPlaneDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"device_management_ip_address": &schema.Schema{
+							Description: `Device Management Ip Address`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"roles": &schema.Schema{
+							Description: `Roles`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"site_hierarchy": &schema.Schema{
+							Description: `Site Hierarchy`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"status": &schema.Schema{
+							Description: `Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
