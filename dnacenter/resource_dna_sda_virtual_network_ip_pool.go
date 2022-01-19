@@ -34,6 +34,70 @@ func resourceSdaVirtualNetworkIPPool() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"authentication_policy_name": &schema.Schema{
+							Description: `Authentication Policy Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"ip_pool_name": &schema.Schema{
+							Description: `Ip Pool Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"is_l2_flooding_enabled": &schema.Schema{
+							Description: `Is L2 Flooding Enabled`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"is_this_critical_pool": &schema.Schema{
+							Description: `Is This Critical Pool`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"scalable_group_name": &schema.Schema{
+							Description: `Scalable Group Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"status": &schema.Schema{
+							Description: `Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"traffic_type": &schema.Schema{
+							Description: `Traffic Type`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"virtual_network_name": &schema.Schema{
+							Description: `Virtual Network Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
