@@ -517,52 +517,9 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vViewGroupID, okViewGroupID := resourceMap["view_group_id"]
-	vViewID, okViewID := resourceMap["view_id"]
-	vReportID, okReportID := resourceMap["report_id"]
+	vReportID := resourceMap["report_id"]
 
-	method1 := []bool{okViewGroupID, okViewID}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okReportID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	if selectedMethod == 1 {
-		log.Printf("[DEBUG] Selected method 1: GetListOfScheduledReports")
-		queryParams1 := dnacentersdkgo.GetListOfScheduledReportsQueryParams{}
-
-		if okViewGroupID {
-			queryParams1.ViewGroupID = vViewGroupID
-		}
-		if okViewID {
-			queryParams1.ViewID = vViewID
-		}
-
-		response1, restyResp1, err := client.Reports.GetListOfScheduledReports(&queryParams1)
-
-		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetListOfScheduledReports", err,
-				"Failure at GetListOfScheduledReports, unexpected response", ""))
-			return diags
-		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
-
-		//TODO FOR DNAC
-
-		vItem1 := flattenReportsGetListOfScheduledReportsItems(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
-			diags = append(diags, diagError(
-				"Failure when setting GetListOfScheduledReports search response",
-				err))
-			return diags
-		}
-
-	}
+	selectedMethod := 2
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetAScheduledReport")
 		vvReportID := vReportID
