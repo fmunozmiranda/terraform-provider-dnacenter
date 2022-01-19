@@ -1237,6 +1237,11 @@ func searchDiscovery(m interface{}, vName string) (*dnacentersdkgo.ResponseDisco
 		if err != nil || totalDiscovery == nil {
 			return foundItem, err
 		}
+
+		if err != nil || totalDiscovery.Response == nil || *totalDiscovery.Response < 1 {
+			return foundItem, err
+		}
+
 		response, _, err := client.Discovery.GetDiscoveriesByRange(1, *totalDiscovery.Response)
 		if err != nil || response == nil {
 			return foundItem, err
