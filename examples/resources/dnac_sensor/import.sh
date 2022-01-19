@@ -1,0 +1,1 @@
+terraform import dnac_sensor.example "id:=string"

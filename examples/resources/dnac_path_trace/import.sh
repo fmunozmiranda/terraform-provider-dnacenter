@@ -1,0 +1,1 @@
+terraform import dnac_path_trace.example "flow_analysis_id:=string"

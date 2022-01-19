@@ -1,0 +1,1 @@
+terraform import dnac_sda_fabric_site.example "id:=string"

@@ -1,0 +1,1 @@
+terraform import dnac_tag.example "id:=string"

@@ -1,0 +1,1 @@
+terraform import dnac_sda_fabric_authentication_profile.example "id:=string"

@@ -1,0 +1,1 @@
+terraform import dnac_pnp_global_settings.example "id:=string"

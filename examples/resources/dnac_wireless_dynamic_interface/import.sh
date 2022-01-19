@@ -1,0 +1,1 @@
+terraform import dnac_wireless_dynamic_interface.example "id:=string"

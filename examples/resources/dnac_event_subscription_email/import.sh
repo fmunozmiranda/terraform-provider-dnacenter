@@ -1,0 +1,1 @@
+terraform import dnac_event_subscription_email.example "id:=string"

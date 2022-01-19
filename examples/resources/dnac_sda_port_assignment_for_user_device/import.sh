@@ -1,0 +1,1 @@
+terraform import dnac_sda_port_assignment_for_user_device.example "id:=string"
