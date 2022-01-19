@@ -34,6 +34,89 @@ func resourceSdaMulticast() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"multicast_method": &schema.Schema{
+							Description: `Multicast Methods
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"multicast_vn_info": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"external_rp_ip_address": &schema.Schema{
+										Description: `External Rp Ip Address, required for muticastType=asm_with_external_rp
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"ip_pool_name": &schema.Schema{
+										Description: `Ip Pool Name, that is reserved to fabricSiteNameHierarchy
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"ssm_group_range": &schema.Schema{
+										Description: `Valid SSM group range ip address(e.g., 230.0.0.0)
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"ssm_info": &schema.Schema{
+										Description: `Source-specific multicast information, required if muticastType=ssm
+`,
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"ssm_wildcard_mask": &schema.Schema{
+										Description: `Valid SSM Wildcard Mask ip address(e.g.,0.255.255.255)
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"virtual_network_name": &schema.Schema{
+										Description: `Virtual Network Name, that is associated to fabricSiteNameHierarchy
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+
+						"muticast_type": &schema.Schema{
+							Description: `Muticast Type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"site_name_hierarchy": &schema.Schema{
+							Description: `Full path of sda fabric siteNameHierarchy
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
