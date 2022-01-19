@@ -53,6 +53,9 @@ required to configure a report.
 `,
 							Type:     schema.TypeList,
 							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"execution_count": &schema.Schema{
 							Description: `Total number of report executions
@@ -135,6 +138,9 @@ required to configure a report.
 						"schedule": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"tags": &schema.Schema{
 							Description: `array of tags for report
@@ -228,6 +234,9 @@ required to configure a report.
 `,
 													Type:     schema.TypeList,
 													Computed: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 											},
 										},
@@ -307,6 +316,9 @@ required to configure a report.
 `,
 							Type:     schema.TypeList,
 							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"name": &schema.Schema{
 							Description: `report name
@@ -324,6 +336,9 @@ required to configure a report.
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"tags": &schema.Schema{
 							Description: `array of tags for report
@@ -413,6 +428,9 @@ required to configure a report.
 													Type:     schema.TypeList,
 													Optional: true,
 													MaxItems: 1,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 											},
 										},

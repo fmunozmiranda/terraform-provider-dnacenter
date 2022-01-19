@@ -129,6 +129,9 @@ func resourceSensor() *schema.Resource {
 													Description: `Config`,
 													Type:        schema.TypeList,
 													Optional:    true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"name": &schema.Schema{
 													Description: `Name`,

@@ -2,9 +2,8 @@ package dnacenter
 
 import (
 	"context"
-	"reflect"
-
 	"log"
+	"reflect"
 
 	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
@@ -833,6 +832,9 @@ func resourceSdaFabricBorderDevice() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"external_domain_routing_protocol_name": &schema.Schema{
 							Description: `External Domain Routing Protocol  Name. (Example: BGP)
@@ -858,6 +860,9 @@ func resourceSdaFabricBorderDevice() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"site_name_hierarchy": &schema.Schema{
 							Description: `Site Name Hierarchy for device location(site should be fabric site)
@@ -871,6 +876,9 @@ func resourceSdaFabricBorderDevice() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"virtual_network_name": &schema.Schema{
 							Description: `Virtual Network Name assigned to site
