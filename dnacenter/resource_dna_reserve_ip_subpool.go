@@ -36,6 +36,216 @@ func resourceReserveIPSubpool() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"group_name": &schema.Schema{
+							Description: `Group Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"group_owner": &schema.Schema{
+							Description: `Group Owner`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"id": &schema.Schema{
+							Description: `Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"ip_pools": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"client_options": &schema.Schema{
+										Description: `Client Options`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"configure_external_dhcp": &schema.Schema{
+										Description: `Configure External Dhcp`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"context": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+
+												"context_key": &schema.Schema{
+													Description: `Context Key`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"context_value": &schema.Schema{
+													Description: `Context Value`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+
+												"owner": &schema.Schema{
+													Description: `Owner`,
+													Type:        schema.TypeString,
+													Computed:    true,
+												},
+											},
+										},
+									},
+
+									"create_time": &schema.Schema{
+										Description: `Create Time`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+
+									"dhcp_server_ips": &schema.Schema{
+										Description: `Dhcp Server Ips`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"dns_server_ips": &schema.Schema{
+										Description: `Dns Server Ips`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"gateways": &schema.Schema{
+										Description: `Gateways`,
+										Type:        schema.TypeList,
+										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+
+									"group_uuid": &schema.Schema{
+										Description: `Group Uuid`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"id": &schema.Schema{
+										Description: `Id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"ip_pool_cidr": &schema.Schema{
+										Description: `Ip Pool Cidr`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"ip_pool_name": &schema.Schema{
+										Description: `Ip Pool Name`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"ipv6": &schema.Schema{
+										Description: `Ipv6`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"last_update_time": &schema.Schema{
+										Description: `Last Update Time`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+
+									"overlapping": &schema.Schema{
+										Description: `Overlapping`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"owner": &schema.Schema{
+										Description: `Owner`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"parent_uuid": &schema.Schema{
+										Description: `Parent Uuid`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"shared": &schema.Schema{
+										Description: `Shared`,
+										// Type:        schema.TypeBool,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"total_ip_address_count": &schema.Schema{
+										Description: `Total Ip Address Count`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+
+									"used_ip_address_count": &schema.Schema{
+										Description: `Used Ip Address Count`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+
+									"used_percentage": &schema.Schema{
+										Description: `Used Percentage`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
+						"site_hierarchy": &schema.Schema{
+							Description: `Site Hierarchy`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"site_id": &schema.Schema{
+							Description: `Site Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"type": &schema.Schema{
+							Description: `Type`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -172,7 +382,7 @@ func resourceReserveIPSubpool() *schema.Resource {
 							Description: `Name of the reserve ip sub pool
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"site_id": &schema.Schema{
 							Description: `siteId path parameter. Site id of site to update sub pool.
@@ -211,8 +421,9 @@ func resourceReserveIPSubpoolCreate(ctx context.Context, d *schema.ResourceData,
 
 	vSiteID := resourceItem["site_id"]
 	vvSiteID := interfaceToString(vSiteID)
-	vID := resourceItem["id"]
-	vvID := interfaceToString(vID)
+	vName := resourceItem["name"]
+	vvName := interfaceToString(vName)
+
 	resp1, restyResp1, err := client.NetworkSettings.ReserveIPSubpool(vvSiteID, request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -226,19 +437,19 @@ func resourceReserveIPSubpoolCreate(ctx context.Context, d *schema.ResourceData,
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["site_id"] = vvSiteID
-	resourceMap["id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceReserveIPSubpoolRead(ctx, d, m)
 }
 
 func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSiteID, okSiteID := resourceMap["site_id"]
+	vName := resourceMap["name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -249,12 +460,9 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 			queryParams1.SiteID = vSiteID
 		}
 
-		response1, restyResp1, err := client.NetworkSettings.GetReserveIPSubpool(&queryParams1)
+		response1, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1, vName)
 
 		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetReserveIPSubpool", err,
 				"Failure at GetReserveIPSubpool, unexpected response", ""))
@@ -265,7 +473,7 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 
 		//TODO FOR DNAC
 
-		vItem1 := flattenNetworkSettingsGetReserveIPSubpoolItems(response1.Response)
+		vItem1 := flattenNetworkSettingsGetReserveIPSubpoolItemIPPools(response1)
 		if err := d.Set("parameters", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetReserveIPSubpool search response",
@@ -285,10 +493,11 @@ func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData,
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSiteID := resourceMap["site_id"]
+	vName := resourceMap["name"]
 
 	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams{}
 	queryParams1.SiteID = vSiteID
-	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1)
+	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1, vName)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetReserveIPSubpool", err,
@@ -296,16 +505,14 @@ func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData,
 		return diags
 	}
 
-	var vvSiteID string
-	vvSiteID = item.SiteID
 	//vvSiteID= item.
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] ID used for update operation %s", vvSiteID)
+		log.Printf("[DEBUG] ID used for update operation %s", vSiteID)
 		request1 := expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vvSiteID, request1, nil) //Preguntar ese ID DE QUERY
+		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vSiteID, request1, nil) //Preguntar ese ID DE QUERY
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
@@ -333,10 +540,11 @@ func resourceReserveIPSubpoolDelete(ctx context.Context, d *schema.ResourceData,
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSiteID := resourceMap["site_id"]
+	vName := resourceMap["name"]
 
 	queryParams1 := dnacentersdkgo.GetReserveIPSubpoolQueryParams{}
 	queryParams1.SiteID = vSiteID
-	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1)
+	item, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1, vName)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetReserveIPSubpool", err,
@@ -490,10 +698,10 @@ func expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx context.Context, ke
 	return &request
 }
 
-func searchNetworkSettingsGetReserveIPSubpool(m interface{}, queryParams dnacentersdkgo.GetReserveIPSubpoolQueryParams) (*dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse, error) {
+func searchNetworkSettingsGetReserveIPSubpool(m interface{}, queryParams dnacentersdkgo.GetReserveIPSubpoolQueryParams, vName string) (*dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPools, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse
+	var foundItem *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPools
 	var ite *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpool
 	ite, _, err = client.NetworkSettings.GetReserveIPSubpool(&queryParams)
 	if err != nil {
@@ -513,9 +721,14 @@ func searchNetworkSettingsGetReserveIPSubpool(m interface{}, queryParams dnacent
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
 		if item.SiteID == queryParams.SiteID {
-			var getItem *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse
-			getItem = &item
-			foundItem = getItem
+			if item.IPPools == nil {
+				return foundItem, err
+			}
+			for _, item2 := range *item.IPPools {
+				if item2.IPPoolName == vName {
+					return &item2, err
+				}
+			}
 			return foundItem, err
 		}
 	}

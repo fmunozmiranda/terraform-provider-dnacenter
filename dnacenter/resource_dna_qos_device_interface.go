@@ -38,6 +38,294 @@ WAN, to associate WAN interfaces with specific SP Profile and to be able to defi
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"cfs_change_info": &schema.Schema{
+							Description: `Cfs change info
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"create_time": &schema.Schema{
+							Description: `Create time
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"custom_provisions": &schema.Schema{
+							Description: `Custom provisions
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"deployed": &schema.Schema{
+							Description: `Deployed
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"display_name": &schema.Schema{
+							Description: `Display name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"excluded_interfaces": &schema.Schema{
+							Description: `excluded interfaces ids
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"id": &schema.Schema{
+							Description: `Id of Qos device info
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"instance_created_on": &schema.Schema{
+							Description: `Instance created on
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"instance_id": &schema.Schema{
+							Description: `Instance id
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"instance_updated_on": &schema.Schema{
+							Description: `Instance updated on
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"instance_version": &schema.Schema{
+							Description: `Instance version
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"is_excluded": &schema.Schema{
+							Description: `Is excluded
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"is_seeded": &schema.Schema{
+							Description: `Is seeded
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"is_stale": &schema.Schema{
+							Description: `Is stale
+`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"last_update_time": &schema.Schema{
+							Description: `Last update time
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Device name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"namespace": &schema.Schema{
+							Description: `Namespace
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"network_device_id": &schema.Schema{
+							Description: `Network device id
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"provisioning_state": &schema.Schema{
+							Description: `Provisioning state
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"qos_device_interface_info": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `Display name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"dmvpn_remote_sites_bw": &schema.Schema{
+										Description: `Dmvpn remote sites bandwidth
+`,
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeInt,
+										},
+									},
+
+									"download_bw": &schema.Schema{
+										Description: `Download bandwidth
+`,
+										Type:     schema.TypeFloat,
+										Computed: true,
+									},
+
+									"id": &schema.Schema{
+										Description: `Id of Qos device interface info
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"instance_created_on": &schema.Schema{
+										Description: `Instance created on
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"instance_id": &schema.Schema{
+										Description: `Instance id
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"instance_updated_on": &schema.Schema{
+										Description: `Instance updated on
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+
+									"instance_version": &schema.Schema{
+										Description: `Instance version
+`,
+										Type:     schema.TypeFloat,
+										Computed: true,
+									},
+
+									"interface_id": &schema.Schema{
+										Description: `Interface id
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"interface_name": &schema.Schema{
+										Description: `Interface name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"label": &schema.Schema{
+										Description: `SP Profile name
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"role": &schema.Schema{
+										Description: `Interface role
+`,
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+
+									"upload_bw": &schema.Schema{
+										Description: `Upload bandwidth
+`,
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+								},
+							},
+						},
+
+						"qualifier": &schema.Schema{
+							Description: `Qualifier
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"resource_version": &schema.Schema{
+							Description: `Resource version
+`,
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+
+						"target_id_list": &schema.Schema{
+							Description: `Target id list
+`,
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"type": &schema.Schema{
+							Description: `Type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateQosDeviceInterfaceInfo`,
 				Type:        schema.TypeList,
@@ -153,7 +441,7 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 
 	if err != nil || response1 != nil {
 		resourceMap := make(map[string]string)
-		resourceMap["id"] = vvID
+		resourceMap["network_device_id"] = vvID
 		d.SetId(joinResourceID(resourceMap))
 		return resourceQosDeviceInterfaceRead(ctx, d, m)
 	}
@@ -170,7 +458,7 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 		return diags
 	}
 	resourceMap := make(map[string]string)
-	resourceMap["id"] = vvID
+	resourceMap["network_device_id"] = vvID
 	d.SetId(joinResourceID(resourceMap))
 	return resourceQosDeviceInterfaceRead(ctx, d, m)
 }

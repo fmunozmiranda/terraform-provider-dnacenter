@@ -354,6 +354,35 @@ func flattenNetworkSettingsGetReserveIPSubpoolItemsIPPools(items *[]dnacentersdk
 	}
 	return respItems
 }
+func flattenNetworkSettingsGetReserveIPSubpoolItemIPPools(item *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPools) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["ip_pool_name"] = item.IPPoolName
+	respItem["dhcp_server_ips"] = flattenNetworkSettingsGetReserveIPSubpoolItemsIPPoolsDhcpServerIPs(item.DhcpServerIPs)
+	respItem["gateways"] = item.Gateways
+	respItem["create_time"] = item.CreateTime
+	respItem["last_update_time"] = item.LastUpdateTime
+	respItem["total_ip_address_count"] = item.TotalIPAddressCount
+	respItem["used_ip_address_count"] = item.UsedIPAddressCount
+	respItem["parent_uuid"] = item.ParentUUID
+	respItem["owner"] = item.Owner
+	respItem["shared"] = boolPtrToString(item.Shared)
+	respItem["overlapping"] = boolPtrToString(item.Overlapping)
+	respItem["configure_external_dhcp"] = boolPtrToString(item.ConfigureExternalDhcp)
+	respItem["used_percentage"] = item.UsedPercentage
+	respItem["client_options"] = flattenNetworkSettingsGetReserveIPSubpoolItemsIPPoolsClientOptions(item.ClientOptions)
+	respItem["group_uuid"] = item.GroupUUID
+	respItem["dns_server_ips"] = flattenNetworkSettingsGetReserveIPSubpoolItemsIPPoolsDNSServerIPs(item.DNSServerIPs)
+	respItem["context"] = flattenNetworkSettingsGetReserveIPSubpoolItemsIPPoolsContext(item.Context)
+	respItem["ipv6"] = boolPtrToString(item.IPv6)
+	respItem["id"] = item.ID
+	respItem["ip_pool_cidr"] = item.IPPoolCidr
+
+	return respItem
+}
 
 func flattenNetworkSettingsGetReserveIPSubpoolItemsIPPoolsDhcpServerIPs(items *[]dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPoolsDhcpServerIPs) []interface{} {
 	if items == nil {
