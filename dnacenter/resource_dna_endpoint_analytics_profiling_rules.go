@@ -84,6 +84,9 @@ func resourceEndpointAnalyticsProfilingRules() *schema.Resource {
 									"condition_group": &schema.Schema{
 										Type:     schema.TypeList,
 										Computed: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 									"operator": &schema.Schema{
 										Type:     schema.TypeString,
@@ -269,6 +272,9 @@ func resourceEndpointAnalyticsProfilingRules() *schema.Resource {
 									"condition_group": &schema.Schema{
 										Type:     schema.TypeList,
 										Optional: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 									"operator": &schema.Schema{
 										Type:     schema.TypeString,

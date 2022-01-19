@@ -66,6 +66,9 @@ func resourcePnpDevice() *schema.Resource {
 							Description: `Day Zero Config Preview`,
 							Type:        schema.TypeList,
 							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"device_info": &schema.Schema{
 							Type:     schema.TypeList,
@@ -255,11 +258,17 @@ func resourcePnpDevice() *schema.Resource {
 													Description: `Ipv4 Address`,
 													Type:        schema.TypeList,
 													Computed:    true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"ipv6_address_list": &schema.Schema{
 													Description: `Ipv6 Address List`,
 													Type:        schema.TypeList,
 													Computed:    true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"mac_address": &schema.Schema{
 													Description: `Mac Address`,
@@ -444,11 +453,17 @@ func resourcePnpDevice() *schema.Resource {
 																Description: `Ipv4 Address`,
 																Type:        schema.TypeList,
 																Computed:    true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"ipv6_address": &schema.Schema{
 																Description: `Ipv6 Address`,
 																Type:        schema.TypeList,
 																Computed:    true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"port": &schema.Schema{
 																Description: `Port`,
@@ -488,11 +503,17 @@ func resourcePnpDevice() *schema.Resource {
 																Description: `Ipv4 Address`,
 																Type:        schema.TypeList,
 																Computed:    true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"ipv6_address": &schema.Schema{
 																Description: `Ipv6 Address`,
 																Type:        schema.TypeList,
 																Computed:    true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"port": &schema.Schema{
 																Description: `Port`,
@@ -705,6 +726,9 @@ func resourcePnpDevice() *schema.Resource {
 										Description: `Tags`,
 										Type:        schema.TypeList,
 										Computed:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 									"user_mic_numbers": &schema.Schema{
 										Description: `User Mic Numbers`,
@@ -1653,10 +1677,16 @@ func resourcePnpDevice() *schema.Resource {
 													Type:     schema.TypeList,
 													Optional: true,
 													MaxItems: 1,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"ipv6_address_list": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"mac_address": &schema.Schema{
 													Type:     schema.TypeString,
@@ -1815,11 +1845,17 @@ func resourcePnpDevice() *schema.Resource {
 																Type:     schema.TypeList,
 																Optional: true,
 																MaxItems: 1,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"ipv6_address": &schema.Schema{
 																Type:     schema.TypeList,
 																Optional: true,
 																MaxItems: 1,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"port": &schema.Schema{
 																Type:     schema.TypeInt,
@@ -1855,11 +1891,17 @@ func resourcePnpDevice() *schema.Resource {
 																Type:     schema.TypeList,
 																Optional: true,
 																MaxItems: 1,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"ipv6_address": &schema.Schema{
 																Type:     schema.TypeList,
 																Optional: true,
 																MaxItems: 1,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 															"port": &schema.Schema{
 																Type:     schema.TypeInt,
@@ -2038,6 +2080,9 @@ func resourcePnpDevice() *schema.Resource {
 										Type:     schema.TypeList,
 										Optional: true,
 										MaxItems: 1,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 									"user_sudi_serial_nos": &schema.Schema{
 										Type:     schema.TypeList,

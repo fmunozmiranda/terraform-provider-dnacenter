@@ -48,6 +48,9 @@ by range" API.
 						"attribute_info": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"cdp_level": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -302,6 +305,9 @@ by range" API.
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"cdp_level": &schema.Schema{
 							Description: `CDP level to which neighbor devices to be discovered

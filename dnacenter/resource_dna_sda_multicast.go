@@ -2,9 +2,8 @@ package dnacenter
 
 import (
 	"context"
-	"reflect"
-
 	"log"
+	"reflect"
 
 	dnacentersdkgo "github.com/cisco-en-programmability/dnacenter-go-sdk/v3/sdk"
 
@@ -160,6 +159,9 @@ func resourceSdaMulticast() *schema.Resource {
 										Type:     schema.TypeList,
 										Optional: true,
 										MaxItems: 1,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 									"ssm_wildcard_mask": &schema.Schema{
 										Description: `Valid SSM Wildcard Mask ip address(e.g.,0.255.255.255)

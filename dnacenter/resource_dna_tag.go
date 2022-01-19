@@ -66,6 +66,9 @@ func resourceTag() *schema.Resource {
 												"items": &schema.Schema{
 													Type:     schema.TypeList,
 													Computed: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"name": &schema.Schema{
 													Type:     schema.TypeString,
@@ -142,6 +145,9 @@ func resourceTag() *schema.Resource {
 												"items": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"name": &schema.Schema{
 													Type:     schema.TypeString,

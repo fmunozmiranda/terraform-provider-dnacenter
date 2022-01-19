@@ -349,6 +349,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 `,
 																			Type:     schema.TypeList,
 																			Computed: true,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
 																		},
 																	},
 																},
@@ -547,6 +550,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 `,
 																			Type:     schema.TypeList,
 																			Computed: true,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
 																		},
 																	},
 																},
@@ -847,6 +853,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 `,
 																Type:     schema.TypeList,
 																Computed: true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 														},
 													},
@@ -1063,6 +1072,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 `,
 																Type:     schema.TypeList,
 																Computed: true,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 														},
 													},
@@ -1081,12 +1093,18 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 `,
 													Type:     schema.TypeList,
 													Computed: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"template_errors": &schema.Schema{
 													Description: `Validation or design conflicts errors
 `,
 													Type:     schema.TypeList,
 													Computed: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"template_id": &schema.Schema{
 													Description: `UUID of template
@@ -1440,6 +1458,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 																			Type:     schema.TypeList,
 																			Optional: true,
 																			MaxItems: 1,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
 																		},
 																	},
 																},
@@ -1643,6 +1664,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 																			Type:     schema.TypeList,
 																			Optional: true,
 																			MaxItems: 1,
+																			Elem: &schema.Schema{
+																				Type: schema.TypeString,
+																			},
 																		},
 																	},
 																},
@@ -1951,6 +1975,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 																Type:     schema.TypeList,
 																Optional: true,
 																MaxItems: 1,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 														},
 													},
@@ -2172,6 +2199,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 																Type:     schema.TypeList,
 																Optional: true,
 																MaxItems: 1,
+																Elem: &schema.Schema{
+																	Type: schema.TypeString,
+																},
 															},
 														},
 													},
@@ -2191,12 +2221,18 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 `,
 													Type:     schema.TypeList,
 													Optional: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"template_errors": &schema.Schema{
 													Description: `Validation or design conflicts errors
 `,
 													Type:     schema.TypeList,
 													Optional: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
 												},
 												"template_id": &schema.Schema{
 													Description: `UUID of template
