@@ -1,6 +1,6 @@
 
-resource "dnac_wireless_dynamic_interface" "example" {
-    provider = dnac
+resource "dnacenter_wireless_dynamic_interface" "example" {
+    provider = dnacenter
     parameters {
       
       interface_name = "string"
@@ -8,6 +8,6 @@ resource "dnac_wireless_dynamic_interface" "example" {
     }
 }
 
-output "dnac_wireless_dynamic_interface_example" {
-    value = dnac_wireless_dynamic_interface.example
+output "dnacenter_wireless_dynamic_interface_example" {
+    value = dnacenter_wireless_dynamic_interface.example
 }

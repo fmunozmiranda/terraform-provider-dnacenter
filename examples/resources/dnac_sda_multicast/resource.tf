@@ -1,6 +1,6 @@
 
-resource "dnac_sda_multicast" "example" {
-    provider = dnac
+resource "dnacenter_sda_multicast" "example" {
+    provider = dnacenter
     parameters {
       
       multicast_method = "string"
@@ -18,6 +18,6 @@ resource "dnac_sda_multicast" "example" {
     }
 }
 
-output "dnac_sda_multicast_example" {
-    value = dnac_sda_multicast.example
+output "dnacenter_sda_multicast_example" {
+    value = dnacenter_sda_multicast.example
 }

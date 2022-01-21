@@ -1,6 +1,6 @@
 
-resource "dnac_discovery" "example" {
-    provider = dnac
+resource "dnacenter_discovery" "example" {
+    provider = dnacenter
     item {
       
       # attribute_info = [------]
@@ -136,6 +136,6 @@ resource "dnac_discovery" "example" {
     }
 }
 
-output "dnac_discovery_example" {
-    value = dnac_discovery.example
+output "dnacenter_discovery_example" {
+    value = dnacenter_discovery.example
 }

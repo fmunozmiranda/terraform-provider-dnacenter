@@ -1,6 +1,6 @@
 
-resource "dnac_endpoint_analytics_profiling_rules" "example" {
-    provider = dnac
+resource "dnacenter_endpoint_analytics_profiling_rules" "example" {
+    provider = dnacenter
     item {
       
       # cluster_id = ------
@@ -75,6 +75,6 @@ resource "dnac_endpoint_analytics_profiling_rules" "example" {
     }
 }
 
-output "dnac_endpoint_analytics_profiling_rules_example" {
-    value = dnac_endpoint_analytics_profiling_rules.example
+output "dnacenter_endpoint_analytics_profiling_rules_example" {
+    value = dnacenter_endpoint_analytics_profiling_rules.example
 }

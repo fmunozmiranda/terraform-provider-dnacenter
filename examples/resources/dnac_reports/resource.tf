@@ -1,6 +1,6 @@
 
-resource "dnac_reports" "example" {
-    provider = dnac
+resource "dnacenter_reports" "example" {
+    provider = dnacenter
     item {
       
       # data_category = ------
@@ -93,6 +93,6 @@ resource "dnac_reports" "example" {
     }
 }
 
-output "dnac_reports_example" {
-    value = dnac_reports.example
+output "dnacenter_reports_example" {
+    value = dnacenter_reports.example
 }

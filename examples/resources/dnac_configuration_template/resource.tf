@@ -1,6 +1,6 @@
 
-resource "dnac_configuration_template" "example" {
-    provider = dnac
+resource "dnacenter_configuration_template" "example" {
+    provider = dnacenter
     item {
       
       # author = ------
@@ -388,6 +388,6 @@ resource "dnac_configuration_template" "example" {
     }
 }
 
-output "dnac_configuration_template_example" {
-    value = dnac_configuration_template.example
+output "dnacenter_configuration_template_example" {
+    value = dnacenter_configuration_template.example
 }

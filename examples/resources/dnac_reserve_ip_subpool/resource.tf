@@ -1,6 +1,6 @@
 
-resource "dnac_reserve_ip_subpool" "example" {
-    provider = dnac
+resource "dnacenter_reserve_ip_subpool" "example" {
+    provider = dnacenter
     parameters {
       
       id = "string"
@@ -28,6 +28,6 @@ resource "dnac_reserve_ip_subpool" "example" {
     }
 }
 
-output "dnac_reserve_ip_subpool_example" {
-    value = dnac_reserve_ip_subpool.example
+output "dnacenter_reserve_ip_subpool_example" {
+    value = dnacenter_reserve_ip_subpool.example
 }

@@ -1,6 +1,6 @@
 
-resource "dnac_sda_fabric_site" "example" {
-    provider = dnac
+resource "dnacenter_sda_fabric_site" "example" {
+    provider = dnacenter
     parameters {
       
       fabric_name = "string"
@@ -8,6 +8,6 @@ resource "dnac_sda_fabric_site" "example" {
     }
 }
 
-output "dnac_sda_fabric_site_example" {
-    value = dnac_sda_fabric_site.example
+output "dnacenter_sda_fabric_site_example" {
+    value = dnacenter_sda_fabric_site.example
 }

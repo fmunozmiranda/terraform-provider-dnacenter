@@ -1,6 +1,6 @@
 
-resource "dnac_tag_member" "example" {
-    provider = dnac
+resource "dnacenter_tag_member" "example" {
+    provider = dnacenter
     parameters {
       
       id = "string"
@@ -8,6 +8,6 @@ resource "dnac_tag_member" "example" {
     }
 }
 
-output "dnac_tag_member_example" {
-    value = dnac_tag_member.example
+output "dnacenter_tag_member_example" {
+    value = dnacenter_tag_member.example
 }

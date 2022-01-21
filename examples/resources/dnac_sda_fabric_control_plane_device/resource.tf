@@ -1,6 +1,6 @@
 
-resource "dnac_sda_fabric_control_plane_device" "example" {
-    provider = dnac
+resource "dnacenter_sda_fabric_control_plane_device" "example" {
+    provider = dnacenter
     parameters {
       
       device_management_ip_address = "string"
@@ -8,6 +8,6 @@ resource "dnac_sda_fabric_control_plane_device" "example" {
     }
 }
 
-output "dnac_sda_fabric_control_plane_device_example" {
-    value = dnac_sda_fabric_control_plane_device.example
+output "dnacenter_sda_fabric_control_plane_device_example" {
+    value = dnacenter_sda_fabric_control_plane_device.example
 }

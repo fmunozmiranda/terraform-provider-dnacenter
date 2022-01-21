@@ -1,6 +1,6 @@
 
-resource "dnac_configuration_template_project" "example" {
-    provider = dnac
+resource "dnacenter_configuration_template_project" "example" {
+    provider = dnacenter
     item {
       
       # create_time = ------
@@ -416,6 +416,6 @@ resource "dnac_configuration_template_project" "example" {
     }
 }
 
-output "dnac_configuration_template_project_example" {
-    value = dnac_configuration_template_project.example
+output "dnacenter_configuration_template_project_example" {
+    value = dnacenter_configuration_template_project.example
 }

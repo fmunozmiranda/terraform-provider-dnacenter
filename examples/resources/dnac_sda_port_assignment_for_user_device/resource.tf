@@ -1,6 +1,6 @@
 
-resource "dnac_sda_port_assignment_for_user_device" "example" {
-    provider = dnac
+resource "dnacenter_sda_port_assignment_for_user_device" "example" {
+    provider = dnacenter
     parameters {
       
       authenticate_template_name = "string"
@@ -14,6 +14,6 @@ resource "dnac_sda_port_assignment_for_user_device" "example" {
     }
 }
 
-output "dnac_sda_port_assignment_for_user_device_example" {
-    value = dnac_sda_port_assignment_for_user_device.example
+output "dnacenter_sda_port_assignment_for_user_device_example" {
+    value = dnacenter_sda_port_assignment_for_user_device.example
 }

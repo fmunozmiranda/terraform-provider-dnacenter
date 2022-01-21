@@ -1,6 +1,6 @@
 
-resource "dnac_nfv_profile" "example" {
-    provider = dnac
+resource "dnacenter_nfv_profile" "example" {
+    provider = dnacenter
     parameters {
       
       device {
@@ -58,6 +58,6 @@ resource "dnac_nfv_profile" "example" {
     }
 }
 
-output "dnac_nfv_profile_example" {
-    value = dnac_nfv_profile.example
+output "dnacenter_nfv_profile_example" {
+    value = dnacenter_nfv_profile.example
 }

@@ -1,6 +1,6 @@
 
-resource "dnac_path_trace" "example" {
-    provider = dnac
+resource "dnacenter_path_trace" "example" {
+    provider = dnacenter
     item {
       
       detailed_status {
@@ -863,6 +863,6 @@ resource "dnac_path_trace" "example" {
     }
 }
 
-output "dnac_path_trace_example" {
-    value = dnac_path_trace.example
+output "dnacenter_path_trace_example" {
+    value = dnacenter_path_trace.example
 }

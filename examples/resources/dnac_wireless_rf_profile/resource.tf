@@ -1,6 +1,6 @@
 
-resource "dnac_wireless_rf_profile" "example" {
-    provider = dnac
+resource "dnacenter_wireless_rf_profile" "example" {
+    provider = dnacenter
     parameters {
       
       channel_width = "string"
@@ -36,6 +36,6 @@ resource "dnac_wireless_rf_profile" "example" {
     }
 }
 
-output "dnac_wireless_rf_profile_example" {
-    value = dnac_wireless_rf_profile.example
+output "dnacenter_wireless_rf_profile_example" {
+    value = dnacenter_wireless_rf_profile.example
 }

@@ -1,5 +1,5 @@
 
-data "dnac_dnacenter_reports_executions_download" "example" {
+data "dnacenter__reports_executions_download" "example" {
   provider     = dnacenter
   dirpath      = "string"
   execution_id = "string"

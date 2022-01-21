@@ -1,6 +1,6 @@
 
-resource "dnac_pnp_device" "example" {
-    provider = dnac
+resource "dnacenter_pnp_device" "example" {
+    provider = dnacenter
     item {
       
       # id = ------
@@ -632,6 +632,6 @@ resource "dnac_pnp_device" "example" {
     }
 }
 
-output "dnac_pnp_device_example" {
-    value = dnac_pnp_device.example
+output "dnacenter_pnp_device_example" {
+    value = dnacenter_pnp_device.example
 }

@@ -1,6 +1,6 @@
 
-resource "dnac_sda_virtual_network_v2" "example" {
-    provider = dnac
+resource "dnacenter_sda_virtual_network_v2" "example" {
+    provider = dnacenter
     parameters {
       
       is_guest_virtual_network = "false"
@@ -10,6 +10,6 @@ resource "dnac_sda_virtual_network_v2" "example" {
     }
 }
 
-output "dnac_sda_virtual_network_v2_example" {
-    value = dnac_sda_virtual_network_v2.example
+output "dnacenter_sda_virtual_network_v2_example" {
+    value = dnacenter_sda_virtual_network_v2.example
 }

@@ -1,12 +1,12 @@
 
-resource "dnac_application_sets" "example" {
-    provider = dnac
+resource "dnacenter_application_sets" "example" {
+    provider = dnacenter
     parameters {
       
       name = "string"
     }
 }
 
-output "dnac_application_sets_example" {
-    value = dnac_application_sets.example
+output "dnacenter_application_sets_example" {
+    value = dnacenter_application_sets.example
 }

@@ -1,6 +1,6 @@
 
-resource "dnac_sda_virtual_network_ip_pool" "example" {
-    provider = dnac
+resource "dnacenter_sda_virtual_network_ip_pool" "example" {
+    provider = dnacenter
     parameters {
       
       authentication_policy_name = "string"
@@ -17,6 +17,6 @@ resource "dnac_sda_virtual_network_ip_pool" "example" {
     }
 }
 
-output "dnac_sda_virtual_network_ip_pool_example" {
-    value = dnac_sda_virtual_network_ip_pool.example
+output "dnacenter_sda_virtual_network_ip_pool_example" {
+    value = dnacenter_sda_virtual_network_ip_pool.example
 }

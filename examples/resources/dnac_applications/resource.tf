@@ -1,6 +1,6 @@
 
-resource "dnac_applications" "example" {
-    provider = dnac
+resource "dnacenter_applications" "example" {
+    provider = dnacenter
     parameters {
       
       application_set {
@@ -41,6 +41,6 @@ resource "dnac_applications" "example" {
     }
 }
 
-output "dnac_applications_example" {
-    value = dnac_applications.example
+output "dnacenter_applications_example" {
+    value = dnacenter_applications.example
 }

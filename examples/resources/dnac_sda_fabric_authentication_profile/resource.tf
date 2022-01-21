@@ -1,6 +1,6 @@
 
-resource "dnac_sda_fabric_authentication_profile" "example" {
-    provider = dnac
+resource "dnacenter_sda_fabric_authentication_profile" "example" {
+    provider = dnacenter
     parameters {
       
       authenticate_template_name = "string"
@@ -12,6 +12,6 @@ resource "dnac_sda_fabric_authentication_profile" "example" {
     }
 }
 
-output "dnac_sda_fabric_authentication_profile_example" {
-    value = dnac_sda_fabric_authentication_profile.example
+output "dnacenter_sda_fabric_authentication_profile_example" {
+    value = dnacenter_sda_fabric_authentication_profile.example
 }

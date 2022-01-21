@@ -1,6 +1,6 @@
 
-resource "dnac_sensor" "example" {
-    provider = dnac
+resource "dnacenter_sensor" "example" {
+    provider = dnacenter
     parameters {
       
       ap_coverage {
@@ -33,6 +33,6 @@ resource "dnac_sensor" "example" {
     }
 }
 
-output "dnac_sensor_example" {
-    value = dnac_sensor.example
+output "dnacenter_sensor_example" {
+    value = dnacenter_sensor.example
 }

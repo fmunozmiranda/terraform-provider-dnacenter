@@ -1,6 +1,6 @@
 
-resource "dnac_snmp_properties" "example" {
-    provider = dnac
+resource "dnacenter_snmp_properties" "example" {
+    provider = dnacenter
     parameters {
       
       id = "string"
@@ -11,6 +11,6 @@ resource "dnac_snmp_properties" "example" {
     }
 }
 
-output "dnac_snmp_properties_example" {
-    value = dnac_snmp_properties.example
+output "dnacenter_snmp_properties_example" {
+    value = dnacenter_snmp_properties.example
 }

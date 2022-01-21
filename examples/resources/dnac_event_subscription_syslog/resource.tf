@@ -1,6 +1,6 @@
 
-resource "dnac_event_subscription_syslog" "example" {
-    provider = dnac
+resource "dnacenter_event_subscription_syslog" "example" {
+    provider = dnacenter
     parameters {
       
       description = "string"
@@ -22,6 +22,6 @@ resource "dnac_event_subscription_syslog" "example" {
     }
 }
 
-output "dnac_event_subscription_syslog_example" {
-    value = dnac_event_subscription_syslog.example
+output "dnacenter_event_subscription_syslog_example" {
+    value = dnacenter_event_subscription_syslog.example
 }

@@ -1,6 +1,6 @@
 
-resource "dnac_site_design_floormap" "example" {
-    provider = dnac
+resource "dnacenter_site_design_floormap" "example" {
+    provider = dnacenter
     # item = ------
     parameters {
       
@@ -8,6 +8,6 @@ resource "dnac_site_design_floormap" "example" {
     }
 }
 
-output "dnac_site_design_floormap_example" {
-    value = dnac_site_design_floormap.example
+output "dnacenter_site_design_floormap_example" {
+    value = dnacenter_site_design_floormap.example
 }

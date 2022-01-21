@@ -1,6 +1,6 @@
 
-resource "dnac_pnp_global_settings" "example" {
-    provider = dnac
+resource "dnacenter_pnp_global_settings" "example" {
+    provider = dnacenter
     parameters {
       
       id = "string"
@@ -63,6 +63,6 @@ resource "dnac_pnp_global_settings" "example" {
     }
 }
 
-output "dnac_pnp_global_settings_example" {
-    value = dnac_pnp_global_settings.example
+output "dnacenter_pnp_global_settings_example" {
+    value = dnacenter_pnp_global_settings.example
 }

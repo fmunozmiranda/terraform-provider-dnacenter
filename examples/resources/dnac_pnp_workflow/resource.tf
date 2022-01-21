@@ -1,6 +1,6 @@
 
-resource "dnac_pnp_workflow" "example" {
-    provider = dnac
+resource "dnacenter_pnp_workflow" "example" {
+    provider = dnacenter
     item {
       
       # id = ------
@@ -85,6 +85,6 @@ resource "dnac_pnp_workflow" "example" {
     }
 }
 
-output "dnac_pnp_workflow_example" {
-    value = dnac_pnp_workflow.example
+output "dnacenter_pnp_workflow_example" {
+    value = dnacenter_pnp_workflow.example
 }

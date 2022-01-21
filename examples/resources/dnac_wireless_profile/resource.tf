@@ -1,6 +1,6 @@
 
-resource "dnac_wireless_profile" "example" {
-    provider = dnac
+resource "dnacenter_wireless_profile" "example" {
+    provider = dnacenter
     parameters {
       
       profile_details {
@@ -24,6 +24,6 @@ resource "dnac_wireless_profile" "example" {
     }
 }
 
-output "dnac_wireless_profile_example" {
-    value = dnac_wireless_profile.example
+output "dnacenter_wireless_profile_example" {
+    value = dnacenter_wireless_profile.example
 }

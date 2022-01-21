@@ -1,6 +1,6 @@
 
-resource "dnac_sda_fabric_border_device" "example" {
-    provider = dnac
+resource "dnacenter_sda_fabric_border_device" "example" {
+    provider = dnacenter
     parameters {
       
       border_session_type = "string"
@@ -20,6 +20,6 @@ resource "dnac_sda_fabric_border_device" "example" {
     }
 }
 
-output "dnac_sda_fabric_border_device_example" {
-    value = dnac_sda_fabric_border_device.example
+output "dnacenter_sda_fabric_border_device_example" {
+    value = dnacenter_sda_fabric_border_device.example
 }

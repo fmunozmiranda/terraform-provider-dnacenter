@@ -1,6 +1,6 @@
 
-resource "dnac_business_sda_hostonboarding_ssid_ippool" "example" {
-    provider = dnac
+resource "dnacenter_business_sda_hostonboarding_ssid_ippool" "example" {
+    provider = dnacenter
     parameters {
       
       scalable_group_name = "string"
@@ -10,6 +10,6 @@ resource "dnac_business_sda_hostonboarding_ssid_ippool" "example" {
     }
 }
 
-output "dnac_business_sda_hostonboarding_ssid_ippool_example" {
-    value = dnac_business_sda_hostonboarding_ssid_ippool.example
+output "dnacenter_business_sda_hostonboarding_ssid_ippool_example" {
+    value = dnacenter_business_sda_hostonboarding_ssid_ippool.example
 }

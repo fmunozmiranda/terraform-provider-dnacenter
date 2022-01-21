@@ -1,6 +1,6 @@
 
-resource "dnac_qos_device_interface" "example" {
-    provider = dnac
+resource "dnacenter_qos_device_interface" "example" {
+    provider = dnacenter
     parameters {
       
       excluded_interfaces = ["string"]
@@ -20,6 +20,6 @@ resource "dnac_qos_device_interface" "example" {
     }
 }
 
-output "dnac_qos_device_interface_example" {
-    value = dnac_qos_device_interface.example
+output "dnacenter_qos_device_interface_example" {
+    value = dnacenter_qos_device_interface.example
 }

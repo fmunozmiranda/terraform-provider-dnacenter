@@ -1,6 +1,6 @@
 
-resource "dnac_wireless_enterprise_ssid" "example" {
-    provider = dnac
+resource "dnacenter_wireless_enterprise_ssid" "example" {
+    provider = dnacenter
     parameters {
       
       basic_service_set_client_idle_timeout = 1
@@ -25,6 +25,6 @@ resource "dnac_wireless_enterprise_ssid" "example" {
     }
 }
 
-output "dnac_wireless_enterprise_ssid_example" {
-    value = dnac_wireless_enterprise_ssid.example
+output "dnacenter_wireless_enterprise_ssid_example" {
+    value = dnacenter_wireless_enterprise_ssid.example
 }

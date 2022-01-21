@@ -1,6 +1,6 @@
 
-resource "dnac_network_device_list" "example" {
-    provider = dnac
+resource "dnacenter_network_device_list" "example" {
+    provider = dnacenter
     parameters {
       
       cli_transport = "string"
@@ -37,6 +37,6 @@ resource "dnac_network_device_list" "example" {
     }
 }
 
-output "dnac_network_device_list_example" {
-    value = dnac_network_device_list.example
+output "dnacenter_network_device_list_example" {
+    value = dnacenter_network_device_list.example
 }

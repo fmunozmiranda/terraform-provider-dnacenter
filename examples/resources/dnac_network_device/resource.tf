@@ -1,6 +1,6 @@
 
-resource "dnac_network_device" "example" {
-    provider = dnac
+resource "dnacenter_network_device" "example" {
+    provider = dnacenter
     item {
       
       # ap_manager_interface_ip = ------
@@ -49,6 +49,6 @@ resource "dnac_network_device" "example" {
     }
 }
 
-output "dnac_network_device_example" {
-    value = dnac_network_device.example
+output "dnacenter_network_device_example" {
+    value = dnacenter_network_device.example
 }

@@ -1,6 +1,6 @@
 
-resource "dnac_event_subscription_rest" "example" {
-    provider = dnac
+resource "dnacenter_event_subscription_rest" "example" {
+    provider = dnacenter
     parameters {
       
       description = "string"
@@ -22,6 +22,6 @@ resource "dnac_event_subscription_rest" "example" {
     }
 }
 
-output "dnac_event_subscription_rest_example" {
-    value = dnac_event_subscription_rest.example
+output "dnacenter_event_subscription_rest_example" {
+    value = dnacenter_event_subscription_rest.example
 }

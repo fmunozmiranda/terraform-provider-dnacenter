@@ -1,6 +1,6 @@
 
-resource "dnac_device_replacement" "example" {
-    provider = dnac
+resource "dnacenter_device_replacement" "example" {
+    provider = dnacenter
     parameters {
       
       creation_time = 1
@@ -20,6 +20,6 @@ resource "dnac_device_replacement" "example" {
     }
 }
 
-output "dnac_device_replacement_example" {
-    value = dnac_device_replacement.example
+output "dnacenter_device_replacement_example" {
+    value = dnacenter_device_replacement.example
 }

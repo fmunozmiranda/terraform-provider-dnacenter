@@ -1,30 +1,42 @@
+terraform {
+  required_providers {
+    dnacenter = {
+      version = "0.0.3"
+      source  = "hashicorp.com/edu/dnacenter"
+      # "hashicorp.com/edu/dnacenter" is the local built source, change to "cisco-en-programmability/dnacenter" to use downloaded version from registry
+    }
+  }
+}
 
-resource "dnac_event_subscription" "example" {
-    provider = dnac
+provider "dnacenter" {
+}
+
+resource "dnacenter_event_subscription" "example" {
+    provider = dnacenter
     parameters {
       
-      description = "string"
+      description = "Test REST subscription 3"
       filter {
         
-        event_ids = ["string"]
+        event_ids = ["NETWORK-DEVICES-2-152"]
       }
-      name = "string"
+      name = "Test REST subscription 3"
       subscription_endpoints {
         
-        instance_id = "string"
+        instance_id = "b4b841cf-cffe-4837-b88f-cea33a3a19ba"
         subscription_details {
           
-          connector_type = "string"
-          method = "string"
-          name = "string"
-          url = "string"
+          connector_type = "REST"
+          method = "POST"
+          name = "TestWebhook"
+          url = "https://enprxnc1g2b3p.x.pipedream.net"
         }
       }
-      subscription_id = "string"
-      version = "string"
+      # subscription_id = "string"
+      # version = "string"
     }
 }
 
-output "dnac_event_subscription_example" {
-    value = dnac_event_subscription.example
+output "dnacenter_event_subscription_example" {
+    value = dnacenter_event_subscription.example
 }

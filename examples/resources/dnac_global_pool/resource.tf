@@ -1,6 +1,6 @@
 
-resource "dnac_global_pool" "example" {
-    provider = dnac
+resource "dnacenter_global_pool" "example" {
+    provider = dnacenter
     parameters {
       
       id = "string"
@@ -21,6 +21,6 @@ resource "dnac_global_pool" "example" {
     }
 }
 
-output "dnac_global_pool_example" {
-    value = dnac_global_pool.example
+output "dnacenter_global_pool_example" {
+    value = dnacenter_global_pool.example
 }

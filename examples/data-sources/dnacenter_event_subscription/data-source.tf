@@ -1,4 +1,3 @@
-
 data "dnacenter_event_subscription" "example" {
   provider  = dnacenter
   event_ids = "string"

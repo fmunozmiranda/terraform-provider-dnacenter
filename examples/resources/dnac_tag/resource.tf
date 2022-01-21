@@ -1,6 +1,6 @@
 
-resource "dnac_tag" "example" {
-    provider = dnac
+resource "dnacenter_tag" "example" {
+    provider = dnacenter
     item {
       
       # description = ------
@@ -43,6 +43,6 @@ resource "dnac_tag" "example" {
     }
 }
 
-output "dnac_tag_example" {
-    value = dnac_tag.example
+output "dnacenter_tag_example" {
+    value = dnacenter_tag.example
 }
