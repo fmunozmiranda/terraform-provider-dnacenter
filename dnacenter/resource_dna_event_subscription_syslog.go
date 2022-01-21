@@ -404,7 +404,7 @@ func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.Resource
 		//TODO FOR DNAC
 
 		vItem1 := flattenEventManagementGetSyslogEventSubscriptionsItems(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetSyslogEventSubscriptions search response",
 				err))

@@ -400,7 +400,7 @@ func resourceWirelessEnterpriseSSIDRead(ctx context.Context, d *schema.ResourceD
 		//TODO FOR DNAC
 
 		vItem1 := flattenWirelessGetEnterpriseSSIDItems(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetEnterpriseSSID search response",
 				err))

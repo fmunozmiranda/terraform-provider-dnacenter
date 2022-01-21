@@ -165,7 +165,7 @@ func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m i
 		//TODO FOR DNAC
 
 		vItem1 := flattenDiscoveryGetSNMPPropertiesItem(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetSNMPProperties search response",
 				err))

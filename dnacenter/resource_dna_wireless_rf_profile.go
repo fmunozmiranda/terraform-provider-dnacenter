@@ -486,7 +486,7 @@ func resourceWirelessRfProfileRead(ctx context.Context, d *schema.ResourceData, 
 		//TODO FOR DNAC
 
 		vItem1 := flattenWirelessRetrieveRfProfilesItems(response1.Response)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting RetrieveRfProfiles search response",
 				err))

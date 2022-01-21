@@ -162,7 +162,7 @@ func resourceTagMemberRead(ctx context.Context, d *schema.ResourceData, m interf
 		//TODO FOR DNAC
 
 		vItem1 := flattenTagGetTagMembersByIDItems(response1.Response)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetTagMembersByID search response",
 				err))

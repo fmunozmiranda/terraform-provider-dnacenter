@@ -650,7 +650,7 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 		//TODO FOR DNAC
 
 		vItem1 := flattenSiteDesignGetNfvProfileItems(response1.Response)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetNfvProfile search response",
 				err))

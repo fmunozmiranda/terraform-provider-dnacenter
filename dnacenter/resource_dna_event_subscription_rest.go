@@ -462,7 +462,7 @@ func resourceEventSubscriptionRestRead(ctx context.Context, d *schema.ResourceDa
 		//TODO FOR DNAC
 
 		vItem1 := flattenEventManagementGetRestWebhookEventSubscriptionsItems(response1)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetRestWebhookEventSubscriptions search response",
 				err))

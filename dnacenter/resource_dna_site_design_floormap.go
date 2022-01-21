@@ -127,7 +127,7 @@ func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData,
 
 		log.Printf("[DEBUG] Retrieved response %s", response1.String())
 
-		if err := d.Set("parameters", response1.String()); err != nil {
+		if err := d.Set("item", response1.String()); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting ListSpecifiedFloormaps response",
 				err))

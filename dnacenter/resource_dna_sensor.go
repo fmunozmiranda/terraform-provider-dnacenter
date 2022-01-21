@@ -229,7 +229,7 @@ func resourceSensorRead(ctx context.Context, d *schema.ResourceData, m interface
 		//TODO FOR DNAC
 
 		vItem1 := flattenSensorsSensorsItems(response1.Response)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting Sensors search response",
 				err))

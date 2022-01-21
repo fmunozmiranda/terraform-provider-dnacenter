@@ -466,7 +466,7 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 		//TODO FOR DNAC
 
 		vItem1 := flattenDeviceOnboardingPnpGetWorkflowByIDItem(response2)
-		if err := d.Set("parameters", vItem1); err != nil {
+		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetWorkflows search response",
 				err))
