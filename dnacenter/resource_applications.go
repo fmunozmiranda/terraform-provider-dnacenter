@@ -1029,7 +1029,6 @@ func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacenter
 			for _, item := range *nResponse {
 				if vID == item.ID {
 					foundItem = &item
-					fmt.Println(item.Name)
 					return foundItem, err
 				}
 				//allItems = append(allItems, &item)

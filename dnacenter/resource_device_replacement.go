@@ -556,7 +556,6 @@ func searchDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetails
 			for _, item := range *nResponse.Response {
 				if vID == item.FaultyDeviceID {
 					foundItem = &item
-					fmt.Println(item.FaultyDeviceName)
 					return foundItem, err
 				}
 				//allItems = append(allItems, &item)

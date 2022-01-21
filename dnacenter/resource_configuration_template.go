@@ -3387,7 +3387,6 @@ func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, queryP
 	for _, item := range *nResponse {
 		if vName == item.Name {
 			foundItem = &item
-			fmt.Println(item.Name)
 			return foundItem, err
 		}
 

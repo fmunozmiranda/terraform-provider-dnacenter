@@ -6134,7 +6134,6 @@ func expandRequestPnpDeviceUpdateDeviceWorkflowParametersConfigListConfigParamet
 		for _, item := range *nResponse.Response {
 			if vID == item.IPPoolName {
 				foundItem = &item
-				fmt.Println(item.IPPoolName)
 				return foundItem, err
 			}
 			//allItems = append(allItems, &item)

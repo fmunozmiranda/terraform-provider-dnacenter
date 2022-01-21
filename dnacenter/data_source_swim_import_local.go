@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 
@@ -119,7 +118,6 @@ func dataSourceSwimImportLocalRead(ctx context.Context, d *schema.ResourceData, 
 		}
 		f, err := os.Open(vFilePath.(string))
 		if err != nil {
-			fmt.Println(err)
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ImportLocalSoftwareImage", err,
 				"Failure at ImportLocalSoftwareImage, unexpected response", ""))
@@ -127,7 +125,7 @@ func dataSourceSwimImportLocalRead(ctx context.Context, d *schema.ResourceData, 
 		}
 		defer func() {
 			if err = f.Close(); err != nil {
-				fmt.Println(err)
+				log.Printf("File close error %s", err.Error())
 			}
 		}()
 

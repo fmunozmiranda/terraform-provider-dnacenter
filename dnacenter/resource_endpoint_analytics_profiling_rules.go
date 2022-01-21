@@ -971,7 +971,6 @@ func searchPolicyGetListOfProfilingRules(m interface{}, queryParams dnacentersdk
 		for _, item := range *nResponse.ProfilingRules {
 			if vName == item.RuleName {
 				foundItem = &item
-				fmt.Println(item.RuleName)
 				return foundItem, err
 			}
 			//allItems = append(allItems, &item)

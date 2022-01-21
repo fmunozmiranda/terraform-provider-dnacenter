@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 
@@ -105,7 +104,6 @@ func dataSourceAuthenticationImportCertificateP12Read(ctx context.Context, d *sc
 
 		isDir, err := IsDirectory(vP12FilePath.(string))
 		if err != nil || isDir {
-			fmt.Println(err)
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ImportCertificateP12", err,
 				"Failure at ImportCertificateP12, unexpected response", ""))
@@ -114,7 +112,6 @@ func dataSourceAuthenticationImportCertificateP12Read(ctx context.Context, d *sc
 
 		f, err := os.Open(vP12FilePath.(string))
 		if err != nil {
-			fmt.Println(err)
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing ImportCertificateP12", err,
 				"Failure at ImportCertificateP12, unexpected response", ""))
@@ -122,7 +119,7 @@ func dataSourceAuthenticationImportCertificateP12Read(ctx context.Context, d *sc
 		}
 		defer func() {
 			if err = f.Close(); err != nil {
-				fmt.Println(err)
+				log.Printf("File close error %s", err.Error())
 			}
 		}()
 

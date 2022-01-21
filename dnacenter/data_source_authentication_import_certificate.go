@@ -2,7 +2,6 @@ package dnacenter
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 
@@ -122,7 +121,6 @@ func dataSourceAuthenticationImportCertificateRead(ctx context.Context, d *schem
 
 		first_file, err := os.Open(vPkFilePath.(string))
 		if err != nil {
-			fmt.Println(err)
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing PkFile", err,
 				"Failure at PkFile, unexpected response", ""))
@@ -130,7 +128,6 @@ func dataSourceAuthenticationImportCertificateRead(ctx context.Context, d *schem
 		}
 		second_file, err := os.Open(vCertFilePath.(string))
 		if err != nil {
-			fmt.Println(err)
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing CertFile", err,
 				"Failure at CertFile, unexpected response", ""))
@@ -138,13 +135,13 @@ func dataSourceAuthenticationImportCertificateRead(ctx context.Context, d *schem
 		}
 		defer func() {
 			if err = first_file.Close(); err != nil {
-				fmt.Println(err)
+				log.Printf("File close error %s", err.Error())
 			}
 		}()
 
 		defer func() {
 			if err = second_file.Close(); err != nil {
-				fmt.Println(err)
+				log.Printf("File close error %s", err.Error())
 			}
 		}()
 
