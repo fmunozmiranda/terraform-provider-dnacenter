@@ -136,7 +136,7 @@ func resourceSdaFabricAuthenticationProfileCreate(ctx context.Context, d *schema
 		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
 		resourceMap["authenticate_template_name"] = vvAuthenticateTemplateName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaFabricAuthenticationProfileRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.DeployAuthenticationTemplateInSdaFabric(request1)
 	if err != nil || resp1 == nil {

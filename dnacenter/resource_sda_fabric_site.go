@@ -105,7 +105,7 @@ func resourceSdaFabricSiteCreate(ctx context.Context, d *schema.ResourceData, m 
 		resourceMap := make(map[string]string)
 		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaFabricSiteRead(ctx, d, m)
 	}
 
 	resp1, restyResp1, err := client.Sda.AddSiteInSdaFabric(request1)

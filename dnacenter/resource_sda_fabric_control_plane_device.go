@@ -127,7 +127,7 @@ func resourceSdaFabricControlPlaneDeviceCreate(ctx context.Context, d *schema.Re
 		resourceMap := make(map[string]string)
 		resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaFabricControlPlaneDeviceRead(ctx, d, m)
 	}
 
 	resp1, restyResp1, err := client.Sda.AddControlPlaneDeviceInSdaFabric(request1)

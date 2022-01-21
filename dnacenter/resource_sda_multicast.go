@@ -218,7 +218,7 @@ func resourceSdaMulticastCreate(ctx context.Context, d *schema.ResourceData, m i
 		resourceMap := make(map[string]string)
 		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaMulticastRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.AddMulticastInSdaFabric(request1)
 	if err != nil || resp1 == nil {

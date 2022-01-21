@@ -346,7 +346,7 @@ func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.Resourc
 		resourceMap := make(map[string]string)
 		resourceMap["ssid_name"] = vvSSIDName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceWirelessEnterpriseSSIDRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Wireless.CreateEnterpriseSSID(request1)
 	if err != nil || resp1 == nil {

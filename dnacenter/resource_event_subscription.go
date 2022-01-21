@@ -250,7 +250,7 @@ func resourceEventSubscriptionCreate(ctx context.Context, d *schema.ResourceData
 		resourceMap["name"] = vvName
 		resourceMap["subscription_id"] = vvSubscriptionID
 		d.SetId(joinResourceID(resourceMap))
-		return resourceAppPolicyQueuingProfileRead(ctx, d, m)
+		return resourceEventSubscriptionRead(ctx, d, m)
 	}
 
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))

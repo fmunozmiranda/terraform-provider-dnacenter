@@ -183,7 +183,7 @@ func resourceSdaPortAssignmentForUserDeviceCreate(ctx context.Context, d *schema
 		resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
 		resourceMap["interface_name"] = vvInterfaceName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaPortAssignmentForUserDeviceRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.AddPortAssignmentForUserDeviceInSdaFabric(request1)
 	if err != nil || resp1 == nil {

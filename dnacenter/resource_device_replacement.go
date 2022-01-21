@@ -213,7 +213,7 @@ func resourceDeviceReplacementCreate(ctx context.Context, d *schema.ResourceData
 		resourceMap["replacement_devicserial_number"] = vvReplacementDeviceSerialNumber
 		resourceMap["faulty_device_id"] = vvFaultyDeviceID
 		d.SetId(joinResourceID(resourceMap))
-		return resourceApplicationsRead(ctx, d, m)
+		return resourceDeviceReplacementRead(ctx, d, m)
 	}
 
 	request1 := expandRequestDeviceReplacementMarkDeviceForReplacement(ctx, "parameters.0", d)

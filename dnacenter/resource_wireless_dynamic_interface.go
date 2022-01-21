@@ -102,7 +102,7 @@ func resourceWirelessDynamicInterfaceCreate(ctx context.Context, d *schema.Resou
 		resourceMap := make(map[string]string)
 		resourceMap["interface_name"] = vvInterfaceName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceWirelessDynamicInterfaceRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Wireless.CreateUpdateDynamicInterface(request1, nil)
 	if err != nil || resp1 == nil {

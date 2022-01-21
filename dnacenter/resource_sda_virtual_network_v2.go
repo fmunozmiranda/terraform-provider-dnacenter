@@ -156,7 +156,7 @@ func resourceSdaVirtualNetworkV2Create(ctx context.Context, d *schema.ResourceDa
 		resourceMap := make(map[string]string)
 		resourceMap["virtual_network_name"] = vvVirtualNetworkName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaVirtualNetworkV2Read(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.AddVirtualNetworkWithScalableGroups(request1)
 	if err != nil || resp1 == nil {

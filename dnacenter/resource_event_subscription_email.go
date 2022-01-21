@@ -352,7 +352,7 @@ func resourceEventSubscriptionEmailCreate(ctx context.Context, d *schema.Resourc
 		resourceMap := make(map[string]string)
 		resourceMap["event_ids"] = vEventIDs
 		d.SetId(joinResourceID(resourceMap))
-		return resourceApplicationsRead(ctx, d, m)
+		return resourceEventSubscriptionEmailRead(ctx, d, m)
 	}
 
 	resp1, restyResp1, err := client.EventManagement.CreateEmailEventSubscription(request1)

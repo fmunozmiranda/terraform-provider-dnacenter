@@ -432,7 +432,7 @@ func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData
 		resourceMap := make(map[string]string)
 		resourceMap["rf_profile_name"] = vvRfProfileName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceWirelessRfProfileRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Wireless.CreateOrUpdateRfProfile(request1)
 	if err != nil || resp1 == nil {

@@ -170,7 +170,7 @@ func resourceSdaPortAssignmentForAccessPointCreate(ctx context.Context, d *schem
 		resourceMap["device_management_ip_address"] = vvDeviceManagementIPAddress
 		resourceMap["interface_name"] = vvInterfaceName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaPortAssignmentForAccessPointRead(ctx, d, m)
 	}
 
 	resp1, restyResp1, err := client.Sda.AddPortAssignmentForAccessPointInSdaFabric(request1)

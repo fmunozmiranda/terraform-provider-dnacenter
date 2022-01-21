@@ -84,7 +84,7 @@ func resourceSdaVirtualNetworkCreate(ctx context.Context, d *schema.ResourceData
 		resourceMap["virtual_network_name"] = vvVirtualNetworkName
 		resourceMap["site_name_hierarchy"] = vvSiteNameHierarchy
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaVirtualNetworkRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.AddVnInSdaFabric(request1)
 	if err != nil || resp1 == nil {

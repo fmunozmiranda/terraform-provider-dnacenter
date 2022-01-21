@@ -256,7 +256,7 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 		resourceMap := make(map[string]string)
 		resourceMap["wireless_profile_name"] = vvWirelessProfileName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceWirelessProfileRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Wireless.CreateWirelessProfile(request1)
 	if err != nil || resp1 == nil {

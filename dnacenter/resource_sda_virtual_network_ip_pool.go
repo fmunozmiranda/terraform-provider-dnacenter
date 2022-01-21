@@ -205,7 +205,7 @@ func resourceSdaVirtualNetworkIPPoolCreate(ctx context.Context, d *schema.Resour
 		resourceMap["ip_pool_name"] = vvIPPoolName
 		resourceMap["virtual_network_name"] = vvVirtualNetworkName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaVirtualNetworkIPPoolRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.AddIPPoolInSdaVirtualNetwork(request1)
 	if err != nil || resp1 == nil {

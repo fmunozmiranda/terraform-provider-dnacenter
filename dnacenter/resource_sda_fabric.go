@@ -99,7 +99,7 @@ func resourceSdaFabricCreate(ctx context.Context, d *schema.ResourceData, m inte
 		resourceMap := make(map[string]string)
 		resourceMap["fabric_name"] = vvFabricName
 		d.SetId(joinResourceID(resourceMap))
-		return resourceReportsRead(ctx, d, m)
+		return resourceSdaFabricRead(ctx, d, m)
 	}
 	resp1, restyResp1, err := client.Sda.AddFabric(request1)
 	if err != nil || resp1 == nil {
