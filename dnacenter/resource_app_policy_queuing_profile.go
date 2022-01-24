@@ -656,7 +656,7 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
-	request1 := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileArray(ctx, "parameters.0", d)
+	request1 := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileArray(ctx, "parameters", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	vName := resourceItem["name"]
@@ -680,6 +680,27 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 				"Failure when executing CreateApplicationPolicyQueuingProfile", err, restyResp1.String()))
 			return diags
 		}
+		diags = append(diags, diagError(
+			"Failure when executing CreateApplicationPolicyQueuingProfile", err))
+		return diags
+	}
+	if resp1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing CreateApplicationPolicyQueuingProfile", err))
+		return diags
+	}
+	taskId := resp1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
 		diags = append(diags, diagError(
 			"Failure when executing CreateApplicationPolicyQueuingProfile", err))
 		return diags
@@ -753,7 +774,7 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vName)
-		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "parameters.0", d)
+		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "parameters", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateApplicationPolicyQueuingProfile(request1)
 		if err != nil || response1 == nil {
