@@ -46,10 +46,31 @@ func resourceSdaFabric() *schema.Resource {
 							Computed:    true,
 						},
 
-						"execution_status_url": &schema.Schema{
-							Description: `Execution Status Url`,
+						"execution_id": &schema.Schema{
+							Description: `Execution Id`,
 							Type:        schema.TypeString,
 							Computed:    true,
+						},
+
+						"fabric_domain_type": &schema.Schema{
+							Description: `Fabric Domain type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"fabric_name": &schema.Schema{
+							Description: `Fabric name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"fabric_type": &schema.Schema{
+							Description: `Fabric type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 
 						"status": &schema.Schema{
@@ -95,12 +116,13 @@ func resourceSdaFabricCreate(ctx context.Context, d *schema.ResourceData, m inte
 	queryParams1.FabricName = vvFabricName
 
 	getResponse2, _, err := client.Sda.GetSdaFabricInfo(&queryParams1)
-	if err == nil && getResponse2 != nil {
+	if getResponse2.Status != "failed" {
 		resourceMap := make(map[string]string)
 		resourceMap["fabric_name"] = vvFabricName
 		d.SetId(joinResourceID(resourceMap))
 		return resourceSdaFabricRead(ctx, d, m)
 	}
+
 	resp1, restyResp1, err := client.Sda.AddFabric(request1)
 	if err != nil || resp1 == nil {
 		if restyResp1 != nil {
@@ -178,7 +200,7 @@ func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m inte
 	queryParams1 := dnacentersdkgo.GetSdaFabricInfoQueryParams{}
 	queryParams1.FabricName = vFabricName
 	item, restyResp1, err := client.Sda.GetSdaFabricInfo(&queryParams1)
-	if err != nil || item == nil {
+	if err != nil || item == nil || item.Status == "failed" {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetSDAFabricInfo", err,
 			"Failure at GetSDAFabricInfo, unexpected response", ""))

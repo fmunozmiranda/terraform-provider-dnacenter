@@ -48,8 +48,8 @@ func dataSourceSensorCreate() *schema.Resource {
 					},
 				},
 			},
-			"connection": &schema.Schema{
-				Description: `Connection`,
+			"r_connection": &schema.Schema{
+				Description: `r_connection`,
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
@@ -88,8 +88,8 @@ func dataSourceSensorCreate() *schema.Resource {
 								},
 							},
 						},
-						"connection": &schema.Schema{
-							Description: `Connection`,
+						"r_connection": &schema.Schema{
+							Description: `r_connection`,
 							Type:        schema.TypeString,
 							Computed:    true,
 						},
@@ -684,7 +684,7 @@ func expandRequestSensorCreateCreateSensorTestTemplate(ctx context.Context, key 
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".name")))) {
 		request.Name = interfaceToString(v)
 	}
-	if v, ok := d.GetOkExists(fixKeyAccess(key + ".connection")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".connection")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".connection")))) {
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".r_connection")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".r_connection")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".r_connection")))) {
 		request.Connection = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ap_coverage")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ap_coverage")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ap_coverage")))) {
@@ -899,7 +899,7 @@ func flattenSensorsCreateSensorTestTemplateItem(item *dnacentersdkgo.ResponseSen
 	respItem["location"] = flattenSensorsCreateSensorTestTemplateItemLocation(item.Location)
 	respItem["site_hierarchy"] = flattenSensorsCreateSensorTestTemplateItemSiteHierarchy(item.SiteHierarchy)
 	respItem["status"] = item.Status
-	respItem["connection"] = item.Connection
+	respItem["r_connection"] = item.Connection
 	respItem["frequency"] = flattenSensorsCreateSensorTestTemplateItemFrequency(item.Frequency)
 	respItem["rssi_threshold"] = item.RssiThreshold
 	respItem["num_neighbor_apthreshold"] = item.NumNeighborApThreshold
