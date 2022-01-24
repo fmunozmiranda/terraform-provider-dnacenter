@@ -3372,10 +3372,10 @@ func expandRequestConfigurationTemplateUpdateTemplateValidationErrorsTemplateErr
 	return &request
 }
 
-func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, queryParams dnacentersdkgo.GetsTheTemplatesAvailableQueryParams, vName string) (*dnacentersdkgo.ResponseItemApplicationPolicyGetApplications, error) {
+func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, queryParams dnacentersdkgo.GetsTheTemplatesAvailableQueryParams, vName string) (*dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications
+	var foundItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse
 	//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
 	nResponse, _, err := client.ApplicationPolicy.GetApplications(nil)
 
@@ -3384,7 +3384,7 @@ func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, queryP
 	}
 	//maxPageSize := 10
 
-	for _, item := range *nResponse {
+	for _, item := range *nResponse.Response {
 		if vName == item.Name {
 			foundItem = &item
 			return foundItem, err

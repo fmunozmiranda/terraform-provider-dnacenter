@@ -330,6 +330,20 @@ func dataSourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m i
 	return diags
 }
 
+func flattenApplicationPolicyGetApplicationsItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse) map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["id"] = item.ID
+	respItem["name"] = item.Name
+	respItem["indicative_network_identity"] = flattenApplicationPolicyGetApplicationsItemsIndicativeNetworkIDentity(item.IndicativeNetworkIDentity)
+	respItem["network_applications"] = flattenApplicationPolicyGetApplicationsItemsNetworkApplications(item.NetworkApplications)
+	respItem["network_identity"] = flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(item.NetworkIDentity)
+	respItem["application_set"] = flattenApplicationPolicyGetApplicationsItemsApplicationSet(item.ApplicationSet)
+	return respItem
+}
+
 func flattenApplicationPolicyGetApplicationsItems(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse) []map[string]interface{} {
 	if items == nil {
 		return nil

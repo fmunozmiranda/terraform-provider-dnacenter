@@ -993,10 +993,10 @@ func expandRequestApplicationsEditApplicationItemApplicationSet(ctx context.Cont
 	return &request
 }
 
-func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacentersdkgo.GetApplicationsQueryParams, vID string) (*dnacentersdkgo.ResponseItemApplicationPolicyGetApplications, error) {
+func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacentersdkgo.GetApplicationsQueryParams, vID string) (*dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications
+	var foundItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse
 	var ite *dnacentersdkgo.ResponseApplicationPolicyGetApplications
 
 	if queryParams.Name != "" {
@@ -1008,11 +1008,14 @@ func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacenter
 		if items == nil {
 			return foundItem, err
 		}
-		itemsCopy := *items
+		itemsCopy := *items.Response
+		if itemsCopy != nil {
+			return foundItem, err
+		}
 		for _, item := range itemsCopy {
 			// Call get by _ method and set value to foundItem and return
 			if item.Name == queryParams.Name {
-				var getItem *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications
+				var getItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse
 				getItem = &item
 				foundItem = getItem
 				return foundItem, err
@@ -1022,11 +1025,11 @@ func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacenter
 		queryParams.Offset = 1
 		//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
 		nResponse, _, err := client.ApplicationPolicy.GetApplications(nil)
-		maxPageSize := len(*nResponse)
+		maxPageSize := len(*nResponse.Response)
 		//maxPageSize := 10
-		for len(*nResponse) > 0 {
+		for len(*nResponse.Response) > 0 {
 			time.Sleep(15 * time.Second)
-			for _, item := range *nResponse {
+			for _, item := range *nResponse.Response {
 				if vID == item.ID {
 					foundItem = &item
 					return foundItem, err
