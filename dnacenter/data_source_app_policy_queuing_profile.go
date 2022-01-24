@@ -591,7 +591,7 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItems(items *[]dn
 	return respItems
 }
 
-func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponse) map[string]interface{} {
+func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponse) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -626,7 +626,9 @@ func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItem(item *dnacen
 	respItem["clause"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsClause(item.Clause)
 	respItem["contract_classifier"] = flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsContractClassifier(item.ContractClassifier)
 
-	return respItem
+	return []map[string]interface{}{
+		respItem,
+	}
 }
 
 func flattenApplicationPolicyGetApplicationPolicyQueuingProfileItemsTargetIDList(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationPolicyQueuingProfileResponseTargetIDList) []interface{} {
