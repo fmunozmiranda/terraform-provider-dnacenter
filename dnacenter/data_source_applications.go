@@ -66,6 +66,51 @@ func dataSourceApplications() *schema.Resource {
 							Computed:    true,
 						},
 
+						"indicative_network_identity": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `displayName`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"id": &schema.Schema{
+										Description: `id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"lower_port": &schema.Schema{
+										Description: `lowerPort`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+
+									"ports": &schema.Schema{
+										Description: `ports`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"protocol": &schema.Schema{
+										Description: `protocol`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"upper_port": &schema.Schema{
+										Description: `upperPort`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
@@ -152,13 +197,13 @@ func dataSourceApplications() *schema.Resource {
 
 									"popularity": &schema.Schema{
 										Description: `Popularity`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 
 									"rank": &schema.Schema{
 										Description: `Rank`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 
@@ -203,7 +248,7 @@ func dataSourceApplications() *schema.Resource {
 
 									"lower_port": &schema.Schema{
 										Description: `Lower Port`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 
@@ -221,7 +266,7 @@ func dataSourceApplications() *schema.Resource {
 
 									"upper_port": &schema.Schema{
 										Description: `Upper Port`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 								},
@@ -271,7 +316,7 @@ func dataSourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m i
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		vItems1 := flattenApplicationPolicyGetApplicationsItems(response1)
+		vItems1 := flattenApplicationPolicyGetApplicationsItems(response1.Response)
 		if err := d.Set("items", vItems1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetApplications response",
@@ -285,7 +330,7 @@ func dataSourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m i
 	return diags
 }
 
-func flattenApplicationPolicyGetApplicationsItems(items *dnacentersdkgo.ResponseApplicationPolicyGetApplications) []map[string]interface{} {
+func flattenApplicationPolicyGetApplicationsItems(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -294,6 +339,7 @@ func flattenApplicationPolicyGetApplicationsItems(items *dnacentersdkgo.Response
 		respItem := make(map[string]interface{})
 		respItem["id"] = item.ID
 		respItem["name"] = item.Name
+		respItem["indicative_network_identity"] = flattenApplicationPolicyGetApplicationsItemsIndicativeNetworkIDentity(item.IndicativeNetworkIDentity)
 		respItem["network_applications"] = flattenApplicationPolicyGetApplicationsItemsNetworkApplications(item.NetworkApplications)
 		respItem["network_identity"] = flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(item.NetworkIDentity)
 		respItem["application_set"] = flattenApplicationPolicyGetApplicationsItemsApplicationSet(item.ApplicationSet)
@@ -301,22 +347,26 @@ func flattenApplicationPolicyGetApplicationsItems(items *dnacentersdkgo.Response
 	}
 	return respItems
 }
-func flattenApplicationPolicyGetApplicationsItem(item *dnacentersdkgo.ResponseItemApplicationPolicyGetApplications) map[string]interface{} {
-	if item == nil {
+
+func flattenApplicationPolicyGetApplicationsItemsIndicativeNetworkIDentity(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponseIndicativeNetworkIDentity) []map[string]interface{} {
+	if items == nil {
 		return nil
 	}
-
-	respItem := make(map[string]interface{})
-	respItem["id"] = item.ID
-	respItem["name"] = item.Name
-	respItem["network_applications"] = flattenApplicationPolicyGetApplicationsItemsNetworkApplications(item.NetworkApplications)
-	respItem["network_identity"] = flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(item.NetworkIDentity)
-	respItem["application_set"] = flattenApplicationPolicyGetApplicationsItemsApplicationSet(item.ApplicationSet)
-
-	return respItem
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["id"] = item.ID
+		respItem["display_name"] = item.DisplayName
+		respItem["lower_port"] = item.LowerPort
+		respItem["ports"] = item.Ports
+		respItem["protocol"] = item.Protocol
+		respItem["upper_port"] = item.UpperPort
+		respItems = append(respItems, respItem)
+	}
+	return respItems
 }
 
-func flattenApplicationPolicyGetApplicationsItemsNetworkApplications(items *[]dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsNetworkApplications) []map[string]interface{} {
+func flattenApplicationPolicyGetApplicationsItemsNetworkApplications(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponseNetworkApplications) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -345,7 +395,7 @@ func flattenApplicationPolicyGetApplicationsItemsNetworkApplications(items *[]dn
 	return respItems
 }
 
-func flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(items *[]dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsNetworkIDentity) []map[string]interface{} {
+func flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponseNetworkIDentity) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -363,7 +413,7 @@ func flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(items *[]dnacen
 	return respItems
 }
 
-func flattenApplicationPolicyGetApplicationsItemsApplicationSet(item *dnacentersdkgo.ResponseItemApplicationPolicyGetApplicationsApplicationSet) []map[string]interface{} {
+func flattenApplicationPolicyGetApplicationsItemsApplicationSet(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponseApplicationSet) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}

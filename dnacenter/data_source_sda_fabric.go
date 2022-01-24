@@ -39,10 +39,31 @@ func dataSourceSdaFabric() *schema.Resource {
 							Computed:    true,
 						},
 
-						"execution_status_url": &schema.Schema{
-							Description: `Execution Status Url`,
+						"execution_id": &schema.Schema{
+							Description: `Execution Id`,
 							Type:        schema.TypeString,
 							Computed:    true,
+						},
+
+						"fabric_domain_type": &schema.Schema{
+							Description: `Fabric Domain type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"fabric_name": &schema.Schema{
+							Description: `Fabric name
+`,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"fabric_type": &schema.Schema{
+							Description: `Fabric type
+`,
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 
 						"status": &schema.Schema{
@@ -105,7 +126,10 @@ func flattenSdaGetSdaFabricInfoItem(item *dnacentersdkgo.ResponseSdaGetSdaFabric
 	respItem := make(map[string]interface{})
 	respItem["status"] = item.Status
 	respItem["description"] = item.Description
-	respItem["execution_status_url"] = item.ExecutionStatusURL
+	respItem["execution_id"] = item.ExecutionID
+	respItem["fabric_name"] = item.FabricName
+	respItem["fabric_type"] = item.FabricType
+	respItem["fabric_domain_type"] = item.FabricDomainType
 	return []map[string]interface{}{
 		respItem,
 	}
