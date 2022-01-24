@@ -330,7 +330,7 @@ func dataSourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m i
 	return diags
 }
 
-func flattenApplicationPolicyGetApplicationsItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse) map[string]interface{} {
+func flattenApplicationPolicyGetApplicationsItem(item *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -341,7 +341,9 @@ func flattenApplicationPolicyGetApplicationsItem(item *dnacentersdkgo.ResponseAp
 	respItem["network_applications"] = flattenApplicationPolicyGetApplicationsItemsNetworkApplications(item.NetworkApplications)
 	respItem["network_identity"] = flattenApplicationPolicyGetApplicationsItemsNetworkIDentity(item.NetworkIDentity)
 	respItem["application_set"] = flattenApplicationPolicyGetApplicationsItemsApplicationSet(item.ApplicationSet)
-	return respItem
+	return []map[string]interface{}{
+		respItem,
+	}
 }
 
 func flattenApplicationPolicyGetApplicationsItems(items *[]dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse) []map[string]interface{} {

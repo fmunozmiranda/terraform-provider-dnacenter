@@ -426,7 +426,7 @@ func resourceApplicationsCreate(ctx context.Context, d *schema.ResourceData, m i
 		return resourceApplicationsRead(ctx, d, m)
 	}
 
-	request1 := expandRequestApplicationsCreateApplication(ctx, "parameters.0", d)
+	request1 := expandRequestApplicationsCreateApplication(ctx, "parameters", d)
 	if request1 != nil {
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 	}
@@ -516,7 +516,7 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams)
-		request1 := expandRequestApplicationsEditApplication(ctx, "parameters.0", d)
+		request1 := expandRequestApplicationsEditApplication(ctx, "parameters", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.EditApplication(request1)
 		if err != nil || response1 == nil {
