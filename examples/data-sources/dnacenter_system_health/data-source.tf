@@ -2,8 +2,8 @@
 data "dnacenter_system_health" "example" {
   provider  = dnacenter
   domain    = "string"
-  limit     = 1
-  offset    = 1
+  limit     = "#"
+  offset    = "#"
   subdomain = "string"
   summary   = "false"
 }

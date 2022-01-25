@@ -2,7 +2,7 @@
 data "dnacenter_client_proximity" "example" {
   provider        = dnacenter
   number_days     = 1
-  time_resolution = 1.0
+  time_resolution = 1
   username        = "string"
 }
 

@@ -1,5 +1,5 @@
 
-data "dnacdnacenter_profiling_rules_in_bulk_create" "example" {
+data "dnacenter_profiling_rules_in_bulk_create" "example" {
   provider = dnacenter
   profiling_rules {
 
@@ -13,8 +13,9 @@ data "dnacdnacenter_profiling_rules_in_bulk_create" "example" {
         operator             = "string"
         value                = "string"
       }
-      operator = "string"
-      type     = "string"
+      condition_group = ["string"]
+      operator        = "string"
+      type            = "string"
     }
     is_deleted       = "false"
     last_modified_by = "string"

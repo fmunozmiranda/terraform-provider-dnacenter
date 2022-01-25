@@ -4,7 +4,7 @@ data "dnacenter_license_device_license_summary" "example" {
   device_type          = "string"
   device_uuid          = "string"
   dna_level            = "string"
-  limit                = 1
+  limit                = "#"
   order                = "string"
   page_number          = 1
   registration_status  = "string"

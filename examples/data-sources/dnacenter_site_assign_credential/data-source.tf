@@ -1,5 +1,5 @@
 
-data "dnacdnacenter_site_assign_credential" "example" {
+data "dnacenter_site_assign_credential" "example" {
   provider         = dnacenter
   site_id          = "string"
   cli_id           = "string"

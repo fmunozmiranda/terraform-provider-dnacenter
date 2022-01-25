@@ -1,10 +1,13 @@
 
-data "dnacdnacenter_service_provider_create" "example" {
+data "dnacenter_service_provider_create" "example" {
   provider = dnacenter
-  qos {
+  settings {
 
-    model        = "string"
-    profile_name = "string"
-    wan_provider = "string"
+    qos {
+
+      model        = "string"
+      profile_name = "string"
+      wan_provider = "string"
+    }
   }
 }

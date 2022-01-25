@@ -1,5 +1,5 @@
 
-data "dnacdnacenter_golden_tag_image_delete" "example" {
+data "dnacenter_golden_tag_image_delete" "example" {
   provider                 = dnacenter
   device_family_identifier = "string"
   device_role              = "string"

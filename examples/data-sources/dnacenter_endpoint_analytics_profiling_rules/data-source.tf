@@ -2,8 +2,8 @@
 data "dnacenter_endpoint_analytics_profiling_rules" "example" {
   provider        = dnacenter
   include_deleted = "false"
-  limit           = 1
-  offset          = 1
+  limit           = "#"
+  offset          = "#"
   order           = "string"
   rule_type       = "string"
   sort_by         = "string"

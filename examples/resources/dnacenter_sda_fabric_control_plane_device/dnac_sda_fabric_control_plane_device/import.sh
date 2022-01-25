@@ -1,1 +1,0 @@
-terraform import dnac_sda_fabric_control_plane_device.example "id:=string"

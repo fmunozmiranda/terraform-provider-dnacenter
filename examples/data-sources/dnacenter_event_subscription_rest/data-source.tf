@@ -2,8 +2,8 @@
 data "dnacenter_event_subscription_rest" "example" {
   provider  = dnacenter
   event_ids = "string"
-  limit     = 1
-  offset    = 1
+  limit     = "#"
+  offset    = "#"
   order     = "string"
   sort_by   = "string"
 }

@@ -6,21 +6,21 @@ data "dnacenter_event_series_audit_logs" "example" {
   description        = "string"
   device_id          = "string"
   domain             = "string"
-  end_time           = 1609459200
+  end_time           = "hh:mm"
   event_hierarchy    = "string"
   event_id           = "string"
   instance_id        = "string"
   is_system_events   = "false"
-  limit              = 1
+  limit              = "#"
   name               = "string"
-  offset             = 1
+  offset             = "#"
   order              = "string"
   parent_instance_id = "string"
   severity           = "string"
   site_id            = "string"
   sort_by            = "string"
   source             = "string"
-  start_time         = 1609459200
+  start_time         = "hh:mm"
   sub_domain         = "string"
   user_id            = "string"
 }

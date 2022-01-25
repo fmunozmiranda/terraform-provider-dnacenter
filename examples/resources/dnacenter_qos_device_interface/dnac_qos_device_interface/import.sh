@@ -1,1 +1,0 @@
-terraform import dnac_qos_device_interface.example "id:=string"

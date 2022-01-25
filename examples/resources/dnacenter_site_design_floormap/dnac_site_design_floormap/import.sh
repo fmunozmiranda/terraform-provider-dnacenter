@@ -1,1 +1,0 @@
-terraform import dnac_site_design_floormap.example "floor_id:=string"

@@ -1,45 +1,100 @@
 
-data "dnacdnacenter_app_policy_intent_create" "example" {
+data "dnacenter_app_policy_intent_create" "example" {
   provider = dnacenter
-  advanced_policy_scope {
+  create_list {
 
-    advanced_policy_scope_element {
+    advanced_policy_scope {
 
-      group_id = ["string"]
-      ssid     = ["string"]
+      advanced_policy_scope_element {
+
+        group_id = ["string"]
+        ssid     = ["string"]
+      }
+      name = "string"
     }
-    name = "string"
-  }
-  consumer {
+    consumer {
 
-    scalable_group {
+      scalable_group {
+
+        id_ref = "string"
+      }
+    }
+    contract {
 
       id_ref = "string"
     }
-  }
-  contract {
+    delete_policy_status = "string"
+    exclusive_contract {
 
-    id_ref = "string"
-  }
-  delete_policy_status = "string"
-  exclusive_contract {
+      clause {
 
-    clause {
+        device_removal_behavior = "string"
+        host_tracking_enabled   = "false"
+        relevance_level         = "string"
+        type                    = "string"
+      }
+    }
+    name         = "string"
+    policy_scope = "string"
+    priority     = "string"
+    producer {
 
-      device_removal_behavior = "string"
-      host_tracking_enabled   = "false"
-      relevance_level         = "string"
-      type                    = "string"
+      scalable_group {
+
+        id_ref = "string"
+      }
     }
   }
-  name         = "string"
-  policy_scope = "string"
-  priority     = "string"
-  producer {
+  delete_list = ["string"]
+  update_list {
 
-    scalable_group {
+    advanced_policy_scope {
+
+      advanced_policy_scope_element {
+
+        group_id = ["string"]
+        id       = "string"
+        ssid     = ["string"]
+      }
+      id   = "string"
+      name = "string"
+    }
+    consumer {
+
+      id = "string"
+      scalable_group {
+
+        id_ref = "string"
+      }
+    }
+    contract {
 
       id_ref = "string"
+    }
+    delete_policy_status = "string"
+    exclusive_contract {
+
+      clause {
+
+        device_removal_behavior = "string"
+        host_tracking_enabled   = "false"
+        id                      = "string"
+        relevance_level         = "string"
+        type                    = "string"
+      }
+      id = "string"
+    }
+    id           = "string"
+    name         = "string"
+    policy_scope = "string"
+    priority     = "string"
+    producer {
+
+      id = "string"
+      scalable_group {
+
+        id_ref = "string"
+      }
     }
   }
 }

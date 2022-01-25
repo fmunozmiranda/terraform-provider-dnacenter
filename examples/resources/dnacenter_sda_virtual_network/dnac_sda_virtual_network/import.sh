@@ -1,1 +1,0 @@
-terraform import dnac_sda_virtual_network.example "id:=string"

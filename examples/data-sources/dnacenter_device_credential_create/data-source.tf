@@ -1,45 +1,48 @@
 
-data "dnacdnacenter_device_credential_create" "example" {
+data "dnacenter_device_credential_create" "example" {
   provider = dnacenter
-  cli_credential {
+  settings {
 
-    description     = "string"
-    enable_password = "string"
-    password        = "******"
-    username        = "string"
-  }
-  https_read {
+    cli_credential {
 
-    name     = "string"
-    password = "******"
-    port     = 9090
-    username = "string"
-  }
-  https_write {
+      description     = "string"
+      enable_password = "string"
+      password        = "******"
+      username        = "string"
+    }
+    https_read {
 
-    name     = "string"
-    password = "******"
-    port     = 9090
-    username = "string"
-  }
-  snmp_v2c_read {
+      name     = "string"
+      password = "******"
+      port     = 1
+      username = "string"
+    }
+    https_write {
 
-    description    = "string"
-    read_community = "string"
-  }
-  snmp_v2c_write {
+      name     = "string"
+      password = "******"
+      port     = 1
+      username = "string"
+    }
+    snmp_v2c_read {
 
-    description     = "string"
-    write_community = "string"
-  }
-  snmp_v3 {
+      description    = "string"
+      read_community = "string"
+    }
+    snmp_v2c_write {
 
-    auth_password    = "string"
-    auth_type        = "string"
-    description      = "string"
-    privacy_password = "string"
-    privacy_type     = "string"
-    snmp_mode        = "string"
-    username         = "string"
+      description     = "string"
+      write_community = "string"
+    }
+    snmp_v3 {
+
+      auth_password    = "string"
+      auth_type        = "string"
+      description      = "string"
+      privacy_password = "string"
+      privacy_type     = "string"
+      snmp_mode        = "string"
+      username         = "string"
+    }
   }
 }

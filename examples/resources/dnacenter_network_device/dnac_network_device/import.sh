@@ -1,1 +1,0 @@
-terraform import dnac_network_device.example "id:=string"

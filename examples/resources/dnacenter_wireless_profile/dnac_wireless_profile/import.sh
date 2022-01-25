@@ -1,1 +1,0 @@
-terraform import dnac_wireless_profile.example "id:=string"

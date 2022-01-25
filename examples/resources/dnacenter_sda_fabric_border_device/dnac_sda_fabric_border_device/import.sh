@@ -1,1 +1,0 @@
-terraform import dnac_sda_fabric_border_device.example "id:=string"

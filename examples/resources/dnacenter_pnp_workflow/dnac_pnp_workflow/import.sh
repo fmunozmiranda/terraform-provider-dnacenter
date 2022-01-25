@@ -1,1 +1,0 @@
-terraform import dnac_pnp_workflow.example "id:=string"

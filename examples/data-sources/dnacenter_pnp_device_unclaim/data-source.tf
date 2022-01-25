@@ -1,5 +1,5 @@
 
-data "dnacdnacenter_pnp_device_unclaim" "example" {
+data "dnacenter_pnp_device_unclaim" "example" {
   provider       = dnacenter
   device_id_list = ["string"]
 }

@@ -1,5 +1,5 @@
 
-data "dnacdnacenter_threat_summary" "example" {
+data "dnacenter_threat_summary" "example" {
   provider     = dnacenter
   end_time     = 1
   site_id      = ["string"]

@@ -1,8 +1,8 @@
 
-data "dnacenter_command_runner_keywords" "example" {
+data "dnacenter_dna_command_runner_keywords" "example" {
   provider = dnacenter
 }
 
-output "dnacenter_command_runner_keywords_example" {
-  value = data.dnacenter_command_runner_keywords.example.items
+output "dnacenter_dna_command_runner_keywords_example" {
+  value = data.dnacenter_dna_command_runner_keywords.example.items
 }

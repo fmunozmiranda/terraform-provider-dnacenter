@@ -1,17 +1,22 @@
 
-data "dnacdnacenter_pnp_device_reset" "example" {
+data "dnacenter_pnp_device_reset" "example" {
   provider = dnacenter
-  config_list {
+  device_reset_list {
 
-    config_id = "string"
-    config_parameters {
+    config_list {
 
-      key   = "string"
-      value = "string"
+      config_id = "string"
+      config_parameters {
+
+        key   = "string"
+        value = "string"
+      }
     }
+    device_id                  = "string"
+    license_level              = "string"
+    license_type               = "string"
+    top_of_stack_serial_number = "string"
   }
-  device_id                  = "string"
-  license_level              = "string"
-  license_type               = "string"
-  top_of_stack_serial_number = "string"
+  project_id  = "string"
+  workflow_id = "string"
 }

@@ -1,9 +1,6 @@
 
-data "dnacdnacenter_swim_trigger_distribution" "example" {
-  provider = dnacenter
-  payload {
-
-    device_uuid = "string"
-    image_uuid  = "string"
-  }
+data "dnacenter_swim_trigger_distribution" "example" {
+  provider    = dnacenter
+  device_uuid = "string"
+  image_uuid  = "string"
 }
