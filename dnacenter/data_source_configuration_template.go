@@ -1506,6 +1506,22 @@ func flattenConfigurationTemplatesGetsTheTemplatesAvailableItems(items *dnacente
 	return respItems
 }
 
+func flattenConfigurationTemplatesGetsTheTemplatesAvailableItem(item *dnacentersdkgo.ResponseItemConfigurationTemplatesGetsTheTemplatesAvailable) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+	respItem := make(map[string]interface{})
+	respItem["composite"] = boolPtrToString(item.Composite)
+	respItem["name"] = item.Name
+	respItem["project_id"] = item.ProjectID
+	respItem["project_name"] = item.ProjectName
+	respItem["template_id"] = item.TemplateID
+	respItem["versions_info"] = flattenConfigurationTemplatesGetsTheTemplatesAvailableItemsVersionsInfo(item.VersionsInfo)
+	return []map[string]interface{}{
+		respItem,
+	}
+}
+
 func flattenConfigurationTemplatesGetsTheTemplatesAvailableItemsVersionsInfo(items *[]dnacentersdkgo.ResponseItemConfigurationTemplatesGetsTheTemplatesAvailableVersionsInfo) []map[string]interface{} {
 	if items == nil {
 		return nil

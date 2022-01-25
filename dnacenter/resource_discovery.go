@@ -696,6 +696,22 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 			"Failure when executing StartDiscovery", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		diags = append(diags, diagError(
+			"Failure when executing CreateDiscovery", err))
+		return diags
+	}
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
 	resourceMap["name"] = vvName
@@ -825,6 +841,22 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdatesAnExistingDiscoveryBySpecifiedID", err,
 				"Failure at UpdatesAnExistingDiscoveryBySpecifiedID, unexpected response", ""))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateDiscovery", err))
 			return diags
 		}
 	}

@@ -2162,7 +2162,7 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 
 		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
 
-		response2, restyResp2, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(response1.ID, &queryParams2)
+		response2, restyResp2, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(response1.TemplateID, &queryParams2)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -2268,6 +2268,22 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateTemplate", err,
 				"Failure at UpdateTemplate, unexpected response", ""))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing CreateApplicationSet", err))
 			return diags
 		}
 	}
@@ -3372,19 +3388,19 @@ func expandRequestConfigurationTemplateUpdateTemplateValidationErrorsTemplateErr
 	return &request
 }
 
-func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, queryParams dnacentersdkgo.GetsTheTemplatesAvailableQueryParams, vName string) (*dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse, error) {
+func searchConfigurationTemplatesGetsTheTemplatesAvailable(m interface{}, queryParams dnacentersdkgo.GetsTheTemplatesAvailableQueryParams, vName string) (*dnacentersdkgo.ResponseItemConfigurationTemplatesGetsTheTemplatesAvailable, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseApplicationPolicyGetApplicationsResponse
+	var foundItem *dnacentersdkgo.ResponseItemConfigurationTemplatesGetsTheTemplatesAvailable
 	//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
-	nResponse, _, err := client.ApplicationPolicy.GetApplications(nil)
+	nResponse, _, err := client.ConfigurationTemplates.GetsTheTemplatesAvailable(nil)
 
 	if err != nil {
 		return foundItem, err
 	}
 	//maxPageSize := 10
 
-	for _, item := range *nResponse.Response {
+	for _, item := range *nResponse {
 		if vName == item.Name {
 			foundItem = &item
 			return foundItem, err

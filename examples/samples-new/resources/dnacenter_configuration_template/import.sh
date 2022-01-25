@@ -1,0 +1,1 @@
+terraform import dnac_configuration_template.example "template_id:=string"

@@ -1173,7 +1173,7 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 							Description: `projectId path parameter. projectId(UUID) of project to be deleted
 `,
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"tags": &schema.Schema{
 							Type:     schema.TypeList,
@@ -2309,6 +2309,22 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			"Failure when executing CreateProject", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		diags = append(diags, diagError(
+			"Failure when executing CreateConfigurationTemplateProject", err))
+		return diags
+	}
 	resourceMap := make(map[string]string)
 	resourceMap["project_id"] = vvProjectID
 	resourceMap["name"] = vvName
@@ -2450,6 +2466,22 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateProject", err,
 				"Failure at UpdateProject, unexpected response", ""))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing UdpateConfigurationTemplateProject", err))
 			return diags
 		}
 	}

@@ -726,7 +726,7 @@ func resourceApplicationsDelete(ctx context.Context, d *schema.ResourceData, m i
 }
 func expandRequestApplicationsCreateApplication(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplication {
 	request := dnacentersdkgo.RequestApplicationPolicyCreateApplication{}
-	if v := expandRequestApplicationsCreateApplicationItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestApplicationsCreateApplicationItemArray(ctx, key, d); v != nil {
 		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
@@ -950,7 +950,7 @@ func expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentityArra
 }
 
 func expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentity(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity {
-	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationIndicativeNetworkIDentity{}
+	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}
