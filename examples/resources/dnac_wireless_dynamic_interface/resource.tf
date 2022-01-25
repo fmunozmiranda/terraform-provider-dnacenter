@@ -4,7 +4,7 @@ resource "dnacenter_wireless_dynamic_interface" "example" {
     parameters {
       
       interface_name = "string"
-      vlan_id = ------
+      vlan_id = 1.0
     }
 }
 

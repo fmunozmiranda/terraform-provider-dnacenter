@@ -1,69 +1,6 @@
 
 resource "dnacenter_discovery" "example" {
     provider = dnacenter
-    item {
-      
-      # attribute_info = [------]
-      # cdp_level = ------
-      # device_ids = ------
-      # discovery_condition = ------
-      # discovery_status = ------
-      # discovery_type = ------
-      # enable_password_list = ------
-      # global_credential_id_list = [------]
-      http_read_credential {
-        
-        # comments = ------
-        # credential_type = ------
-        # description = ------
-        # id = ------
-        # instance_tenant_id = ------
-        # instance_uuid = ------
-        # password = ------
-        # port = ------
-        # secure = ------
-        # username = ------
-      }
-      http_write_credential {
-        
-        # comments = ------
-        # credential_type = ------
-        # description = ------
-        # id = ------
-        # instance_tenant_id = ------
-        # instance_uuid = ------
-        # password = ------
-        # port = ------
-        # secure = ------
-        # username = ------
-      }
-      # id = ------
-      # ip_address_list = ------
-      # ip_filter_list = ------
-      # is_auto_cdp = ------
-      # lldp_level = ------
-      # name = ------
-      # netconf_port = ------
-      # num_devices = ------
-      # parent_discovery_id = ------
-      # password_list = ------
-      # preferred_mgmt_ipmethod = ------
-      # protocol_order = ------
-      # retry_count = ------
-      # snmp_auth_passphrase = ------
-      # snmp_auth_protocol = ------
-      # snmp_mode = ------
-      # snmp_priv_passphrase = ------
-      # snmp_priv_protocol = ------
-      # snmp_ro_community = ------
-      # snmp_ro_community_desc = ------
-      # snmp_rw_community = ------
-      # snmp_rw_community_desc = ------
-      # snmp_user_name = ------
-      # time_out = ------
-      # update_mgmt_ip = ------
-      # user_name_list = ------
-    }
     parameters {
       
       attribute_info = ["string"]

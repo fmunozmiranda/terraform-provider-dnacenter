@@ -14,7 +14,7 @@ resource "dnacenter_nfv_profile" "example" {
             
             service_name = "string"
           }
-          vlan_id = ------
+          vlan_id = 1.0
           vlan_mode = "string"
         }
         custom_template {
@@ -49,7 +49,7 @@ resource "dnacenter_nfv_profile" "example" {
         vlan_for_l2 {
           
           vlan_description = "string"
-          vlan_id = ------
+          vlan_id = 1.0
           vlan_type = "string"
         }
       }

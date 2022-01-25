@@ -1,80 +1,44 @@
 
 resource "dnacenter_endpoint_analytics_profiling_rules" "example" {
-    provider = dnacenter
-    item {
-      
-      # cluster_id = ------
-      condition_groups {
-        
-        condition {
-          
-          # attribute = ------
-          # attribute_dictionary = ------
-          # operator = ------
-          # value = ------
-        }
-        # condition_group = [------]
-        # operator = ------
-        # type = ------
+  provider = dnacenter
+  parameters {
+
+    cluster_id = "string"
+    condition_groups {
+
+      condition {
+
+        attribute            = "string"
+        attribute_dictionary = "string"
+        operator             = "string"
+        value                = "string"
       }
-      # is_deleted = ------
-      # last_modified_by = ------
-      # last_modified_on = ------
-      # plugin_id = ------
-      # rejected = ------
-      result {
-        
-        # device_type = [------]
-        # hardware_manufacturer = [------]
-        # hardware_model = [------]
-        # operating_system = [------]
-      }
-      # rule_id = ------
-      # rule_name = ------
-      # rule_priority = ------
-      # rule_type = ------
-      # rule_version = ------
-      # source_priority = ------
-      # used_attributes = [------]
+      condition_group = ["string"]
+      operator        = "string"
+      type            = "string"
     }
-    parameters {
-      
-      cluster_id = "string"
-      condition_groups {
-        
-        condition {
-          
-          attribute = "string"
-          attribute_dictionary = "string"
-          operator = "string"
-          value = "string"
-        }
-        condition_group = ["string"]
-        operator = "string"
-        type = "string"
-      }
-      is_deleted = "false"
-      last_modified_by = "string"
-      last_modified_on = 1
-      plugin_id = "string"
-      rejected = "false"
-      result {
-        
-        device_type = ["string"]
-        hardware_manufacturer = ["string"]
-        hardware_model = ["string"]
-        operating_system = ["string"]
-      }
-      rule_id = "string"
-      rule_name = "string"
-      rule_priority = 1
-      rule_type = "string"
-      rule_version = 1
-      source_priority = 1
-      used_attributes = ["string"]
+    is_deleted       = "false"
+    last_modified_by = "string"
+    last_modified_on = 1
+    plugin_id        = "string"
+    rejected         = "false"
+    result {
+
+      device_type           = ["string"]
+      hardware_manufacturer = ["string"]
+      hardware_model        = ["string"]
+      operating_system      = ["string"]
     }
+    rule_id         = "string"
+    rule_name       = "string"
+    rule_priority   = 1
+    rule_type       = "string"
+    rule_version    = 1
+    source_priority = 1
+    used_attributes = ["string"]
+  }
 }
 
 output "dnacenter_endpoint_analytics_profiling_rules_example" {
-    value = dnacenter_endpoint_analytics_profiling_rules.example
+  value = dnacenter_endpoint_analytics_profiling_rules.example
 }

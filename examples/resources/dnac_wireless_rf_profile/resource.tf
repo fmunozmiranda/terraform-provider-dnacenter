@@ -14,10 +14,10 @@ resource "dnacenter_wireless_rf_profile" "example" {
         
         data_rates = "string"
         mandatory_data_rates = "string"
-        max_power_level = ------
-        min_power_level = ------
+        max_power_level = 1.0
+        min_power_level = 1.0
         parent_profile = "string"
-        power_threshold_v1 = ------
+        power_threshold_v1 = 1
         radio_channels = "string"
         rx_sop_threshold = "string"
       }
@@ -25,10 +25,10 @@ resource "dnacenter_wireless_rf_profile" "example" {
         
         data_rates = "string"
         mandatory_data_rates = "string"
-        max_power_level = ------
-        min_power_level = ------
+        max_power_level = 1.0
+        min_power_level = 1.0
         parent_profile = "string"
-        power_threshold_v1 = ------
+        power_threshold_v1 = 1
         radio_channels = "string"
         rx_sop_threshold = "string"
       }
