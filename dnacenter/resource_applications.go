@@ -65,6 +65,51 @@ func resourceApplications() *schema.Resource {
 							Computed:    true,
 						},
 
+						"indicative_network_identity": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `displayName`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"id": &schema.Schema{
+										Description: `id`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"lower_port": &schema.Schema{
+										Description: `lowerPort`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+
+									"ports": &schema.Schema{
+										Description: `ports`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"protocol": &schema.Schema{
+										Description: `protocol`,
+										Type:        schema.TypeString,
+										Computed:    true,
+									},
+
+									"upper_port": &schema.Schema{
+										Description: `upperPort`,
+										Type:        schema.TypeInt,
+										Computed:    true,
+									},
+								},
+							},
+						},
+
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
@@ -151,13 +196,13 @@ func resourceApplications() *schema.Resource {
 
 									"popularity": &schema.Schema{
 										Description: `Popularity`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 
 									"rank": &schema.Schema{
 										Description: `Rank`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 
@@ -202,7 +247,7 @@ func resourceApplications() *schema.Resource {
 
 									"lower_port": &schema.Schema{
 										Description: `Lower Port`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 
@@ -220,7 +265,7 @@ func resourceApplications() *schema.Resource {
 
 									"upper_port": &schema.Schema{
 										Description: `Upper Port`,
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										Computed:    true,
 									},
 								},
@@ -256,10 +301,49 @@ func resourceApplications() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 						},
+						"indicative_network_identity": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+
+									"display_name": &schema.Schema{
+										Description: `displayName`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"id": &schema.Schema{
+										Description: `id`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"lower_port": &schema.Schema{
+										Description: `lowerPort`,
+										Type:        schema.TypeInt,
+										Optional:    true,
+									},
+									"ports": &schema.Schema{
+										Description: `ports`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"protocol": &schema.Schema{
+										Description: `protocol`,
+										Type:        schema.TypeString,
+										Optional:    true,
+									},
+									"upper_port": &schema.Schema{
+										Description: `upperPort`,
+										Type:        schema.TypeInt,
+										Optional:    true,
+									},
+								},
+							},
+						},
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 						},
 						"network_applications": &schema.Schema{
 							Type:     schema.TypeList,
@@ -442,6 +526,23 @@ func resourceApplicationsCreate(ctx context.Context, d *schema.ResourceData, m i
 			"Failure when executing CreateApplication", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		diags = append(diags, diagError(
+			"Failure when executing CreateApplicationSet", err))
+		return diags
+	}
+
 	resourceMap := make(map[string]string)
 	resourceMap["name"] = vvName
 	resourceMap["id"] = vvID
@@ -532,6 +633,22 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 				"Failure at EditApplication, unexpected response", ""))
 			return diags
 		}
+		taskId := response1.Response.TaskID
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing UdpateApplication", err))
+			return diags
+		}
 	}
 
 	return resourceApplicationsRead(ctx, d, m)
@@ -560,6 +677,8 @@ func resourceApplicationsDelete(ctx context.Context, d *schema.ResourceData, m i
 			// Assume that element it is already gone
 			return diags
 		}
+		log.Printf("[DEBUG] itemID => %s", item1.ID)
+		log.Printf("[DEBUG] itemName => %s", item1.Name)
 		vID = item1.ID
 	}
 
@@ -579,6 +698,23 @@ func resourceApplicationsDelete(ctx context.Context, d *schema.ResourceData, m i
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing DeleteApplication", err,
 			"Failure at DeleteApplication, unexpected response", ""))
+		return diags
+	}
+
+	taskId := response1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		diags = append(diags, diagError(
+			"Failure when executing DeleteApplication", err))
 		return diags
 	}
 
@@ -637,6 +773,9 @@ func expandRequestApplicationsCreateApplicationItem(ctx context.Context, key str
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".application_set")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".application_set")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".application_set")))) {
 		request.ApplicationSet = expandRequestApplicationsCreateApplicationItemApplicationSet(ctx, key+".application_set.0", d)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".indicative_network_identity")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".indicative_network_identity")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".indicative_network_identity")))) {
+		request.IndicativeNetworkIDentity = expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentityArray(ctx, key+".indicative_network_identity", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -778,6 +917,57 @@ func expandRequestApplicationsCreateApplicationItemApplicationSet(ctx context.Co
 	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationApplicationSet{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id_ref")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id_ref")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id_ref")))) {
 		request.IDRef = interfaceToString(v)
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}
+
+func expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentityArray(ctx context.Context, key string, d *schema.ResourceData) *[]dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity {
+	request := []dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity{}
+	key = fixKeyAccess(key)
+	o := d.Get(key)
+	if o == nil {
+		return nil
+	}
+	objs := o.([]interface{})
+	if len(objs) == 0 {
+		return nil
+	}
+	for item_no, _ := range objs {
+		i := expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentity(ctx, fmt.Sprintf("%s.%d", key, item_no), d)
+		if i != nil {
+			request = append(request, *i)
+		}
+	}
+	if isEmptyValue(reflect.ValueOf(request)) {
+		return nil
+	}
+
+	return &request
+}
+
+func expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentity(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity {
+	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationIndicativeNetworkIDentity{}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
+		request.ID = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".display_name")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".display_name")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".display_name")))) {
+		request.DisplayName = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".lower_port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".lower_port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".lower_port")))) {
+		request.LowerPort = interfaceToIntPtr(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".ports")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".ports")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".ports")))) {
+		request.Ports = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".protocol")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".protocol")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".protocol")))) {
+		request.Protocol = interfaceToString(v)
+	}
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".upper_port")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".upper_port")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".upper_port")))) {
+		request.UpperPort = interfaceToIntPtr(v)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
@@ -1009,7 +1199,7 @@ func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacenter
 			return foundItem, err
 		}
 		itemsCopy := *items.Response
-		if itemsCopy != nil {
+		if itemsCopy == nil {
 			return foundItem, err
 		}
 		for _, item := range itemsCopy {

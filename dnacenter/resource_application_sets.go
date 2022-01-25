@@ -318,7 +318,7 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 		d.SetId(joinResourceID(resourceMap))
 		return resourceApplicationSetsRead(ctx, d, m)
 	}
-	request1 := expandRequestApplicationSetsCreateApplicationSet(ctx, "parameters.0", d)
+	request1 := expandRequestApplicationSetsCreateApplicationSet(ctx, "parameters", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	resp1, restyResp1, err := client.ApplicationPolicy.CreateApplicationSet(request1)
@@ -332,6 +332,23 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 			"Failure when executing CreateApplicationSet", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		diags = append(diags, diagError(
+			"Failure when executing CreateApplicationSet", err))
+		return diags
+	}
+
 	resourceMap := make(map[string]string)
 	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
@@ -433,7 +450,7 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 }
 func expandRequestApplicationSetsCreateApplicationSet(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateApplicationSet {
 	request := dnacentersdkgo.RequestApplicationPolicyCreateApplicationSet{}
-	if v := expandRequestApplicationSetsCreateApplicationSetItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestApplicationSetsCreateApplicationSetItemArray(ctx, key, d); v != nil {
 		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
