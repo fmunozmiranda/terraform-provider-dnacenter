@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 terraform {
   required_providers {
     dnacenter = {
@@ -13,7 +11,6 @@ terraform {
 provider "dnacenter" {
 }
 
->>>>>>> Stashed changes
 data "dnacenter_event_subscription" "example" {
   provider  = dnacenter
   event_ids = "string"

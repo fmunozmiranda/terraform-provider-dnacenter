@@ -12,7 +12,7 @@ provider "dnacenter" {
 }
 
 data "dnacenter_device_replacement_count" "example" {
-  provider           = dnacenter
+  provider = dnacenter
 }
 
 output "dnacenter_device_replacement_count_example" {

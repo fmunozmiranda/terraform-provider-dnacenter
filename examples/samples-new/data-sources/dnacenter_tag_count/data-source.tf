@@ -12,7 +12,7 @@ provider "dnacenter" {
 }
 
 data "dnacenter_tag_count" "example" {
-  provider       = dnacenter
+  provider = dnacenter
 }
 
 output "dnacenter_tag_count_example" {

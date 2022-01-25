@@ -12,7 +12,7 @@ provider "dnacenter" {
 }
 
 data "dnacenter_task_count" "example" {
-  provider       = dnacenter
+  provider = dnacenter
 }
 
 output "dnacenter_task_count_example" {

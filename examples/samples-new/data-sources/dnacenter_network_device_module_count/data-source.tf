@@ -12,8 +12,8 @@ provider "dnacenter" {
 }
 
 data "dnacenter_network_device_module_count" "example" {
-  provider                    = dnacenter
-  device_id                   = "3eb928b8-2414-4121-ac35-1247e5d666a4"
+  provider  = dnacenter
+  device_id = "3eb928b8-2414-4121-ac35-1247e5d666a4"
 }
 
 output "dnacenter_network_device_module_count_example" {
