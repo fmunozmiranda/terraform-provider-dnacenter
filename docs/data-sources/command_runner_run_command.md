@@ -16,7 +16,7 @@ It performs create operation on Command Runner.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_command_runner_run_command" "example" {
+data "dnacenter_command_runner_run_command" "example" {
   provider     = dnacenter
   commands     = ["string"]
   description  = "string"

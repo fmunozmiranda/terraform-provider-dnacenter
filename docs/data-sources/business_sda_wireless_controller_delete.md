@@ -16,7 +16,7 @@ It performs delete operation on Fabric Wireless.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_business_sda_wireless_controller_delete" "example" {
+data "dnacenter_business_sda_wireless_controller_delete" "example" {
   provider         = dnacenter
   device_ipaddress = "string"
 }

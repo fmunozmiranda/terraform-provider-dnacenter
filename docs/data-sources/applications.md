@@ -18,9 +18,9 @@ It performs read operation on Application Policy.
 ```terraform
 data "dnacenter_applications" "example" {
   provider = dnacenter
-  limit    = 1
+  limit    = "#"
   name     = "string"
-  offset   = 1
+  offset   = "#"
 }
 
 output "dnacenter_applications_example" {

@@ -16,30 +16,34 @@ It performs create operation on Sites.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_site_create" "example" {
+data "dnacenter_site_create" "example" {
   provider = dnacenter
-  area {
+  site {
 
-    name        = "string"
-    parent_name = "string"
-  }
-  building {
+    area {
 
-    address     = "string"
-    latitude    = 1.0
-    longitude   = 1.0
-    name        = "string"
-    parent_name = "string"
-  }
-  floor {
+      name        = "string"
+      parent_name = "string"
+    }
+    building {
 
-    height      = 1.0
-    length      = 1.0
-    name        = "string"
-    parent_name = "string"
-    rf_model    = "string"
-    width       = 1.0
+      address     = "string"
+      latitude    = 1
+      longitude   = 1
+      name        = "string"
+      parent_name = "string"
+    }
+    floor {
+
+      height      = 1
+      length      = 1
+      name        = "string"
+      parent_name = "string"
+      rf_model    = "string"
+      width       = 1
+    }
   }
+  type = "string"
 }
 ```
 

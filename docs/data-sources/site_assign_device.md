@@ -16,10 +16,13 @@ It performs create operation on Sites.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_site_assign_device" "example" {
+data "dnacenter_site_assign_device" "example" {
   provider = dnacenter
   site_id  = "string"
-  ip       = "string"
+  device {
+
+    ip = "string"
+  }
 }
 ```
 

@@ -16,14 +16,11 @@ It performs create operation on Wireless.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_wireless_psk_override" "example" {
-  provider = dnacenter
-  payload {
-
-    pass_phrase = "string"
-    site        = "string"
-    ssid        = "string"
-  }
+data "dnacenter_wireless_psk_override" "example" {
+  provider    = dnacenter
+  pass_phrase = "string"
+  site        = "string"
+  ssid        = "string"
 }
 ```
 

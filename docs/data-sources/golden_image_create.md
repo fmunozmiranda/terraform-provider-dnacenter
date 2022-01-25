@@ -16,7 +16,7 @@ It performs create operation on Software Image Management (SWIM).
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_golden_image_create" "example" {
+data "dnacenter_golden_image_create" "example" {
   provider                 = dnacenter
   device_family_identifier = "string"
   device_role              = "string"

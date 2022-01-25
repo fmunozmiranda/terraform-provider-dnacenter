@@ -18,7 +18,7 @@ platforms.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_pnp_device_claim_to_site" "example" {
+data "dnacenter_pnp_device_claim_to_site" "example" {
   provider  = dnacenter
   device_id = "string"
   site_id   = "string"

@@ -16,7 +16,7 @@ It performs create operation on Devices.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_network_device_export" "example" {
+data "dnacenter_network_device_export" "example" {
   provider       = dnacenter
   device_uuids   = ["string"]
   id             = "string"

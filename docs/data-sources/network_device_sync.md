@@ -20,7 +20,7 @@ can be seen in the child task of each device
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_network_device_sync" "example" {
+data "dnacenter_network_device_sync" "example" {
   provider   = dnacenter
   force_sync = "false"
 }

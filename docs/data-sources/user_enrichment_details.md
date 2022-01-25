@@ -19,7 +19,9 @@ user and devices that the user is connected to
 
 ```terraform
 data "dnacenter_user_enrichment_details" "example" {
-  provider = dnacenter
+  provider     = dnacenter
+  entity_type  = "string"
+  entity_value = "string"
 }
 
 output "dnacenter_user_enrichment_details_example" {

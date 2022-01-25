@@ -16,7 +16,7 @@ It performs create operation on Network Settings.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_site_assign_credential" "example" {
+data "dnacenter_site_assign_credential" "example" {
   provider         = dnacenter
   site_id          = "string"
   cli_id           = "string"

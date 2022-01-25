@@ -16,7 +16,7 @@ It performs update operation on Sensors.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_sensor_test_run" "example" {
+data "dnacenter_sensor_test_run" "example" {
   provider      = dnacenter
   template_name = "string"
 }

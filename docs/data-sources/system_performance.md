@@ -18,10 +18,10 @@ It performs read operation on Health and Performance.
 ```terraform
 data "dnacenter_system_performance" "example" {
   provider   = dnacenter
-  end_time   = 1609459200
+  end_time   = "hh:mm"
   function   = "string"
   kpi        = "string"
-  start_time = 1609459200
+  start_time = "hh:mm"
 }
 
 output "dnacenter_system_performance_example" {

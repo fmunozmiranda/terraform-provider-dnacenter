@@ -16,7 +16,7 @@ It performs delete operation on Software Image Management (SWIM).
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_golden_tag_image_delete" "example" {
+data "dnacenter_golden_tag_image_delete" "example" {
   provider                 = dnacenter
   device_family_identifier = "string"
   device_role              = "string"

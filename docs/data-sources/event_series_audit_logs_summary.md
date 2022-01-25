@@ -23,7 +23,7 @@ data "dnacenter_event_series_audit_logs_summary" "example" {
   description        = "string"
   device_id          = "string"
   domain             = "string"
-  end_time           = 1609459200
+  end_time           = "hh:mm"
   event_hierarchy    = "string"
   event_id           = "string"
   instance_id        = "string"
@@ -34,7 +34,7 @@ data "dnacenter_event_series_audit_logs_summary" "example" {
   severity           = "string"
   site_id            = "string"
   source             = "string"
-  start_time         = 1609459200
+  start_time         = "hh:mm"
   sub_domain         = "string"
   user_id            = "string"
 }

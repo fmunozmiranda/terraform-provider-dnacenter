@@ -16,7 +16,7 @@ It performs delete operation on Discovery.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_global_credential_delete" "example" {
+data "dnacenter_global_credential_delete" "example" {
   provider             = dnacenter
   global_credential_id = "string"
 }

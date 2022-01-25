@@ -16,7 +16,7 @@ It performs read operation on File.
 ## Example Usage
 
 ```terraform
-data "dnacenter__file" "example" {
+data "dnacenter_file" "example" {
   provider = dnacenter
   dirpath  = "string"
   file_id  = "string"

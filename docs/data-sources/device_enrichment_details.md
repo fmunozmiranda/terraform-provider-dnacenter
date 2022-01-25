@@ -19,7 +19,9 @@ about the device and neighbor topology
 
 ```terraform
 data "dnacenter_device_enrichment_details" "example" {
-  provider = dnacenter
+  provider     = dnacenter
+  entity_type  = "string"
+  entity_value = "string"
 }
 
 output "dnacenter_device_enrichment_details_example" {

@@ -16,7 +16,7 @@ It performs create operation on Configuration Templates.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_configuration_template_import_project" "example" {
+data "dnacenter_configuration_template_import_project" "example" {
   provider   = dnacenter
   do_version = "false"
 }

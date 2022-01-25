@@ -16,7 +16,7 @@ It performs create operation on Fabric Wireless.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_business_sda_wireless_controller_create" "example" {
+data "dnacenter_business_sda_wireless_controller_create" "example" {
   provider            = dnacenter
   device_name         = "string"
   site_name_hierarchy = "string"

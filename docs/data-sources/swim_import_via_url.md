@@ -18,19 +18,16 @@ files extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz and qcow2
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_swim_import_via_url" "example" {
-  provider        = dnacenter
-  schedule_at     = "string"
-  schedule_desc   = "string"
-  schedule_origin = "string"
-  payload {
-
-    application_type = "string"
-    image_family     = "string"
-    source_url       = "string"
-    third_party      = "false"
-    vendor           = "string"
-  }
+data "dnacenter_swim_import_via_url" "example" {
+  provider         = dnacenter
+  schedule_at      = "string"
+  schedule_desc    = "string"
+  schedule_origin  = "string"
+  application_type = "string"
+  image_family     = "string"
+  source_url       = "string"
+  third_party      = "false"
+  vendor           = "string"
 }
 ```
 

@@ -16,14 +16,17 @@ It performs update operation on Network Settings.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_service_provider_update" "example" {
+data "dnacenter_service_provider_update" "example" {
   provider = dnacenter
-  qos {
+  settings {
 
-    model            = "string"
-    old_profile_name = "string"
-    profile_name     = "string"
-    wan_provider     = "string"
+    qos {
+
+      model            = "string"
+      old_profile_name = "string"
+      profile_name     = "string"
+      wan_provider     = "string"
+    }
   }
 }
 ```

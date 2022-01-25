@@ -16,54 +16,57 @@ It performs create operation on Network Settings.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_network_create" "example" {
+data "dnacenter_network_create" "example" {
   provider = dnacenter
   site_id  = "string"
-  client_and_endpoint_aaa {
+  settings {
 
-    ip_address    = "string"
-    network       = "string"
-    protocol      = "string"
-    servers       = "string"
-    shared_secret = "string"
-  }
-  dhcp_server = ["string"]
-  dns_server {
+    client_and_endpoint_aaa {
 
-    domain_name          = "string"
-    primary_ip_address   = "string"
-    secondary_ip_address = "string"
-  }
-  message_of_theday {
+      ip_address    = "string"
+      network       = "string"
+      protocol      = "string"
+      servers       = "string"
+      shared_secret = "string"
+    }
+    dhcp_server = ["string"]
+    dns_server {
 
-    banner_message         = "string"
-    retain_existing_banner = "string"
-  }
-  netflowcollector {
+      domain_name          = "string"
+      primary_ip_address   = "string"
+      secondary_ip_address = "string"
+    }
+    message_of_theday {
 
-    ip_address = "string"
-    port       = 9090
-  }
-  network_aaa {
+      banner_message         = "string"
+      retain_existing_banner = "string"
+    }
+    netflowcollector {
 
-    ip_address    = "string"
-    network       = "string"
-    protocol      = "string"
-    servers       = "string"
-    shared_secret = "string"
-  }
-  ntp_server = ["string"]
-  snmp_server {
+      ip_address = "string"
+      port       = 25
+    }
+    network_aaa {
 
-    configure_dnac_ip = "false"
-    ip_addresses      = ["string"]
-  }
-  syslog_server {
+      ip_address    = "string"
+      network       = "string"
+      protocol      = "string"
+      servers       = "string"
+      shared_secret = "string"
+    }
+    ntp_server = ["string"]
+    snmp_server {
 
-    configure_dnac_ip = "false"
-    ip_addresses      = ["string"]
+      configure_dnac_ip = "false"
+      ip_addresses      = ["string"]
+    }
+    syslog_server {
+
+      configure_dnac_ip = "false"
+      ip_addresses      = ["string"]
+    }
+    timezone = "string"
   }
-  timezone = "string"
 }
 ```
 

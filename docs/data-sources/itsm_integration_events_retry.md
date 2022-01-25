@@ -20,9 +20,8 @@ Ids can be retrieved using the 'Get Failed ITSM Events' API in the 'instanceId' 
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_itsm_integration_events_retry" "example" {
+data "dnacenter_itsm_integration_events_retry" "example" {
   provider = dnacenter
-  payload  = ["string"]
 }
 ```
 

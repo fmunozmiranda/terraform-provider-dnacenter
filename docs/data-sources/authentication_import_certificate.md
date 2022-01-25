@@ -18,10 +18,13 @@ Upload the files to the **certFileUpload** and **pkFileUpload** form data fields
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_authentication_import_certificate" "example" {
-  provider      = dnacenter
-  list_of_users = ["string"]
-  pk_password   = "******"
+data "dnacenter_authentication_import_certificate" "example" {
+  provider       = dnacenter
+  cert_file_path = "string"
+  file_name      = "string"
+  list_of_users  = ["string"]
+  pk_file_path   = "string"
+  pk_password    = "******"
 }
 ```
 

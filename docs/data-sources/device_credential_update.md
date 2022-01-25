@@ -16,54 +16,57 @@ It performs update operation on Network Settings.
 ## Example Usage
 
 ```terraform
-data "dnacdnacenter_device_credential_update" "example" {
+data "dnacenter_device_credential_update" "example" {
   provider = dnacenter
-  cli_credential {
+  settings {
 
-    description     = "string"
-    enable_password = "string"
-    id              = "string"
-    password        = "******"
-    username        = "string"
-  }
-  https_read {
+    cli_credential {
 
-    id       = "string"
-    name     = "string"
-    password = "******"
-    port     = "string"
-    username = "string"
-  }
-  https_write {
+      description     = "string"
+      enable_password = "string"
+      id              = "string"
+      password        = "******"
+      username        = "string"
+    }
+    https_read {
 
-    id       = "string"
-    name     = "string"
-    password = "******"
-    port     = "string"
-    username = "string"
-  }
-  snmp_v2c_read {
+      id       = "string"
+      name     = "string"
+      password = "******"
+      port     = "string"
+      username = "string"
+    }
+    https_write {
 
-    description    = "string"
-    id             = "string"
-    read_community = "string"
-  }
-  snmp_v2c_write {
+      id       = "string"
+      name     = "string"
+      password = "******"
+      port     = "string"
+      username = "string"
+    }
+    snmp_v2c_read {
 
-    description     = "string"
-    id              = "string"
-    write_community = "string"
-  }
-  snmp_v3 {
+      description    = "string"
+      id             = "string"
+      read_community = "string"
+    }
+    snmp_v2c_write {
 
-    auth_password    = "string"
-    auth_type        = "string"
-    description      = "string"
-    id               = "string"
-    privacy_password = "string"
-    privacy_type     = "string"
-    snmp_mode        = "string"
-    username         = "string"
+      description     = "string"
+      id              = "string"
+      write_community = "string"
+    }
+    snmp_v3 {
+
+      auth_password    = "string"
+      auth_type        = "string"
+      description      = "string"
+      id               = "string"
+      privacy_password = "string"
+      privacy_type     = "string"
+      snmp_mode        = "string"
+      username         = "string"
+    }
   }
 }
 ```
