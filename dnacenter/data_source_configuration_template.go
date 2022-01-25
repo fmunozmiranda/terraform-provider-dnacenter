@@ -1682,7 +1682,7 @@ func flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemContainingTempl
 	respItem["default_selected_values"] = item.DefaultSelectedValues
 	respItem["id"] = item.ID
 	respItem["selection_type"] = item.SelectionType
-	respItem["selection_values"] = item.SelectionValues
+	respItem["selection_values"] = flattenConfigurationTemplatesGetsDetailsOfAGivenTemplateItemContainingTemplatesRollbackTemplateParamsSelectionSelectionValues(item.SelectionValues)
 
 	return []map[string]interface{}{
 		respItem,

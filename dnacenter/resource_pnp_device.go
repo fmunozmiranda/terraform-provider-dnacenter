@@ -64,11 +64,8 @@ func resourcePnpDevice() *schema.Resource {
 						},
 						"day_zero_config_preview": &schema.Schema{
 							Description: `Day Zero Config Preview`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"device_info": &schema.Schema{
 							Type:     schema.TypeList,
@@ -256,11 +253,8 @@ func resourcePnpDevice() *schema.Resource {
 
 												"ipv4_address": &schema.Schema{
 													Description: `Ipv4 Address`,
-													Type:        schema.TypeList,
+													Type:        schema.TypeString,
 													Computed:    true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 												"ipv6_address_list": &schema.Schema{
 													Description: `Ipv6 Address List`,
@@ -451,19 +445,13 @@ func resourcePnpDevice() *schema.Resource {
 															},
 															"ipv4_address": &schema.Schema{
 																Description: `Ipv4 Address`,
-																Type:        schema.TypeList,
+																Type:        schema.TypeString,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 															"ipv6_address": &schema.Schema{
 																Description: `Ipv6 Address`,
-																Type:        schema.TypeList,
+																Type:        schema.TypeString,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 															"port": &schema.Schema{
 																Description: `Port`,
@@ -501,19 +489,13 @@ func resourcePnpDevice() *schema.Resource {
 															},
 															"ipv4_address": &schema.Schema{
 																Description: `Ipv4 Address`,
-																Type:        schema.TypeList,
+																Type:        schema.TypeString,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 															"ipv6_address": &schema.Schema{
 																Description: `Ipv6 Address`,
-																Type:        schema.TypeList,
+																Type:        schema.TypeString,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 															"port": &schema.Schema{
 																Description: `Port`,

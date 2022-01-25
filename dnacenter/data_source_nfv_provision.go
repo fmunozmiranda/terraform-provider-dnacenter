@@ -48,6 +48,26 @@ func dataSourceNfvProvision() *schema.Resource {
 					},
 				},
 			},
+			"runsync": &schema.Schema{
+				Description: `__runsync header parameter. Enable this parameter to execute the API and return a response synchronously
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
+			"timeout": &schema.Schema{
+				Description: `__timeout header parameter. During synchronous execution, this defines the maximum time to wait for a response, before the API execution is terminated
+			`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"provisioning": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -758,9 +778,9 @@ func dataSourceNfvProvisionRead(ctx context.Context, d *schema.ResourceData, m i
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vRunsync := d.Get("runsync")
-	vTimeout := d.Get("timeout")
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vRunsync, okRunsync := d.GetOk("runsync")
+	vTimeout, okTimeout := d.GetOk("timeout")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -769,11 +789,17 @@ func dataSourceNfvProvisionRead(ctx context.Context, d *schema.ResourceData, m i
 
 		headerParams1 := dnacentersdkgo.ProvisionNfvHeaderParams{}
 
-		headerParams1.Runsync = vRunsync.(string)
+		if okRunsync {
+			headerParams1.Runsync = vRunsync.(string)
+		}
 
-		headerParams1.Timeout = vTimeout.(string)
+		if okTimeout {
+			headerParams1.Timeout = vTimeout.(string)
+		}
 
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.SiteDesign.ProvisionNfv(request1, &headerParams1)
 

@@ -80,6 +80,12 @@ func dataSourceEventSubscription() *schema.Resource {
 							},
 						},
 
+						"is_private": &schema.Schema{
+							Description: `Is Private`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
@@ -138,6 +144,18 @@ func dataSourceEventSubscription() *schema.Resource {
 									},
 								},
 							},
+						},
+
+						"subscription_id": &schema.Schema{
+							Description: `Subscription Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"tenant_id": &schema.Schema{
+							Description: `Tenant Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 
 						"version": &schema.Schema{
@@ -218,6 +236,9 @@ func flattenEventManagementGetEventSubscriptionsItems(items *dnacentersdkgo.Resp
 	var respItems []map[string]interface{}
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
+		respItem["subscription_id"] = item.SubscriptionID
+		respItem["is_private"] = item.IsPrivate
+		respItem["tenant_id"] = item.TenantID
 		respItem["version"] = item.Version
 		respItem["name"] = item.Name
 		respItem["description"] = item.Description

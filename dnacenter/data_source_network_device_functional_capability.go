@@ -50,11 +50,8 @@ func dataSourceNetworkDeviceFunctionalCapability() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"function_details": &schema.Schema{
@@ -64,11 +61,8 @@ func dataSourceNetworkDeviceFunctionalCapability() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 
 									"attribute_info": &schema.Schema{
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"id": &schema.Schema{
@@ -114,11 +108,8 @@ func dataSourceNetworkDeviceFunctionalCapability() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"device_id": &schema.Schema{
@@ -133,11 +124,8 @@ func dataSourceNetworkDeviceFunctionalCapability() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 
 									"attribute_info": &schema.Schema{
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"function_details": &schema.Schema{
@@ -147,11 +135,8 @@ func dataSourceNetworkDeviceFunctionalCapability() *schema.Resource {
 											Schema: map[string]*schema.Schema{
 
 												"attribute_info": &schema.Schema{
-													Type:     schema.TypeList,
+													Type:     schema.TypeString,
 													Computed: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 
 												"id": &schema.Schema{

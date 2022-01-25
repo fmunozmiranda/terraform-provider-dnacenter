@@ -207,13 +207,13 @@ func dataSourceReserveIPSubpool() *schema.Resource {
 
 									"total_ip_address_count": &schema.Schema{
 										Description: `Total Ip Address Count`,
-										Type:        schema.TypeInt,
+										Type:        schema.TypeFloat,
 										Computed:    true,
 									},
 
 									"used_ip_address_count": &schema.Schema{
 										Description: `Used Ip Address Count`,
-										Type:        schema.TypeInt,
+										Type:        schema.TypeFloat,
 										Computed:    true,
 									},
 

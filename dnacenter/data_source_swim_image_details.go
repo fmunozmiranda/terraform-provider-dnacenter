@@ -167,11 +167,8 @@ func dataSourceSwimImageDetails() *schema.Resource {
 						},
 
 						"extended_attributes": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"family": &schema.Schema{
@@ -260,11 +257,8 @@ func dataSourceSwimImageDetails() *schema.Resource {
 									},
 
 									"extended_attributes": &schema.Schema{
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"memory": &schema.Schema{

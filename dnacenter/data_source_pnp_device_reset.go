@@ -95,11 +95,8 @@ func dataSourcePnpDeviceReset() *schema.Resource {
 						},
 						"json_response": &schema.Schema{
 							Description: `Json Response`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"message": &schema.Schema{
 							Description: `Message`,

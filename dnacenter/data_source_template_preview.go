@@ -57,11 +57,8 @@ func dataSourceTemplatePreview() *schema.Resource {
 						"validation_errors": &schema.Schema{
 							Description: `Validation error in template content if any
 `,
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 					},
 				},

@@ -24,6 +24,13 @@ sites
 
 		ReadContext: dataSourceWirelessProvisionSSIDCreateProvisionRead,
 		Schema: map[string]*schema.Schema{
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"enable_fabric": &schema.Schema{
 				Description: `Enable SSID for Fabric
 `,
@@ -177,7 +184,7 @@ func dataSourceWirelessProvisionSSIDCreateProvisionRead(ctx context.Context, d *
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -186,7 +193,9 @@ func dataSourceWirelessProvisionSSIDCreateProvisionRead(ctx context.Context, d *
 
 		headerParams1 := dnacentersdkgo.CreateAndProvisionSSIDHeaderParams{}
 
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.Wireless.CreateAndProvisionSSID(request1, &headerParams1)
 

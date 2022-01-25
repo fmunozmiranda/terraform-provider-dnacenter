@@ -140,11 +140,8 @@ func dataSourceReportsExecutions() *schema.Resource {
 						},
 
 						"schedule": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"tags": &schema.Schema{
@@ -187,11 +184,8 @@ func dataSourceReportsExecutions() *schema.Resource {
 									},
 
 									"format": &schema.Schema{
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"name": &schema.Schema{

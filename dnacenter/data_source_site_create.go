@@ -47,6 +47,26 @@ func dataSourceSiteCreate() *schema.Resource {
 					},
 				},
 			},
+			"runsync": &schema.Schema{
+				Description: `__runsync header parameter. Enable this parameter to execute the API and return a response synchronously
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
+			"timeout": &schema.Schema{
+				Description: `__timeout header parameter. During synchronous execution, this defines the maximum time to wait for a response, before the API execution is terminated
+			`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"site": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -175,9 +195,9 @@ func dataSourceSiteCreateRead(ctx context.Context, d *schema.ResourceData, m int
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vRunsync := d.Get("runsync")
-	vTimeout := d.Get("timeout")
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vRunsync, okRunsync := d.GetOk("runsync")
+	vTimeout, okTimeout := d.GetOk("timeout")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -185,12 +205,15 @@ func dataSourceSiteCreateRead(ctx context.Context, d *schema.ResourceData, m int
 		request1 := expandRequestSiteCreateCreateSite(ctx, "", d)
 
 		headerParams1 := dnacentersdkgo.CreateSiteHeaderParams{}
-
-		headerParams1.Runsync = vRunsync.(string)
-
-		headerParams1.Timeout = vTimeout.(string)
-
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okRunsync {
+			headerParams1.Runsync = vRunsync.(string)
+		}
+		if okTimeout {
+			headerParams1.Timeout = vTimeout.(string)
+		}
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.Sites.CreateSite(request1, &headerParams1)
 

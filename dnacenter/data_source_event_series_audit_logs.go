@@ -161,11 +161,8 @@ func dataSourceEventSeriesAuditLogs() *schema.Resource {
 
 						"additional_details": &schema.Schema{
 							Description: `Additional Details`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"category": &schema.Schema{
@@ -200,11 +197,8 @@ func dataSourceEventSeriesAuditLogs() *schema.Resource {
 
 						"details": &schema.Schema{
 							Description: `Details`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"domain": &schema.Schema{

@@ -44,11 +44,8 @@ func dataSourceTopologyPhysical() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 
 									"additional_info": &schema.Schema{
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"end_port_id": &schema.Schema{
@@ -148,11 +145,8 @@ func dataSourceTopologyPhysical() *schema.Resource {
 									},
 
 									"additional_info": &schema.Schema{
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"custom_param": &schema.Schema{

@@ -285,11 +285,8 @@ ignores the other request parameters.
 
 						"ap_ethernet_mac_address": &schema.Schema{
 							Description: `Ap Ethernet Mac Address`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"ap_manager_interface_ip": &schema.Schema{
@@ -414,20 +411,14 @@ ignores the other request parameters.
 
 						"location": &schema.Schema{
 							Description: `Location`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"location_name": &schema.Schema{
 							Description: `Location Name`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"mac_address": &schema.Schema{
@@ -535,11 +526,8 @@ ignores the other request parameters.
 
 						"tunnel_udp_port": &schema.Schema{
 							Description: `Tunnel Udp Port`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"type": &schema.Schema{
@@ -562,11 +550,8 @@ ignores the other request parameters.
 
 						"waas_device_mode": &schema.Schema{
 							Description: `Waas Device Mode`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 					},
 				},

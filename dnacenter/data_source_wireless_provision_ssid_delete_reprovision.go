@@ -31,6 +31,13 @@ func dataSourceWirelessProvisionSSIDDeleteReprovision() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -65,7 +72,7 @@ func dataSourceWirelessProvisionSSIDDeleteReprovisionRead(ctx context.Context, d
 	var diags diag.Diagnostics
 	vSSIDName := d.Get("ssid_name")
 	vManagedApLocations := d.Get("managed_aplocations")
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -75,7 +82,9 @@ func dataSourceWirelessProvisionSSIDDeleteReprovisionRead(ctx context.Context, d
 
 		headerParams1 := dnacentersdkgo.DeleteSSIDAndProvisionItToDevicesHeaderParams{}
 
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.Wireless.DeleteSSIDAndProvisionItToDevices(vvSSIDName, vvManagedApLocations, &headerParams1)
 

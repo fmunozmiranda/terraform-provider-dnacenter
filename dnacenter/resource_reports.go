@@ -136,11 +136,8 @@ required to configure a report.
 							Computed: true,
 						},
 						"schedule": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"tags": &schema.Schema{
 							Description: `array of tags for report
@@ -232,11 +229,8 @@ required to configure a report.
 												"value": &schema.Schema{
 													Description: `value of filter. data type is based on the filter type.
 `,
-													Type:     schema.TypeList,
+													Type:     schema.TypeString,
 													Computed: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 											},
 										},
@@ -333,12 +327,8 @@ required to configure a report.
 							Required: true,
 						},
 						"schedule": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Optional: true,
-							MaxItems: 1,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"tags": &schema.Schema{
 							Description: `array of tags for report
@@ -425,12 +415,8 @@ required to configure a report.
 												"value": &schema.Schema{
 													Description: `value of filter. data type is based on the filter type. Use the filter definitions from the view to fetch the options for a filter.
 `,
-													Type:     schema.TypeList,
+													Type:     schema.TypeString,
 													Optional: true,
-													MaxItems: 1,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
 												},
 											},
 										},
@@ -627,7 +613,7 @@ func expandRequestReportsCreateOrScheduleAReport(ctx context.Context, key string
 		request.Name = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".schedule")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".schedule")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".schedule")))) {
-		request.Schedule = expandRequestReportsCreateOrScheduleAReportSchedule(ctx, key+".schedule.0", d)
+		request.Schedule = expandRequestReportsCreateOrScheduleAReportSchedule(ctx, key+".schedule", d)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".view")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".view")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".view")))) {
 		request.View = expandRequestReportsCreateOrScheduleAReportView(ctx, key+".view.0", d)
@@ -830,7 +816,7 @@ func expandRequestReportsCreateOrScheduleAReportViewFilters(ctx context.Context,
 		request.Type = interfaceToString(v)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".value")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".value")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".value")))) {
-		request.Value = expandRequestReportsCreateOrScheduleAReportViewFiltersValue(ctx, key+".value.0", d)
+		request.Value = expandRequestReportsCreateOrScheduleAReportViewFiltersValue(ctx, key+".value", d)
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil

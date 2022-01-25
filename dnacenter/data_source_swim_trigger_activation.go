@@ -24,36 +24,29 @@ func dataSourceSwimTriggerActivation() *schema.Resource {
 
 		ReadContext: dataSourceSwimTriggerActivationRead,
 		Schema: map[string]*schema.Schema{
+			"client_type": &schema.Schema{
+				Description: `Client-Type header parameter. Client-type (Optional)
+`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"client_url": &schema.Schema{
+				Description: `Client-Url header parameter. Client-url (Optional)
+`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"schedule_validate": &schema.Schema{
 				Description: `scheduleValidate query parameter. scheduleValidate, validates data before schedule (Optional)
 `,
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"item": &schema.Schema{
+			"payload": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-
-						"task_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"url": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
-			},
-			"payload": &schema.Schema{
-				Description: `Array of RequestSoftwareImageManagementSwimTriggerSoftwareImageActivation`,
-				Type:        schema.TypeList,
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-
 						"activate_lower_image_version": &schema.Schema{
 							// Type:     schema.TypeBool,
 							Type:         schema.TypeString,
@@ -91,6 +84,23 @@ func dataSourceSwimTriggerActivation() *schema.Resource {
 					},
 				},
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"task_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"url": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -100,8 +110,8 @@ func dataSourceSwimTriggerActivationRead(ctx context.Context, d *schema.Resource
 
 	var diags diag.Diagnostics
 	vScheduleValidate, okScheduleValidate := d.GetOk("schedule_validate")
-	vClientType := d.Get("client_type")
-	vClientURL := d.Get("client_url")
+	vClientType, okClientType := d.GetOk("client_type")
+	vClientURL, okClientURL := d.GetOk("client_url")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -114,9 +124,14 @@ func dataSourceSwimTriggerActivationRead(ctx context.Context, d *schema.Resource
 		if okScheduleValidate {
 			queryParams1.ScheduleValidate = vScheduleValidate.(bool)
 		}
-		headerParams1.ClientType = vClientType.(string)
 
-		headerParams1.ClientURL = vClientURL.(string)
+		if okClientType {
+			headerParams1.ClientType = vClientType.(string)
+		}
+
+		if okClientURL {
+			headerParams1.ClientURL = vClientURL.(string)
+		}
 
 		response1, restyResp1, err := client.SoftwareImageManagementSwim.TriggerSoftwareImageActivation(request1, &headerParams1, &queryParams1)
 

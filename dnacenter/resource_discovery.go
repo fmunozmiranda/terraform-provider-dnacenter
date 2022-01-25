@@ -46,11 +46,8 @@ by range" API.
 					Schema: map[string]*schema.Schema{
 
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"cdp_level": &schema.Schema{
 							Type:     schema.TypeInt,
@@ -302,12 +299,8 @@ by range" API.
 					Schema: map[string]*schema.Schema{
 
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Optional: true,
-							MaxItems: 1,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 						"cdp_level": &schema.Schema{
 							Description: `CDP level to which neighbor devices to be discovered
@@ -1026,7 +1019,7 @@ func expandRequestDiscoveryStartDiscoveryHTTPWriteCredential(ctx context.Context
 func expandRequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedID(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedID {
 	request := dnacentersdkgo.RequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedID{}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".attribute_info")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".attribute_info")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".attribute_info")))) {
-		request.AttributeInfo = expandRequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedIDAttributeInfo(ctx, key+".attribute_info.0", d)
+		request.AttributeInfo = expandRequestDiscoveryUpdatesAnExistingDiscoveryBySpecifiedIDAttributeInfo(ctx, key+".attribute_info", d)
 	}
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".cdp_level")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".cdp_level")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".cdp_level")))) {
 		request.CdpLevel = interfaceToIntPtr(v)

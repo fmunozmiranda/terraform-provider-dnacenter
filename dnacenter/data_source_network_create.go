@@ -29,6 +29,13 @@ func dataSourceNetworkCreate() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"item": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -294,7 +301,7 @@ func dataSourceNetworkCreateRead(ctx context.Context, d *schema.ResourceData, m 
 
 	var diags diag.Diagnostics
 	vSiteID := d.Get("site_id")
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -303,8 +310,9 @@ func dataSourceNetworkCreateRead(ctx context.Context, d *schema.ResourceData, m 
 		request1 := expandRequestNetworkCreateCreateNetwork(ctx, "", d)
 
 		headerParams1 := dnacentersdkgo.CreateNetworkHeaderParams{}
-
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.NetworkSettings.CreateNetwork(vvSiteID, request1, &headerParams1)
 

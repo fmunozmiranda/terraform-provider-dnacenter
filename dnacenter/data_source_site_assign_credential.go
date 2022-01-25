@@ -23,6 +23,13 @@ func dataSourceSiteAssignCredential() *schema.Resource {
 
 		ReadContext: dataSourceSiteAssignCredentialRead,
 		Schema: map[string]*schema.Schema{
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"site_id": &schema.Schema{
 				Description: `siteId path parameter. site id to assign credential.
 `,
@@ -92,7 +99,7 @@ func dataSourceSiteAssignCredentialRead(ctx context.Context, d *schema.ResourceD
 
 	var diags diag.Diagnostics
 	vSiteID := d.Get("site_id")
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -102,7 +109,9 @@ func dataSourceSiteAssignCredentialRead(ctx context.Context, d *schema.ResourceD
 
 		headerParams1 := dnacentersdkgo.AssignCredentialToSiteHeaderParams{}
 
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.NetworkSettings.AssignCredentialToSite(vvSiteID, request1, &headerParams1)
 

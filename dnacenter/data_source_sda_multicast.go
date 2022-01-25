@@ -70,11 +70,8 @@ func dataSourceSdaMulticast() *schema.Resource {
 									"ssm_info": &schema.Schema{
 										Description: `Source-specific multicast information, required if muticastType=ssm
 `,
-										Type:     schema.TypeList,
+										Type:     schema.TypeString,
 										Computed: true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 
 									"ssm_wildcard_mask": &schema.Schema{

@@ -35,7 +35,7 @@ func dataSourceSiteCount() *schema.Resource {
 
 						"response": &schema.Schema{
 							Description: `Response`,
-							Type:        schema.TypeString,
+							Type:        schema.TypeInt,
 							Computed:    true,
 						},
 

@@ -92,11 +92,8 @@ func dataSourceNetworkDeviceModule() *schema.Resource {
 						},
 
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"containment_entity": &schema.Schema{
@@ -184,11 +181,8 @@ func dataSourceNetworkDeviceModule() *schema.Resource {
 						},
 
 						"attribute_info": &schema.Schema{
-							Type:     schema.TypeList,
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"containment_entity": &schema.Schema{

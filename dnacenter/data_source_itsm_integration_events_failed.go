@@ -77,11 +77,8 @@ func dataSourceItsmIntegrationEventsFailed() *schema.Resource {
 
 									"response_received_from_itsmsystem": &schema.Schema{
 										Description: `Response Received From ITSMSystem`,
-										Type:        schema.TypeList,
+										Type:        schema.TypeString,
 										Computed:    true,
-										Elem: &schema.Schema{
-											Type: schema.TypeString,
-										},
 									},
 								},
 							},

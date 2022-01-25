@@ -41,11 +41,8 @@ func dataSourceEventAPIStatus() *schema.Resource {
 
 						"error_message": &schema.Schema{
 							Description: `Error Message`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"status_message": &schema.Schema{

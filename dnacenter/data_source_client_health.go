@@ -137,11 +137,8 @@ func dataSourceClientHealth() *schema.Resource {
 
 															"client_unique_count": &schema.Schema{
 																Description: `Client Unique Count`,
-																Type:        schema.TypeList,
+																Type:        schema.TypeString,
 																Computed:    true,
-																Elem: &schema.Schema{
-																	Type: schema.TypeString,
-																},
 															},
 
 															"endtime": &schema.Schema{

@@ -24,6 +24,26 @@ func dataSourceSiteAssignDevice() *schema.Resource {
 
 		ReadContext: dataSourceSiteAssignDeviceRead,
 		Schema: map[string]*schema.Schema{
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
+			"runsync": &schema.Schema{
+				Description: `__runsync header parameter. Enable this parameter to execute the API and return a response synchronously
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
+			"runsynctimeout": &schema.Schema{
+				Description: `__runsynctimeout header parameter. During synchronous execution, this defines the maximum time to wait for a response, before the API execution is terminated
+			`,
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"site_id": &schema.Schema{
 				Description: `siteId path parameter. Site id to which site the device to assign
 `,
@@ -78,9 +98,9 @@ func dataSourceSiteAssignDeviceRead(ctx context.Context, d *schema.ResourceData,
 
 	var diags diag.Diagnostics
 	vSiteID := d.Get("site_id")
-	vRunsync := d.Get("runsync")
-	vPersistbapioutput := d.Get("persistbapioutput")
-	vRunsynctimeout := d.Get("runsynctimeout")
+	vRunsync, okRunsync := d.GetOk("runsync")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
+	vRunsynctimeout, okRunsynctimeout := d.GetOk("runsynctimeout")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -89,12 +109,15 @@ func dataSourceSiteAssignDeviceRead(ctx context.Context, d *schema.ResourceData,
 		request1 := expandRequestSiteAssignDeviceAssignDeviceToSite(ctx, "", d)
 
 		headerParams1 := dnacentersdkgo.AssignDeviceToSiteHeaderParams{}
-
-		headerParams1.Runsync = vRunsync.(string)
-
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
-
-		headerParams1.Runsynctimeout = vRunsynctimeout.(string)
+		if okRunsync {
+			headerParams1.Runsync = vRunsync.(string)
+		}
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
+		if okRunsynctimeout {
+			headerParams1.Runsynctimeout = vRunsynctimeout.(string)
+		}
 
 		response1, restyResp1, err := client.Sites.AssignDeviceToSite(vvSiteID, request1, &headerParams1)
 

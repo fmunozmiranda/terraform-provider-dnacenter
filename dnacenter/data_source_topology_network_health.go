@@ -42,11 +42,8 @@ given point of time
 
 						"entity": &schema.Schema{
 							Description: `Entity`,
-							Type:        schema.TypeList,
+							Type:        schema.TypeString,
 							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 
 						"fair_count": &schema.Schema{

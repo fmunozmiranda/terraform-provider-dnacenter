@@ -68,6 +68,13 @@ func dataSourceWirelessProvisionDeviceUpdate() *schema.Resource {
 					},
 				},
 			},
+			"persistbapioutput": &schema.Schema{
+				Description: `__persistbapioutput header parameter. Persist bapi sync response
+			`,
+				Type:         schema.TypeString,
+				ValidateFunc: validateStringHasValueFunc([]string{"", "true", "false"}),
+				Optional:     true,
+			},
 			"payload": &schema.Schema{
 				Description: `Array of RequestWirelessProvisionUpdate`,
 				Type:        schema.TypeList,
@@ -138,7 +145,7 @@ func dataSourceWirelessProvisionDeviceUpdateRead(ctx context.Context, d *schema.
 	client := m.(*dnacentersdkgo.Client)
 
 	var diags diag.Diagnostics
-	vPersistbapioutput := d.Get("persistbapioutput")
+	vPersistbapioutput, okPersistbapioutput := d.GetOk("persistbapioutput")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -147,7 +154,9 @@ func dataSourceWirelessProvisionDeviceUpdateRead(ctx context.Context, d *schema.
 
 		headerParams1 := dnacentersdkgo.ProvisionUpdateHeaderParams{}
 
-		headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		if okPersistbapioutput {
+			headerParams1.Persistbapioutput = vPersistbapioutput.(string)
+		}
 
 		response1, restyResp1, err := client.Wireless.ProvisionUpdate(request1, &headerParams1)
 
