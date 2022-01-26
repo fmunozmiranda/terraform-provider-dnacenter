@@ -201,7 +201,7 @@ func resourceGlobalPool() *schema.Resource {
 							Description: `id path parameter. global pool id
 `,
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"settings": &schema.Schema{
 							Type:     schema.TypeList,
@@ -398,6 +398,13 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestGlobalPoolUpdateGlobalPool(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if item != nil && len(*item) > 0 {
+			if request1 != nil && request1.Settings != nil && request1.Settings.IPpool != nil && len(*request1.Settings.IPpool) > 0 {
+				found := *item
+				req := *request1.Settings.IPpool
+				req[0].ID = found[0].ID
+			}
+		}
 		response1, restyResp1, err := client.NetworkSettings.UpdateGlobalPool(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -436,6 +443,9 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 			"Failure when executing GetGlobalPool", err,
 			"Failure at GetGlobalPool, unexpected response", ""))
 		return diags
+	}
+	if vID == "" && item != nil && len(*item) > 0 {
+		vID = (*item)[0].ID
 	}
 
 	response1, restyResp1, err := client.NetworkSettings.DeleteGlobalIPPool(vID)
