@@ -317,7 +317,7 @@ func flattenEventManagementGetEmailEventSubscriptionsItems(items *dnacentersdkgo
 		respItem["description"] = item.Description
 		respItem["subscription_endpoints"] = flattenEventManagementGetEmailEventSubscriptionsItemsSubscriptionEndpoints(item.SubscriptionEndpoints)
 		respItem["filter"] = flattenEventManagementGetEmailEventSubscriptionsItemsFilter(item.Filter)
-		respItem["is_private"] = item.IsPrivate
+		respItem["is_private"] = boolPtrToString(item.IsPrivate)
 		respItem["tenant_id"] = item.TenantID
 		respItems = append(respItems, respItem)
 	}

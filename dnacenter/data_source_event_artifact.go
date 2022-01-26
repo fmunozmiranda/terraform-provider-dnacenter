@@ -334,13 +334,13 @@ func flattenEventManagementGetEventArtifactsItems(items *dnacentersdkgo.Response
 		respItem["domain"] = item.Domain
 		respItem["sub_domain"] = item.SubDomain
 		respItem["tags"] = item.Tags
-		respItem["is_template_enabled"] = item.IsTemplateEnabled
+		respItem["is_template_enabled"] = boolPtrToString(item.IsTemplateEnabled)
 		respItem["cisco_dna_event_link"] = item.CiscoDnaEventLink
 		respItem["note"] = item.Note
-		respItem["is_private"] = item.IsPrivate
+		respItem["is_private"] = boolPtrToString(item.IsPrivate)
 		respItem["event_payload"] = flattenEventManagementGetEventArtifactsItemsEventPayload(item.EventPayload)
 		respItem["event_templates"] = flattenEventManagementGetEventArtifactsItemsEventTemplates(item.EventTemplates)
-		respItem["is_tenant_aware"] = item.IsTenantAware
+		respItem["is_tenant_aware"] = boolPtrToString(item.IsTenantAware)
 		respItem["supported_connector_types"] = item.SupportedConnectorTypes
 		respItem["tenant_id"] = item.TenantID
 		respItems = append(respItems, respItem)

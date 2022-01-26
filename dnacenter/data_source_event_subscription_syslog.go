@@ -347,7 +347,7 @@ func flattenEventManagementGetSyslogEventSubscriptionsItems(items *dnacentersdkg
 		respItem["description"] = item.Description
 		respItem["subscription_endpoints"] = flattenEventManagementGetSyslogEventSubscriptionsItemsSubscriptionEndpoints(item.SubscriptionEndpoints)
 		respItem["filter"] = flattenEventManagementGetSyslogEventSubscriptionsItemsFilter(item.Filter)
-		respItem["is_private"] = item.IsPrivate
+		respItem["is_private"] = boolPtrToString(item.IsPrivate)
 		respItem["tenant_id"] = item.TenantID
 		respItems = append(respItems, respItem)
 	}

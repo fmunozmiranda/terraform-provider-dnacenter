@@ -67,6 +67,12 @@ func resourceEventSubscription() *schema.Resource {
 							},
 						},
 
+						"is_private": &schema.Schema{
+							Description: `Is Private`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
 						"name": &schema.Schema{
 							Description: `Name`,
 							Type:        schema.TypeString,
@@ -125,6 +131,18 @@ func resourceEventSubscription() *schema.Resource {
 									},
 								},
 							},
+						},
+
+						"subscription_id": &schema.Schema{
+							Description: `Subscription Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"tenant_id": &schema.Schema{
+							Description: `Tenant Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 
 						"version": &schema.Schema{
@@ -245,7 +263,7 @@ func resourceEventSubscriptionCreate(ctx context.Context, d *schema.ResourceData
 
 	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vvName, vvSubscriptionID)
-	if err != nil || item != nil {
+	if err == nil && (item != nil && len(*item) > 0) {
 		resourceMap := make(map[string]string)
 		resourceMap["name"] = vvName
 		resourceMap["subscription_id"] = vvSubscriptionID
@@ -286,7 +304,7 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Selected method 1: GetEventSubscriptions")
 		queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 		item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
-		if err != nil || item == nil {
+		if err != nil || item == nil || len(*item) <= 0 {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetEventSubscriptions", err,
 				"Failure at GetEventSubscriptions, unexpected response", ""))
@@ -319,7 +337,7 @@ func resourceEventSubscriptionUpdate(ctx context.Context, d *schema.ResourceData
 
 	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
-	if err != nil || item == nil {
+	if err != nil || item == nil || len(*item) <= 0 {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetEventSubscriptions", err,
 			"Failure at GetEventSubscriptions, unexpected response", ""))
@@ -329,8 +347,15 @@ func resourceEventSubscriptionUpdate(ctx context.Context, d *schema.ResourceData
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		request1 := expandRequestEventSubscriptionUpdateEventSubscriptions(ctx, "parameters.0", d)
+		request1 := expandRequestEventSubscriptionUpdateEventSubscriptions(ctx, "parameters", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		// Add SubscriptionID to update
+		if request1 != nil && len(*request1) > 0 && item != nil && len(*item) > 0 {
+			found := *item
+			req := *request1
+			req[0].SubscriptionID = found[0].SubscriptionID
+			request1 = &req
+		}
 		response1, restyResp1, err := client.EventManagement.UpdateEventSubscriptions(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -363,7 +388,7 @@ func resourceEventSubscriptionDelete(ctx context.Context, d *schema.ResourceData
 
 	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
-	if err != nil || item == nil {
+	if err != nil || item == nil || len(*item) <= 0 {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetEventSubscriptions", err,
 			"Failure at GetEventSubscriptions, unexpected response", ""))
@@ -377,7 +402,7 @@ func resourceEventSubscriptionDelete(ctx context.Context, d *schema.ResourceData
 	queryParams2 := dnacentersdkgo.DeleteEventSubscriptionsQueryParams{}
 	if len(*item) > 0 {
 		itemCopy := *item
-		queryParams2.Subscriptions = itemCopy[0].Name
+		queryParams2.Subscriptions = itemCopy[0].SubscriptionID
 	}
 	response1, restyResp1, err := client.EventManagement.DeleteEventSubscriptions(&queryParams2)
 	if err != nil || response1 == nil {
@@ -686,9 +711,9 @@ func searchEventManagementGetEventSubscriptions(m interface{}, queryParams dnace
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		//if item.SubscriptionID == subscriptionID || item.Name == name {
-		if item.Name == name {
+		if item.SubscriptionID == subscriptionID || item.Name == name {
 			foundItems = append(foundItems, item)
+			break
 		}
 	}
 	return &foundItems, err

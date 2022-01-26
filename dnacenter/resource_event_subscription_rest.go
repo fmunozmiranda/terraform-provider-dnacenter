@@ -391,8 +391,23 @@ func resourceEventSubscriptionRestCreate(ctx context.Context, d *schema.Resource
 
 	var diags diag.Diagnostics
 
-	//resourceItem := *getResourceItem(d.Get("parameters"))
+	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestEventSubscriptionRestCreateRestWebhookEventSubscription(ctx, "parameters.0", d)
+	vName := resourceItem["name"]
+	vvName := interfaceToString(vName)
+	vSubscriptionID := resourceItem["subscription_id"]
+	vvSubscriptionID := interfaceToString(vSubscriptionID)
+
+	queryParams1 := dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams{}
+	item, err := searchEventManagementGetRestWebhookEventSubscriptions(m, queryParams1, vvName, vvSubscriptionID)
+	if err == nil && (item != nil && len(*item) > 0) {
+		resourceMap := make(map[string]string)
+		resourceMap["name"] = vvName
+		resourceMap["subscription_id"] = vvSubscriptionID
+		d.SetId(joinResourceID(resourceMap))
+		return resourceEventSubscriptionRestRead(ctx, d, m)
+	}
+
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	resp1, restyResp1, err := client.EventManagement.CreateRestWebhookEventSubscription(request1)
@@ -407,61 +422,35 @@ func resourceEventSubscriptionRestCreate(ctx context.Context, d *schema.Resource
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["name"] = vvName
+	resourceMap["subscription_id"] = vvSubscriptionID
 	d.SetId(joinResourceID(resourceMap))
 	return resourceEventSubscriptionRestRead(ctx, d, m)
 }
 
 func resourceEventSubscriptionRestRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
-
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs, okEventIDs := resourceMap["event_ids"]
-	vOffset, okOffset := resourceMap["offset"]
-	vLimit, okLimit := resourceMap["limit"]
-	vSortBy, okSortBy := resourceMap["sort_by"]
-	vOrder, okOrder := resourceMap["order"]
+	vName, _ := resourceMap["name"]
+	vSubscriptionID, _ := resourceMap["subscription_id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetRestWebhookEventSubscriptions")
 		queryParams1 := dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams{}
-
-		if okEventIDs {
-			queryParams1.EventIDs = vEventIDs
-		}
-		if okOffset {
-			queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-		}
-		if okLimit {
-			queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-		}
-		if okSortBy {
-			queryParams1.SortBy = vSortBy
-		}
-		if okOrder {
-			queryParams1.Order = vOrder
-		}
-
-		response1, restyResp1, err := client.EventManagement.GetRestWebhookEventSubscriptions(&queryParams1)
-
-		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
+		item, err := searchEventManagementGetRestWebhookEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
+		if err != nil || item == nil || len(*item) <= 0 {
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetRestWebhookEventSubscriptions", err,
-				"Failure at GetRestWebhookEventSubscriptions, unexpected response", ""))
+				"Failure when executing GetEmailEventSubscriptions", err,
+				"Failure at GetEmailEventSubscriptions, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*item))
 
-		//TODO FOR DNAC
-
-		vItem1 := flattenEventManagementGetRestWebhookEventSubscriptionsItems(response1)
+		vItem1 := flattenEventManagementGetRestWebhookEventSubscriptionsItems(item)
 		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetRestWebhookEventSubscriptions search response",
@@ -480,20 +469,12 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
+	vName, _ := resourceMap["name"]
+	vSubscriptionID, _ := resourceMap["subscription_id"]
 
 	queryParams1 := dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams{}
-	queryParams1.EventIDs = vEventIDs
-	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-	queryParams1.SortBy = vSortBy
-	queryParams1.Order = vOrder
-	item, err := searchEventManagementGetRestWebhookEventSubscriptions(m, queryParams1)
-	if err != nil || item == nil {
+	item, err := searchEventManagementGetRestWebhookEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
+	if err != nil || item == nil || len(*item) <= 0 {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetRestWebhookEventSubscriptions", err,
 			"Failure at GetRestWebhookEventSubscriptions, unexpected response", ""))
@@ -505,6 +486,13 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 	if d.HasChange("parameters") {
 		request1 := expandRequestEventSubscriptionRestUpdateRestWebhookEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		// Add SubscriptionID to update
+		if request1 != nil && len(*request1) > 0 && item != nil && len(*item) > 0 {
+			found := *item
+			req := *request1
+			req[0].SubscriptionID = found[0].SubscriptionID
+			request1 = &req
+		}
 		response1, restyResp1, err := client.EventManagement.UpdateRestWebhookEventSubscription(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -525,9 +513,52 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 }
 
 func resourceEventSubscriptionRestDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
 	var diags diag.Diagnostics
-	// NOTE: Unable to delete EventSubscriptionRest on Dna Center
-	//       Returning empty diags to delete it on Terraform
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vName, _ := resourceMap["name"]
+	vSubscriptionID, _ := resourceMap["subscription_id"]
+
+	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
+	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
+	if err != nil || item == nil || len(*item) <= 0 {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEventSubscriptions", err,
+			"Failure at GetEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+	if len(*item) == 0 {
+		return diags
+	}
+
+	// REVIEW: Add getAllItems and search function to get missing params
+	queryParams2 := dnacentersdkgo.DeleteEventSubscriptionsQueryParams{}
+	if len(*item) > 0 {
+		itemCopy := *item
+		queryParams2.Subscriptions = itemCopy[0].SubscriptionID
+	}
+	response1, restyResp1, err := client.EventManagement.DeleteEventSubscriptions(&queryParams2)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteEventSubscriptions", err, restyResp1.String(),
+				"Failure at DeleteEventSubscriptions, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteEventSubscriptions", err,
+			"Failure at DeleteEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
+
 	return diags
 }
 func expandRequestEventSubscriptionRestCreateRestWebhookEventSubscription(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateRestWebhookEventSubscription {
@@ -782,29 +813,26 @@ func expandRequestEventSubscriptionRestUpdateRestWebhookEventSubscriptionItemFil
 	return &request
 }
 
-func searchEventManagementGetRestWebhookEventSubscriptions(m interface{}, queryParams dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams) (*dnacentersdkgo.ResponseItemEventManagementGetRestWebhookEventSubscriptions, error) {
+func searchEventManagementGetRestWebhookEventSubscriptions(m interface{}, queryParams dnacentersdkgo.GetRestWebhookEventSubscriptionsQueryParams, name string, subscriptionID string) (*dnacentersdkgo.ResponseEventManagementGetRestWebhookEventSubscriptions, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemEventManagementGetRestWebhookEventSubscriptions
-	var ite *dnacentersdkgo.ResponseEventManagementGetRestWebhookEventSubscriptions
-	ite, _, err = client.EventManagement.GetRestWebhookEventSubscriptions(&queryParams)
+	var foundItems dnacentersdkgo.ResponseEventManagementGetRestWebhookEventSubscriptions
+	var items *dnacentersdkgo.ResponseEventManagementGetRestWebhookEventSubscriptions
+	items, _, err = client.EventManagement.GetRestWebhookEventSubscriptions(&queryParams)
 	if err != nil {
-		return foundItem, err
+		return nil, err
 	}
-	if ite == nil {
-		return foundItem, err
+	if items == nil {
+		return nil, err
 	}
 
-	items := ite
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.SubscriptionID == queryParams.EventIDs {
-			var getItem *dnacentersdkgo.ResponseItemEventManagementGetRestWebhookEventSubscriptions
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
+		if item.SubscriptionID == subscriptionID || item.Name == name {
+			foundItems = append(foundItems, item)
+			break
 		}
 	}
-	return foundItem, err
+	return &foundItems, err
 }

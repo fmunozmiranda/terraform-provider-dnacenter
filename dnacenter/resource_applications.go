@@ -951,6 +951,7 @@ func expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentityArra
 
 func expandRequestApplicationsCreateApplicationItemIndicativeNetworkIDentity(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity {
 	request := dnacentersdkgo.RequestItemApplicationPolicyCreateApplicationIndicativeNetworkIDentity{}
+
 	if v, ok := d.GetOkExists(fixKeyAccess(key + ".id")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".id")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".id")))) {
 		request.ID = interfaceToString(v)
 	}

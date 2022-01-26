@@ -349,8 +349,23 @@ func resourceEventSubscriptionSyslogCreate(ctx context.Context, d *schema.Resour
 
 	var diags diag.Diagnostics
 
-	//resourceItem := *getResourceItem(d.Get("parameters"))
+	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestEventSubscriptionSyslogCreateSyslogEventSubscription(ctx, "parameters.0", d)
+	vName := resourceItem["name"]
+	vvName := interfaceToString(vName)
+	vSubscriptionID := resourceItem["subscription_id"]
+	vvSubscriptionID := interfaceToString(vSubscriptionID)
+
+	queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams{}
+	item, err := searchEventManagementGetSyslogEventSubscriptions(m, queryParams1, vvName, vvSubscriptionID)
+	if err == nil && (item != nil && len(*item) > 0) {
+		resourceMap := make(map[string]string)
+		resourceMap["name"] = vvName
+		resourceMap["subscription_id"] = vvSubscriptionID
+		d.SetId(joinResourceID(resourceMap))
+		return resourceEventSubscriptionSyslogRead(ctx, d, m)
+	}
+
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	resp1, restyResp1, err := client.EventManagement.CreateSyslogEventSubscription(request1)
@@ -365,45 +380,35 @@ func resourceEventSubscriptionSyslogCreate(ctx context.Context, d *schema.Resour
 		return diags
 	}
 	resourceMap := make(map[string]string)
+	resourceMap["name"] = vvName
+	resourceMap["subscription_id"] = vvSubscriptionID
 	d.SetId(joinResourceID(resourceMap))
 	return resourceEventSubscriptionSyslogRead(ctx, d, m)
 }
 
 func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*dnacentersdkgo.Client)
-
 	var diags diag.Diagnostics
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs, okEventIDs := resourceMap["event_ids"]
+	vName, _ := resourceMap["name"]
+	vSubscriptionID, _ := resourceMap["subscription_id"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetSyslogEventSubscriptions")
 		queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams{}
-
-		if okEventIDs {
-			queryParams1.EventIDs = vEventIDs
-		}
-
-		response1, restyResp1, err := client.EventManagement.GetSyslogEventSubscriptions(&queryParams1)
-
-		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
+		item, err := searchEventManagementGetSyslogEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
+		if err != nil || item == nil || len(*item) <= 0 {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetSyslogEventSubscriptions", err,
 				"Failure at GetSyslogEventSubscriptions, unexpected response", ""))
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*item))
 
-		//TODO FOR DNAC
-
-		vItem1 := flattenEventManagementGetSyslogEventSubscriptionsItems(response1)
+		vItem1 := flattenEventManagementGetSyslogEventSubscriptionsItems(item)
 		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetSyslogEventSubscriptions search response",
@@ -422,20 +427,12 @@ func resourceEventSubscriptionSyslogUpdate(ctx context.Context, d *schema.Resour
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vEventIDs := resourceMap["event_ids"]
-	vOffset := resourceMap["offset"]
-	vLimit := resourceMap["limit"]
-	vSortBy := resourceMap["sort_by"]
-	vOrder := resourceMap["order"]
+	vName, _ := resourceMap["name"]
+	vSubscriptionID, _ := resourceMap["subscription_id"]
 
 	queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams{}
-	queryParams1.EventIDs = vEventIDs
-	queryParams1.Offset = *stringToFloat64Ptr(vOffset)
-	queryParams1.Limit = *stringToFloat64Ptr(vLimit)
-	queryParams1.SortBy = vSortBy
-	queryParams1.Order = vOrder
-	item, err := searchEventManagementGetSyslogEventSubscriptions(m, queryParams1)
-	if err != nil || item == nil {
+	item, err := searchEventManagementGetSyslogEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
+	if err != nil || item == nil || len(*item) <= 0 {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetSyslogEventSubscriptions", err,
 			"Failure at GetSyslogEventSubscriptions, unexpected response", ""))
@@ -447,6 +444,13 @@ func resourceEventSubscriptionSyslogUpdate(ctx context.Context, d *schema.Resour
 	if d.HasChange("parameters") {
 		request1 := expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscription(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		// Add SubscriptionID to update
+		if request1 != nil && len(*request1) > 0 && item != nil && len(*item) > 0 {
+			found := *item
+			req := *request1
+			req[0].SubscriptionID = found[0].SubscriptionID
+			request1 = &req
+		}
 		response1, restyResp1, err := client.EventManagement.UpdateSyslogEventSubscription(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -467,9 +471,52 @@ func resourceEventSubscriptionSyslogUpdate(ctx context.Context, d *schema.Resour
 }
 
 func resourceEventSubscriptionSyslogDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
 	var diags diag.Diagnostics
-	// NOTE: Unable to delete EventSubscriptionSyslog on Dna Center
-	//       Returning empty diags to delete it on Terraform
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+	vName, _ := resourceMap["name"]
+	vSubscriptionID, _ := resourceMap["subscription_id"]
+
+	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
+	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
+	if err != nil || item == nil || len(*item) <= 0 {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetEventSubscriptions", err,
+			"Failure at GetEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+	if len(*item) == 0 {
+		return diags
+	}
+
+	// REVIEW: Add getAllItems and search function to get missing params
+	queryParams2 := dnacentersdkgo.DeleteEventSubscriptionsQueryParams{}
+	if len(*item) > 0 {
+		itemCopy := *item
+		queryParams2.Subscriptions = itemCopy[0].SubscriptionID
+	}
+	response1, restyResp1, err := client.EventManagement.DeleteEventSubscriptions(&queryParams2)
+	if err != nil || response1 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
+			diags = append(diags, diagErrorWithAltAndResponse(
+				"Failure when executing DeleteEventSubscriptions", err, restyResp1.String(),
+				"Failure at DeleteEventSubscriptions, unexpected response", ""))
+			return diags
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing DeleteEventSubscriptions", err,
+			"Failure at DeleteEventSubscriptions, unexpected response", ""))
+		return diags
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
+
 	return diags
 }
 func expandRequestEventSubscriptionSyslogCreateSyslogEventSubscription(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestEventManagementCreateSyslogEventSubscription {
@@ -724,29 +771,28 @@ func expandRequestEventSubscriptionSyslogUpdateSyslogEventSubscriptionItemFilter
 	return &request
 }
 
-func searchEventManagementGetSyslogEventSubscriptions(m interface{}, queryParams dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams) (*dnacentersdkgo.ResponseItemEventManagementGetSyslogEventSubscriptions, error) {
+func searchEventManagementGetSyslogEventSubscriptions(m interface{}, queryParams dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams, name string, subscriptionID string) (*dnacentersdkgo.ResponseEventManagementGetSyslogEventSubscriptions, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseItemEventManagementGetSyslogEventSubscriptions
-	var ite *dnacentersdkgo.ResponseEventManagementGetSyslogEventSubscriptions
-	ite, _, err = client.EventManagement.GetSyslogEventSubscriptions(&queryParams)
+	var foundItems dnacentersdkgo.ResponseEventManagementGetSyslogEventSubscriptions
+	var items *dnacentersdkgo.ResponseEventManagementGetSyslogEventSubscriptions
+	items, _, err = client.EventManagement.GetSyslogEventSubscriptions(&queryParams)
 	if err != nil {
-		return foundItem, err
+		return nil, err
 	}
-	if ite == nil {
-		return foundItem, err
+	if items == nil {
+		return nil, err
 	}
 
-	items := ite
 	itemsCopy := *items
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
 		if item.Name == queryParams.EventIDs {
-			var getItem *dnacentersdkgo.ResponseItemEventManagementGetSyslogEventSubscriptions
-			getItem = &item
-			foundItem = getItem
-			return foundItem, err
+			if item.SubscriptionID == subscriptionID || item.Name == name {
+				foundItems = append(foundItems, item)
+				break
+			}
 		}
 	}
-	return foundItem, err
+	return &foundItems, err
 }

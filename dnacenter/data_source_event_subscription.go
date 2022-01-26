@@ -237,7 +237,7 @@ func flattenEventManagementGetEventSubscriptionsItems(items *dnacentersdkgo.Resp
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
 		respItem["subscription_id"] = item.SubscriptionID
-		respItem["is_private"] = item.IsPrivate
+		respItem["is_private"] = boolPtrToString(item.IsPrivate)
 		respItem["tenant_id"] = item.TenantID
 		respItem["version"] = item.Version
 		respItem["name"] = item.Name

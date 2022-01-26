@@ -389,7 +389,7 @@ func flattenEventManagementGetRestWebhookEventSubscriptionsItems(items *dnacente
 		respItem["description"] = item.Description
 		respItem["subscription_endpoints"] = flattenEventManagementGetRestWebhookEventSubscriptionsItemsSubscriptionEndpoints(item.SubscriptionEndpoints)
 		respItem["filter"] = flattenEventManagementGetRestWebhookEventSubscriptionsItemsFilter(item.Filter)
-		respItem["is_private"] = item.IsPrivate
+		respItem["is_private"] = boolPtrToString(item.IsPrivate)
 		respItem["tenant_id"] = item.TenantID
 		respItems = append(respItems, respItem)
 	}
