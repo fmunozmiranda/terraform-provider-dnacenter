@@ -517,7 +517,9 @@ func resourceAppPolicyQueuingProfile() *schema.Resource {
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplicationPolicyQueuingProfile`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -657,7 +659,9 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestAppPolicyQueuingProfileCreateApplicationPolicyQueuingProfileArray(ctx, "parameters", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vName := resourceItem["name"]
 
@@ -700,7 +704,7 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 			"Failure at GetTaskByID, unexpected response", ""))
 		return diags
 	}
-	if *response2.Response.IsError {
+	if response2.Response.IsError != nil && *response2.Response.IsError {
 		diags = append(diags, diagError(
 			"Failure when executing CreateApplicationPolicyQueuingProfile", err))
 		return diags
@@ -734,8 +738,6 @@ func resourceAppPolicyQueuingProfileRead(ctx context.Context, d *schema.Resource
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*item))
-
-		//TODO Code Items for DNAC
 
 		vItem1 := flattenApplicationPolicyGetApplicationPolicyQueuingProfileItem(item)
 		if err := d.Set("item", vItem1); err != nil {
@@ -775,7 +777,15 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vName)
 		request1 := expandRequestAppPolicyQueuingProfileUpdateApplicationPolicyQueuingProfileArray(ctx, "parameters", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+		// Add SubscriptionID to update
+		if request1 != nil && len(*request1) > 0 && item != nil {
+			req := *request1
+			req[0].ID = item.ID
+			request1 = &req
+		}
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateApplicationPolicyQueuingProfile(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -788,6 +798,27 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateApplicationPolicyQueuingProfile", err,
 				"Failure at UpdateApplicationPolicyQueuingProfile, unexpected response", ""))
+			return diags
+		}
+		if response1.Response == nil {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateApplicationPolicyQueuingProfile", err))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response.IsError != nil && *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateApplicationPolicyQueuingProfile", err))
 			return diags
 		}
 	}
@@ -827,6 +858,27 @@ func resourceAppPolicyQueuingProfileDelete(ctx context.Context, d *schema.Resour
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing DeleteApplicationPolicyQueuingProfile", err,
 			"Failure at DeleteApplicationPolicyQueuingProfile, unexpected response", ""))
+		return diags
+	}
+	if response1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing DeleteApplicationPolicyQueuingProfile", err))
+		return diags
+	}
+	taskId := response1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if response2.Response.IsError != nil && *response2.Response.IsError {
+		diags = append(diags, diagError(
+			"Failure when executing DeleteApplicationPolicyQueuingProfile", err))
 		return diags
 	}
 

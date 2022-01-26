@@ -301,7 +301,9 @@ func resourceEventSubscriptionRest() *schema.Resource {
 			"parameters": &schema.Schema{
 				Description: `Array of RequestEventManagementCreateRestWebhookEventSubscription`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -334,7 +336,7 @@ func resourceEventSubscriptionRest() *schema.Resource {
 							Description: `Name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"subscription_endpoints": &schema.Schema{
 							Type:     schema.TypeList,
@@ -408,7 +410,9 @@ func resourceEventSubscriptionRestCreate(ctx context.Context, d *schema.Resource
 		return resourceEventSubscriptionRestRead(ctx, d, m)
 	}
 
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	resp1, restyResp1, err := client.EventManagement.CreateRestWebhookEventSubscription(request1)
 	if err != nil || resp1 == nil {
@@ -448,7 +452,9 @@ func resourceEventSubscriptionRestRead(ctx context.Context, d *schema.ResourceDa
 			return diags
 		}
 
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*item))
+		if item != nil {
+			log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*item))
+		}
 
 		vItem1 := flattenEventManagementGetRestWebhookEventSubscriptionsItems(item)
 		if err := d.Set("item", vItem1); err != nil {
@@ -485,7 +491,9 @@ func resourceEventSubscriptionRestUpdate(ctx context.Context, d *schema.Resource
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
 		request1 := expandRequestEventSubscriptionRestUpdateRestWebhookEventSubscription(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		// Add SubscriptionID to update
 		if request1 != nil && len(*request1) > 0 && item != nil && len(*item) > 0 {
 			found := *item
@@ -524,13 +532,13 @@ func resourceEventSubscriptionRestDelete(ctx context.Context, d *schema.Resource
 
 	queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 	item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
-	if err != nil || item == nil || len(*item) <= 0 {
+	if err != nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetEventSubscriptions", err,
 			"Failure at GetEventSubscriptions, unexpected response", ""))
 		return diags
 	}
-	if len(*item) == 0 {
+	if item == nil || len(*item) == 0 {
 		return diags
 	}
 

@@ -13,31 +13,54 @@ resource "dnacenter_app_policy_queuing_profile" "example" {
   provider = dnacenter
   parameters {
 
-    clause {
+    # clause {
 
-      instance_id = 1
-      interface_speed_bandwidth_clauses {
+    #   instance_id = 337341
+    #   # interface_speed_bandwidth_clauses {
 
-        instance_id     = 1
-        interface_speed = "string"
-        tc_bandwidth_settings {
+    #   #   instance_id     = 1
+    #   #   interface_speed = "string"
+    #   #   tc_bandwidth_settings {
 
-          bandwidth_percentage = 1
-          instance_id          = 1
-          traffic_class        = "string"
-        }
-      }
-      is_common_between_all_interface_speeds = "false"
-      tc_dscp_settings {
+    #   #     bandwidth_percentage = 1
+    #   #     instance_id          = 1
+    #   #     traffic_class        = "string"
+    #   #   }
+    #   # }
+    #   is_common_between_all_interface_speeds = "true"
+    #   # tc_dscp_settings {
 
-        dscp          = "string"
-        instance_id   = 1
-        traffic_class = "string"
-      }
-      type = "string"
-    }
-    description = "Cisco Validated Design Queuing Profile2"
-    id          = "42e3255f-304c-4f3f-8f01-fc7e813721c9"
+    #   #   dscp          = "string"
+    #   #   instance_id   = 1
+    #   #   traffic_class = "string"
+    #   # }
+    #   type = "BANDWIDTH"
+    # }
+    # clause {
+
+    #   instance_id = 337340
+    #   # interface_speed_bandwidth_clauses {
+
+    #   #   instance_id     = 1
+    #   #   interface_speed = "string"
+    #   #   tc_bandwidth_settings {
+
+    #   #     bandwidth_percentage = 1
+    #   #     instance_id          = 1
+    #   #     traffic_class        = "string"
+    #   #   }
+    #   # }
+    #   is_common_between_all_interface_speeds = "true"
+    #   # tc_dscp_settings {
+
+    #   #   dscp          = "string"
+    #   #   instance_id   = 1
+    #   #   traffic_class = "string"
+    #   # }
+    #   type = "DSCP_CUSTOMIZATION"
+    # }
+    description = "Cisco Validated Design Queuing Profile 3"
+    # id          = "42e3255f-304c-4f3f-8f01-fc7e813721c9"
     name        = "CVD_QUEUING_PROFILE"
   }
 }

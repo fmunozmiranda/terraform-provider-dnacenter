@@ -226,7 +226,9 @@ func resourceEndpointAnalyticsProfilingRules() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -377,7 +379,7 @@ func resourceEndpointAnalyticsProfilingRules() *schema.Resource {
 							Description: `Human readable name for the rule.
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"rule_priority": &schema.Schema{
 							Description: `Priority for the rule.
@@ -426,7 +428,9 @@ func resourceEndpointAnalyticsProfilingRulesCreate(ctx context.Context, d *schem
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestEndpointAnalyticsProfilingRulesCreateAProfilingRule(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vRuleID, okRuleID := resourceItem["rule_id"]
 	vvRuleID := interfaceToString(vRuleID)
@@ -501,7 +505,6 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
 		vItems1 := flattenPolicyGetProfilingRulesItem(response1)
 		if err := d.Set("item", vItems1); err != nil {
 			diags = append(diags, diagError(
@@ -586,11 +589,15 @@ func resourceEndpointAnalyticsProfilingRulesUpdate(ctx context.Context, d *schem
 				"Failure at GetListOfProfilingRules, unexpected response", ""))
 			return diags
 		}
+		// Update vRuleID
+		vRuleID = response1.RuleID
 	}
 
 	if d.HasChange("parameters") {
 		request1 := expandRequestEndpointAnalyticsProfilingRulesUpdateAnExistingProfilingRule(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		restyResp1, err := client.Policy.UpdateAnExistingProfilingRule(vRuleID, request1)
 		if err != nil {
 			if restyResp1 != nil {
@@ -620,18 +627,29 @@ func resourceEndpointAnalyticsProfilingRulesDelete(ctx context.Context, d *schem
 	resourceMap := separateResourceID(resourceID)
 
 	vRuleID := resourceMap["rule_id"]
+	vRuleName := resourceMap["rule_name"]
 
-	/*selectedMethod := pickMethod([][]bool{method1, method2})*/
-	selectedMethod := 2
 	var vvRuleID string
 
-	if selectedMethod == 2 {
+	if vRuleID != "" {
 		vvRuleID = vRuleID
 		getResp, _, err := client.Policy.GetDetailsOfASingleProfilingRule(vvRuleID)
 		if err != nil || getResp == nil {
 			// Assume that element it is already gone
 			return diags
 		}
+	}
+	if vRuleName != "" {
+		queryParams1 := dnacentersdkgo.GetListOfProfilingRulesQueryParams{}
+
+		response1, err := searchPolicyGetListOfProfilingRules(m, queryParams1, vRuleName)
+
+		if err != nil || response1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		// Update vvRuleID
+		vvRuleID = response1.RuleID
 	}
 	restyResp1, err := client.Policy.DeleteAnExistingProfilingRule(vvRuleID)
 	if err != nil {
@@ -973,7 +991,6 @@ func searchPolicyGetListOfProfilingRules(m interface{}, queryParams dnacentersdk
 				foundItem = &item
 				return foundItem, err
 			}
-			//allItems = append(allItems, &item)
 		}
 		queryParams.Limit = float64(maxPageSize)
 		queryParams.Offset += float64(maxPageSize)

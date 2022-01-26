@@ -193,7 +193,9 @@ func resourceGlobalPool() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -205,8 +207,9 @@ func resourceGlobalPool() *schema.Resource {
 						},
 						"settings": &schema.Schema{
 							Type:     schema.TypeList,
-							Optional: true,
+							Required: true,
 							MaxItems: 1,
+							MinItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 
@@ -305,7 +308,9 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
 
 	response1, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vvID, vvIpPoolName)
-	log.Printf("[DEBUG] searchNetworkSettingsGetGlobalPool result %v", response1)
+	if response1 != nil {
+		log.Printf("[DEBUG] searchNetworkSettingsGetGlobalPool result %v", responseInterfaceToString(*response1))
+	}
 	if err == nil && (response1 != nil && len(*response1) > 0) {
 		resourceMap := make(map[string]string)
 		resourceMap["ip_pool_name"] = vvIpPoolName
@@ -367,7 +372,7 @@ func resourceGlobalPoolRead(ctx context.Context, d *schema.ResourceData, m inter
 		queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
 
 		response1, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vID, vIpPoolName)
-		if err != nil || response1 == nil {
+		if err != nil || response1 == nil || len(*response1) <= 0 {
 
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetGlobalPool", err,
@@ -402,7 +407,7 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 
 	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
 	item, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vID, vIpPoolName)
-	if err != nil || item == nil {
+	if err != nil || item == nil || len(*item) <= 0 {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetGlobalPool", err,
 			"Failure at GetGlobalPool, unexpected response", ""))
@@ -412,7 +417,6 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestGlobalPoolUpdateGlobalPool(ctx, "parameters.0", d)
 		if request1 != nil {
 			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
@@ -476,10 +480,13 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 
 	queryParams1 := dnacentersdkgo.GetGlobalPoolQueryParams{}
 	item, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vID, vIpPoolName)
-	if err != nil || item == nil {
+	if err != nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetGlobalPool", err,
 			"Failure at GetGlobalPool, unexpected response", ""))
+		return diags
+	}
+	if item == nil || len(*item) == 0 {
 		return diags
 	}
 	if vID == "" && item != nil && len(*item) > 0 {
@@ -685,7 +692,6 @@ func expandRequestGlobalPoolUpdateGlobalPoolSettingsIPpool(ctx context.Context, 
 }
 
 func searchNetworkSettingsGetGlobalPool(m interface{}, queryParams dnacentersdkgo.GetGlobalPoolQueryParams, vID string, vIPPoolName string) (*[]dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse, error) {
-	log.Printf("[DEBUG] call searchNetworkSettingsGetGlobalPool %s", vID)
 	client := m.(*dnacentersdkgo.Client)
 	var err error
 	var foundItems []dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse
@@ -694,22 +700,19 @@ func searchNetworkSettingsGetGlobalPool(m interface{}, queryParams dnacentersdkg
 
 	nResponse, _, err := client.NetworkSettings.GetGlobalPool(&queryParams)
 	if err != nil {
-		log.Printf("[DEBUG] err != nil || nResponse == nil %s", err.Error())
+		log.Printf("[DEBUG] GetGlobalPool error %s", err.Error())
 		return nil, err
 	}
 	if nResponse == nil {
-		log.Println("[DEBUG] err != nil || nResponse == nil")
 		return nil, err
 	}
 	if nResponse.Response == nil {
-		log.Println("[DEBUG] nResponse.Response == nil")
 		return nil, err
 	}
 	maxPageSize := len(*nResponse.Response)
 	//maxPageSize := 10
 	for nResponse != nil && nResponse.Response != nil && len(*nResponse.Response) > 0 {
 		for _, item := range *nResponse.Response {
-			log.Printf("[DEBUG] item.IPPoolName %s", item.IPPoolName)
 			if vIPPoolName == item.IPPoolName {
 				foundItems = append(foundItems, item)
 				return &foundItems, err
@@ -718,7 +721,6 @@ func searchNetworkSettingsGetGlobalPool(m interface{}, queryParams dnacentersdkg
 				foundItems = append(foundItems, item)
 				return &foundItems, err
 			}
-			//allItems = append(allItems, &item)
 		}
 
 		queryParams.Limit = strconv.Itoa(maxPageSize)
