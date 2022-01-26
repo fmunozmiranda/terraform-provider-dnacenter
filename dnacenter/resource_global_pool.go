@@ -306,7 +306,7 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 
 	response1, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vvID, vvIpPoolName)
 	log.Printf("[DEBUG] searchNetworkSettingsGetGlobalPool result %v", response1)
-	if err == nil && response1 != nil {
+	if err == nil && (response1 != nil && len(*response1) > 0) {
 		resourceMap := make(map[string]string)
 		resourceMap["ip_pool_name"] = vvIpPoolName
 		resourceMap["id"] = vvID
@@ -397,7 +397,9 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestGlobalPoolUpdateGlobalPool(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		if item != nil && len(*item) > 0 {
 			if request1 != nil && request1.Settings != nil && request1.Settings.IPpool != nil && len(*request1.Settings.IPpool) > 0 {
 				found := *item
@@ -472,7 +474,9 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 func expandRequestGlobalPoolCreateGlobalPool(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsCreateGlobalPool {
 	log.Println("[DEBUG] call expandRequestGlobalPoolCreateGlobalPool")
 	request := dnacentersdkgo.RequestNetworkSettingsCreateGlobalPool{}
-	request.Settings = expandRequestGlobalPoolCreateGlobalPoolSettings(ctx, key, d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".settings")))) {
+		request.Settings = expandRequestGlobalPoolCreateGlobalPoolSettings(ctx, key+".settings.0", d)
+	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
 	}
@@ -552,7 +556,9 @@ func expandRequestGlobalPoolCreateGlobalPoolSettingsIPpool(ctx context.Context, 
 func expandRequestGlobalPoolUpdateGlobalPool(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestNetworkSettingsUpdateGlobalPool {
 	log.Println("[DEBUG] call expandRequestGlobalPoolUpdateGlobalPool")
 	request := dnacentersdkgo.RequestNetworkSettingsUpdateGlobalPool{}
-	request.Settings = expandRequestGlobalPoolUpdateGlobalPoolSettings(ctx, key, d)
+	if v, ok := d.GetOkExists(fixKeyAccess(key + ".settings")); !isEmptyValue(reflect.ValueOf(d.Get(fixKeyAccess(key+".settings")))) && (ok || !reflect.DeepEqual(v, d.Get(fixKeyAccess(key+".settings")))) {
+		request.Settings = expandRequestGlobalPoolUpdateGlobalPoolSettings(ctx, key+".settings.0", d)
+	}
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
 	}
