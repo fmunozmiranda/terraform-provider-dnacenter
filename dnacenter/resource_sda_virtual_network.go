@@ -35,6 +35,53 @@ func resourceSdaVirtualNetwork() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"device_management_ip_address": &schema.Schema{
+							Description: `Device Management Ip Address`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"name": &schema.Schema{
+							Description: `Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"roles": &schema.Schema{
+							Description: `Roles`,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+
+						"site_hierarchy": &schema.Schema{
+							Description: `Site Hierarchy`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"status": &schema.Schema{
+							Description: `Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Required: true,
@@ -211,9 +258,10 @@ func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData
 	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 	item, restyResp1, err := client.Sda.GetVnFromSdaFabric(&queryParams1)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetVNFromSDAFabric", err,
-			"Failure at GetVNFromSDAFabric, unexpected response", ""))
+		//diags = append(diags, diagErrorWithAlt(
+		//	"Failure when executing GetVNFromSDAFabric", err,
+		//	"Failure at GetVNFromSDAFabric, unexpected response", ""))
+		d.SetId("")
 		return diags
 	}
 
@@ -234,6 +282,40 @@ func resourceSdaVirtualNetworkDelete(ctx context.Context, d *schema.ResourceData
 			"Failure when executing DeleteVnFromSdaFabric", err,
 			"Failure at DeleteVnFromSdaFabric, unexpected response", ""))
 		return diags
+	}
+	executionId := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetExecutionByID", err,
+				"Failure at GetExecutionByID, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteVnFromSdaFabric", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but

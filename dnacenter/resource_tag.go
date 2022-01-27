@@ -131,6 +131,7 @@ func resourceTag() *schema.Resource {
 						"dynamic_rules": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
+							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 
@@ -148,6 +149,7 @@ func resourceTag() *schema.Resource {
 												"items": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
+													MaxItems: 1,
 													Elem: &schema.Schema{
 														Type: schema.TypeString,
 													},
@@ -167,6 +169,7 @@ func resourceTag() *schema.Resource {
 												"values": &schema.Schema{
 													Type:     schema.TypeList,
 													Optional: true,
+													MaxItems: 1,
 													Elem: &schema.Schema{
 														Type: schema.TypeString,
 													},
@@ -482,16 +485,17 @@ func resourceTagDelete(ctx context.Context, d *schema.ResourceData, m interface{
 		getResp, _, err := client.Tag.GetTagByID(vvID)
 		if err != nil || getResp == nil {
 			// Assume that element it is already gone
+			d.SetId("")
 			return diags
 		}
-	}
-	if vName != "" {
+	} else if vName != "" {
 		queryParams1 := dnacentersdkgo.GetTagQueryParams{}
 
 		queryParams1.Name = vName
 		getResp, err := searchTagGetTag(m, queryParams1)
 		if err != nil || getResp == nil {
 			// Assume that element it is already gone
+			d.SetId("")
 			return diags
 		}
 		vvID = getResp.ID

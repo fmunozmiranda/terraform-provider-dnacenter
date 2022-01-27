@@ -332,9 +332,10 @@ func resourceSdaVirtualNetworkIPPoolDelete(ctx context.Context, d *schema.Resour
 	queryParams1.VirtualNetworkName = vVirtualNetworkName
 	item, restyResp1, err := client.Sda.GetIPPoolFromSdaVirtualNetwork(&queryParams1)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetIPPoolFromSDAVirtualNetwork", err,
-			"Failure at GetIPPoolFromSDAVirtualNetwork, unexpected response", ""))
+		//diags = append(diags, diagErrorWithAlt(
+		//	"Failure when executing GetIPPoolFromSDAVirtualNetwork", err,
+		//	"Failure at GetIPPoolFromSDAVirtualNetwork, unexpected response", ""))
+		d.SetId("")
 		return diags
 	}
 
@@ -356,7 +357,40 @@ func resourceSdaVirtualNetworkIPPoolDelete(ctx context.Context, d *schema.Resour
 			"Failure at DeleteIPPoolFromSdaVirtualNetwork, unexpected response", ""))
 		return diags
 	}
-
+	executionId := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetExecutionByID", err,
+				"Failure at GetExecutionByID, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteIPPoolFromSdaVirtualNetwork", err))
+			return diags
+		}
+	}
 	// d.SetId("") is automatically called assuming delete returns no errors, but
 	// it is added here for explicitness.
 	d.SetId("")
