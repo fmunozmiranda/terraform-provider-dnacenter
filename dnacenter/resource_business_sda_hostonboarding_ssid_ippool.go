@@ -156,28 +156,29 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 			"Failure when executing AddSSIDToIPPoolMapping", err))
 		return diags
 	}
-	if len(*resp1) > 0 {
-		executionID := (*resp1)[0].ExecutionID
-		if executionID != "" {
-			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
-			if err != nil || response2 == nil {
-				if restyResp2 != nil {
-					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-				}
-				diags = append(diags, diagErrorWithAlt(
-					"Failure when executing GetBusinessAPIExecutionDetails", err,
-					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
-				return diags
+	// if len(*resp1) > 0 {
+	// executionID := (*resp1)[0].ExecutionID
+	executionID := resp1.ExecutionID
+	if executionID != "" {
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			if response2.Status != "SUCCESS" {
-				bapiError := response2.BapiError
-				diags = append(diags, diagErrorWithAlt(
-					"Failure when executing AddSSIDToIPPoolMapping", err,
-					"Failure at AddSSIDToIPPoolMapping execution", bapiError))
-				return diags
-			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetBusinessAPIExecutionDetails", err,
+				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+			return diags
+		}
+		if response2.Status != "SUCCESS" {
+			bapiError := response2.BapiError
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing AddSSIDToIPPoolMapping", err,
+				"Failure at AddSSIDToIPPoolMapping execution", bapiError))
+			return diags
 		}
 	}
+	// }
 
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
@@ -278,28 +279,29 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 				"Failure at UpdateSSIDToIPPoolMapping, unexpected response", ""))
 			return diags
 		}
-		if len(*response1) > 0 {
-			executionID := (*response1)[0].ExecutionID
-			if executionID != "" {
-				response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
-				if err != nil || response2 == nil {
-					if restyResp2 != nil {
-						log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-					}
-					diags = append(diags, diagErrorWithAlt(
-						"Failure when executing GetBusinessAPIExecutionDetails", err,
-						"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
-					return diags
+		// if len(*response1) > 0 {
+		// 	executionID := (*response1)[0].ExecutionID
+		executionID := response1.ExecutionID
+		if executionID != "" {
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 				}
-				if response2.Status != "SUCCESS" {
-					bapiError := response2.BapiError
-					diags = append(diags, diagErrorWithAlt(
-						"Failure when executing AddSSIDToIPPoolMapping", err,
-						"Failure at AddSSIDToIPPoolMapping execution", bapiError))
-					return diags
-				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetBusinessAPIExecutionDetails", err,
+					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+				return diags
+			}
+			if response2.Status != "SUCCESS" {
+				bapiError := response2.BapiError
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing AddSSIDToIPPoolMapping", err,
+					"Failure at AddSSIDToIPPoolMapping execution", bapiError))
+				return diags
 			}
 		}
+		// }
 	}
 
 	return resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx, d, m)

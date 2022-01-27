@@ -126,12 +126,12 @@ func flattenFabricWirelessAddWLCToFabricDomainItems(items *dnacentersdkgo.Respon
 		return nil
 	}
 	var respItems []map[string]interface{}
-	for _, item := range *items {
-		respItem := make(map[string]interface{})
-		respItem["execution_id"] = item.ExecutionID
-		respItem["execution_status_url"] = item.ExecutionStatusURL
-		respItem["message"] = item.Message
-		respItems = append(respItems, respItem)
-	}
+	// for _, item := range *items {
+	respItem := make(map[string]interface{})
+	respItem["execution_id"] = items.ExecutionID
+	respItem["execution_status_url"] = items.ExecutionStatusURL
+	respItem["message"] = items.Message
+	respItems = append(respItems, respItem)
+	// }
 	return respItems
 }
