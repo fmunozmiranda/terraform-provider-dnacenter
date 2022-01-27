@@ -70,7 +70,6 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 
 	vFloorID, okFloorID := resourceItem["floor_id"]
 	vvFloorID := interfaceToString(vFloorID)
-	var vvID string
 	if okFloorID && vvFloorID != "" {
 		getResponse1, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
 		if err == nil && getResponse1 != nil {
@@ -91,11 +90,8 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 			"Failure when executing CreateFloormap", err))
 		return diags
 	}
-	headers := restyResp1.Header()
-	if locationHeader, ok := headers["Location"]; ok && len(locationHeader) > 0 {
-		vvID = getLocationID(locationHeader[0])
-	}
-	log.Printf("[DEBUG]", vvID)
+
+	log.Printf("[DEBUG]", vvFloorID)
 	resourceMap := make(map[string]string)
 	resourceMap["floor_id"] = vvFloorID
 	d.SetId(joinResourceID(resourceMap))

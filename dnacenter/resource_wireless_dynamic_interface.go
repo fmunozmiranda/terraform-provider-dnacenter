@@ -196,11 +196,6 @@ func resourceWirelessDynamicInterfaceDelete(ctx context.Context, d *schema.Resou
 	// REVIEW: Add getAllItems and search function to get missing params
 	if selectedMethod == 1 {
 
-		getResp1, _, err := client.Wireless.GetDynamicInterface(nil)
-		if err != nil || getResp1 == nil {
-			// Assume that element it is already gone
-			return diags
-		}
 		item1, err := searchWirelessGetDynamicInterface(m, queryParams1)
 		if err != nil || item1 == nil {
 			// Assume that element it is already gone

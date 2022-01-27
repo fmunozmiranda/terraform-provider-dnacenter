@@ -106,7 +106,7 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
-	request1 := expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx, "parameters.0", d)
+	request1 := expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx, "parameters", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 	vInstanceTenantId := resourceItem["instance_tenant_id"]
 	vSystemPropertyName := resourceItem["system_property_name"]
@@ -134,6 +134,24 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 			"Failure when executing CreateUpdateSNMPProperties", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		log.Printf("[DEBUG] Error => %v", response2.Response.FailureReason)
+		diags = append(diags, diagError(
+			"Failure when executing CreateUpdateSNMPProperties", err))
+		return diags
+	}
+
 	resourceMap := make(map[string]string)
 	resourceMap["instance_tenant_id"] = vvInstanceTenantId
 	resourceMap["system_property_name"] = vvSystemPropertyName
@@ -188,7 +206,7 @@ func resourceSNMPPropertiesDelete(ctx context.Context, d *schema.ResourceData, m
 }
 func expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestDiscoveryCreateUpdateSNMPProperties {
 	request := dnacentersdkgo.RequestDiscoveryCreateUpdateSNMPProperties{}
-	if v := expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestSNMPPropertiesCreateUpdateSNMPPropertiesItemArray(ctx, key, d); v != nil {
 		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
@@ -262,7 +280,7 @@ func searchDiscoveryGetSNMPProperties(m interface{}, vID string, vName string) (
 	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.InstanceTenantID == vID && item.SystemPropertyName == vName {
+		if item.InstanceTenantID == vID || item.SystemPropertyName == vName {
 			var getItem *dnacentersdkgo.ResponseDiscoveryGetSNMPPropertiesResponse
 			getItem = &item
 			foundItem = getItem

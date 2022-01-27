@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -210,11 +211,28 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
+	vName, okName := resourceItem["name"]
+	vvName := interfaceToString(vName)
 	if okID && vvID != "" {
 		getResponse2, _, err := client.Tag.GetTagByID(vvID)
 		if err == nil && getResponse2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
+			d.SetId(joinResourceID(resourceMap))
+			return resourceTagRead(ctx, d, m)
+		}
+	}
+	if okName && vvName != "" {
+		queryParams1 := dnacentersdkgo.GetTagQueryParams{}
+
+		queryParams1.Name = vvName
+		response1, err := searchTagGetTag(m, queryParams1)
+
+		if err != nil || response1 != nil {
+			resourceMap := make(map[string]string)
+			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourceTagRead(ctx, d, m)
 		}
@@ -230,8 +248,29 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 			"Failure when executing CreateTag", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TaskID %s", taskId)
+	time.Sleep(5 * time.Second)
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+		diags = append(diags, diagError(
+			"Failure when executing CreateTag", err))
+		return diags
+	}
+
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceTagRead(ctx, d, m)
 }
@@ -333,13 +372,9 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 	resourceMap := separateResourceID(resourceID)
 
 	vID := resourceMap["id"]
-
-	selectedMethod := 2
+	vName := resourceMap["name"]
 	var vvID string
-	var vvName string
-	// NOTE: Consider adding getAllItems and search function to get missing params
-	// if selectedMethod == 1 { }
-	if selectedMethod == 2 {
+	if vID != "" {
 		vvID = vID
 		getResp, _, err := client.Tag.GetTagByID(vvID)
 		if err != nil || getResp == nil {
@@ -348,11 +383,27 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 				"Failure at GetTagByID, unexpected response", ""))
 			return diags
 		}
-		//Set value vvName = getResp.
-
 	}
+	if vName != "" {
+		queryParams1 := dnacentersdkgo.GetTagQueryParams{}
+
+		queryParams1.Name = vName
+		response1, err := searchTagGetTag(m, queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTagByID", err,
+				"Failure at GetTag, unexpected response", ""))
+			return diags
+		}
+		vvID = response1.ID
+	}
+	// NOTE: Consider adding getAllItems and search function to get missing params
+	// if selectedMethod == 1 { }
+
+	//Set value vvName = getResp
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		log.Printf("[DEBUG] Id used for update operation %s", vvID)
 		request1 := expandRequestTagUpdateTag(ctx, "parameters.0", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.Tag.UpdateTag(request1)
@@ -367,6 +418,23 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateTag", err,
 				"Failure at UpdateTag, unexpected response", ""))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing UpdateTag", err))
 			return diags
 		}
 	}
@@ -384,16 +452,26 @@ func resourceTagDelete(ctx context.Context, d *schema.ResourceData, m interface{
 	resourceMap := separateResourceID(resourceID)
 
 	vID := resourceMap["id"]
-
-	selectedMethod := 2
+	vName := resourceMap["name"]
 	var vvID string
-	if selectedMethod == 2 {
+	if vID != "" {
 		vvID = vID
 		getResp, _, err := client.Tag.GetTagByID(vvID)
 		if err != nil || getResp == nil {
 			// Assume that element it is already gone
 			return diags
 		}
+	}
+	if vName != "" {
+		queryParams1 := dnacentersdkgo.GetTagQueryParams{}
+
+		queryParams1.Name = vName
+		getResp, err := searchTagGetTag(m, queryParams1)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		vvID = getResp.ID
 	}
 	response1, restyResp1, err := client.Tag.DeleteTag(vvID)
 	if err != nil || response1 == nil {
@@ -407,6 +485,23 @@ func resourceTagDelete(ctx context.Context, d *schema.ResourceData, m interface{
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing DeleteTag", err,
 			"Failure at DeleteTag, unexpected response", ""))
+		return diags
+	}
+	taskId := response1.Response.TaskID
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+		diags = append(diags, diagError(
+			"Failure when executing DeleteTag", err))
 		return diags
 	}
 

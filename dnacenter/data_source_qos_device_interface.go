@@ -398,7 +398,7 @@ func flattenApplicationPolicyGetQosDeviceInterfaceInfoItems(items *[]dnacentersd
 	return respItems
 }
 
-func flattenApplicationPolicyGetQosDeviceInterfaceInfoItem(item *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse) map[string]interface{} {
+func flattenApplicationPolicyGetQosDeviceInterfaceInfoItem(item *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -428,7 +428,9 @@ func flattenApplicationPolicyGetQosDeviceInterfaceInfoItem(item *dnacentersdkgo.
 	respItem["network_device_id"] = item.NetworkDeviceID
 	respItem["qos_device_interface_info"] = flattenApplicationPolicyGetQosDeviceInterfaceInfoItemsQosDeviceInterfaceInfo(item.QosDeviceInterfaceInfo)
 
-	return respItem
+	return []map[string]interface{}{
+		respItem,
+	}
 }
 
 func flattenApplicationPolicyGetQosDeviceInterfaceInfoItemsTargetIDList(items *[]dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponseTargetIDList) []interface{} {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -427,21 +428,24 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 	var diags diag.Diagnostics
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
-	request1 := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfo(ctx, "parameters.0", d)
+	request1 := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfo(ctx, "parameters", d)
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	vID := resourceItem["network_device_id"]
 	vvID := interfaceToString(vID)
+	vName := resourceItem["name"]
+	vvName := interfaceToString(vName)
 
 	queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams{}
 
 	queryParams1.NetworkDeviceID = vvID
 
-	response1, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1)
+	response1, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1, vvName)
 
 	if err != nil || response1 != nil {
 		resourceMap := make(map[string]string)
 		resourceMap["network_device_id"] = vvID
+		resourceMap["name"] = vvName
 		d.SetId(joinResourceID(resourceMap))
 		return resourceQosDeviceInterfaceRead(ctx, d, m)
 	}
@@ -457,8 +461,29 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 			"Failure when executing CreateQosDeviceInterfaceInfo", err))
 		return diags
 	}
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	time.Sleep(5 * time.Second)
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	log.Printf("[DEBUG] Error %t", *response2.Response.IsError)
+	if *response2.Response.IsError {
+		log.Printf("[DEBUG] Error %s", response2.Response.FailureReason)
+		diags = append(diags, diagError(
+			"Failure when executing CreateQuosDeviceInterface", err))
+		return diags
+	}
 	resourceMap := make(map[string]string)
 	resourceMap["network_device_id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceQosDeviceInterfaceRead(ctx, d, m)
 }
@@ -470,6 +495,7 @@ func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData,
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vNetworkDeviceID, okNetworkDeviceID := resourceMap["network_device_id"]
+	vName := resourceMap["name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -480,7 +506,7 @@ func resourceQosDeviceInterfaceRead(ctx context.Context, d *schema.ResourceData,
 			queryParams1.NetworkDeviceID = vNetworkDeviceID
 		}
 
-		response1, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1)
+		response1, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1, vName)
 
 		if err != nil || response1 == nil {
 			diags = append(diags, diagErrorWithAlt(
@@ -513,10 +539,11 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["network_device_id"]
+	vName := resourceMap["name"]
 
 	queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams{}
 	queryParams1.NetworkDeviceID = vID
-	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1)
+	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1, vName)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
 			"Failure when executing GetQosDeviceInterfaceInfo", err,
@@ -529,7 +556,7 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 	// if selectedMethod == 1 { }
 	if d.HasChange("item") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
-		request1 := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx, "parameters.0", d)
+		request1 := expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfo(ctx, "parameters", d)
 		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateQosDeviceInterfaceInfo(request1)
 		if err != nil || response1 == nil {
@@ -543,6 +570,23 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateQosDeviceInterfaceInfo", err,
 				"Failure at UpdateQosDeviceInterfaceInfo, unexpected response", ""))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateQuosDeviceInterface", err))
 			return diags
 		}
 	}
@@ -559,14 +603,12 @@ func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceDat
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vNetworkDeviceID := resourceMap["network_device_id"]
-
+	vName := resourceMap["name"]
 	queryParams1 := dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams{}
 	queryParams1.NetworkDeviceID = vNetworkDeviceID
-	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1)
+	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1, vName)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetQosDeviceInterfaceInfo", err,
-			"Failure at GetQosDeviceInterfaceInfo, unexpected response", ""))
+
 		return diags
 	}
 
@@ -595,7 +637,7 @@ func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceDat
 }
 func expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfo(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestApplicationPolicyCreateQosDeviceInterfaceInfo {
 	request := dnacentersdkgo.RequestApplicationPolicyCreateQosDeviceInterfaceInfo{}
-	if v := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemArray(ctx, key+".", d); v != nil {
+	if v := expandRequestQosDeviceInterfaceCreateQosDeviceInterfaceInfoItemArray(ctx, key, d); v != nil {
 		request = *v
 	}
 	if isEmptyValue(reflect.ValueOf(request)) {
@@ -815,35 +857,64 @@ func expandRequestQosDeviceInterfaceUpdateQosDeviceInterfaceInfoItemQosDeviceInt
 	return &request
 }
 
-func searchApplicationPolicyGetQosDeviceInterfaceInfo(m interface{}, queryParams dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams) (*dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse, error) {
+func searchApplicationPolicyGetQosDeviceInterfaceInfo(m interface{}, queryParams dnacentersdkgo.GetQosDeviceInterfaceInfoQueryParams, vName string) (*dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
 	var foundItem *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse
 	var ite *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfo
-	ite, _, err = client.ApplicationPolicy.GetQosDeviceInterfaceInfo(&queryParams)
-	if err != nil {
-		return foundItem, err
-	}
-
-	if ite == nil {
-		return foundItem, err
-	}
-
-	if ite.Response == nil {
-		return foundItem, err
-	}
-
-	items := ite
-
-	itemsCopy := *items.Response
-	for _, item := range itemsCopy {
-		// Call get by _ method and set value to foundItem and return
-		if item.ID == queryParams.NetworkDeviceID {
-			var getItem *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse
-			getItem = &item
-			foundItem = getItem
+	if queryParams.NetworkDeviceID != "" {
+		ite, _, err = client.ApplicationPolicy.GetQosDeviceInterfaceInfo(&queryParams)
+		if err != nil {
 			return foundItem, err
 		}
+
+		if ite == nil {
+			return foundItem, err
+		}
+
+		if ite.Response == nil {
+			return foundItem, err
+		}
+
+		items := ite
+
+		itemsCopy := *items.Response
+		for _, item := range itemsCopy {
+			// Call get by _ method and set value to foundItem and return
+			if item.ID == queryParams.NetworkDeviceID {
+				var getItem *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse
+				getItem = &item
+				foundItem = getItem
+				return foundItem, err
+			}
+		}
+	} else {
+		ite, _, err = client.ApplicationPolicy.GetQosDeviceInterfaceInfo(nil)
+		if err != nil {
+			return foundItem, err
+		}
+
+		if ite == nil {
+			return foundItem, err
+		}
+
+		if ite.Response == nil {
+			return foundItem, err
+		}
+
+		items := ite
+
+		itemsCopy := *items.Response
+		for _, item := range itemsCopy {
+			// Call get by _ method and set value to foundItem and return
+			if item.Name == vName {
+				var getItem *dnacentersdkgo.ResponseApplicationPolicyGetQosDeviceInterfaceInfoResponse
+				getItem = &item
+				foundItem = getItem
+				return foundItem, err
+			}
+		}
 	}
+
 	return foundItem, err
 }

@@ -397,11 +397,26 @@ func resourcePnpWorkflowCreate(ctx context.Context, d *schema.ResourceData, m in
 
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
+	vName, okName := resourceItem["name"]
+	vvName := interfaceToString(vName)
 	if okID && vvID != "" {
 		getResponse2, _, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
 		if err == nil && getResponse2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
+			d.SetId(joinResourceID(resourceMap))
+			return resourcePnpWorkflowRead(ctx, d, m)
+		}
+	}
+	if okName && vvName != "" {
+		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
+		queryParams1.Name = append(queryParams1.Name, vvName)
+		getResponse2, err := searchDeviceOnboardingPnpGetWorkflows(m, queryParams1)
+		if err == nil && getResponse2 != nil {
+			resourceMap := make(map[string]string)
+			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourcePnpWorkflowRead(ctx, d, m)
 		}
@@ -438,7 +453,7 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
 
 		if okName {
-			queryParams1.Name = interfaceToSliceString(vName)
+			queryParams1.Name = append(queryParams1.Name, vName)
 		}
 
 		response1, err := searchDeviceOnboardingPnpGetWorkflows(m, queryParams1)
@@ -514,8 +529,42 @@ func resourcePnpWorkflowUpdate(ctx context.Context, d *schema.ResourceData, m in
 	resourceMap := separateResourceID(resourceID)
 
 	vID := resourceMap["id"]
+	vName := resourceMap["name"]
 
 	vvID := vID
+
+	if vName != "" {
+		log.Printf("[DEBUG] Selected method 1: GetWorkflows")
+		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
+
+		queryParams1.Name = append(queryParams1.Name, vName)
+
+		response1, err := searchDeviceOnboardingPnpGetWorkflows(m, queryParams1)
+
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetWorkflows", err,
+				"Failure at GetWorkflows, unexpected response", ""))
+			return diags
+		}
+	}
+
+	if vID != "" {
+		log.Printf("[DEBUG] Selected method 2: GetWorkflowByID")
+		vvID := vID
+
+		response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
+
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetWorkflowByID", err,
+				"Failure at GetWorkflowByID, unexpected response", ""))
+			return diags
+		}
+	}
 
 	response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
 

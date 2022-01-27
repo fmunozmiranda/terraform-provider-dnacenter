@@ -3210,7 +3210,7 @@ get results and follow progress.
 							Description: `flowAnalysisId path parameter. Flow analysis request id
 `,
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"inclusions": &schema.Schema{
 							Type:     schema.TypeList,
@@ -3276,7 +3276,7 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 		return diags
 	}
 	resourceMap := make(map[string]string)
-	resourceMap["flow_analysis_id"] = vvFlowAnalysisID
+	resourceMap["flow_analysis_id"] = resp1.Response.FlowAnalysisID
 	d.SetId(joinResourceID(resourceMap))
 	return resourcePathTraceRead(ctx, d, m)
 }

@@ -488,11 +488,23 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 
 	vReportID, okReportID := resourceItem["report_id"]
 	vvReportID := interfaceToString(vReportID)
+	vName, okName := resourceItem["name"]
+	vvName := interfaceToString(vName)
 	if okReportID && vvReportID != "" {
 		getResponse2, _, err := client.Reports.GetAScheduledReport(vvReportID)
 		if err == nil && getResponse2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["report_id"] = vvReportID
+			d.SetId(joinResourceID(resourceMap))
+			return resourceReportsRead(ctx, d, m)
+		}
+	}
+	if okName && vvName != "" {
+		getResponse2, err := searchReportsGetListOfScheduledReports(m, nil, vvName)
+		if err == nil && getResponse2 != nil {
+			resourceMap := make(map[string]string)
+			resourceMap["report_id"] = vvReportID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourceReportsRead(ctx, d, m)
 		}
@@ -509,7 +521,8 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 		return diags
 	}
 	resourceMap := make(map[string]string)
-	resourceMap["report_id"] = vvReportID
+	resourceMap["report_id"] = resp1.ReportID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceReportsRead(ctx, d, m)
 }
@@ -522,13 +535,48 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vReportID := resourceMap["report_id"]
+	vName := resourceMap["name"]
 
-	selectedMethod := 2
-	if selectedMethod == 2 {
+	if vReportID != "" {
 		log.Printf("[DEBUG] Selected method 2: GetAScheduledReport")
 		vvReportID := vReportID
 
-		response2, restyResp2, err := client.Reports.GetAScheduledReport(vvReportID)
+		response1, restyResp1, err := client.Reports.GetAScheduledReport(vvReportID)
+
+		if err != nil || response1 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetAScheduledReport", err,
+				"Failure at GetAScheduledReport, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+
+		vItem1 := flattenReportsGetAScheduledReportItem(response1)
+		if err := d.Set("item", vItem1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetAScheduledReport response",
+				err))
+			return diags
+		}
+		return diags
+
+	}
+
+	if vName != "" {
+		response1, err := searchReportsGetListOfScheduledReports(m, nil, vName)
+		if err != nil || response1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetAScheduledReport", err,
+				"Failure at GetAScheduledReport, unexpected response", ""))
+			return diags
+		}
+
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+		response2, restyResp2, err := client.Reports.GetAScheduledReport(response1.ReportID)
 
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -569,18 +617,26 @@ func resourceReportsDelete(ctx context.Context, d *schema.ResourceData, m interf
 	resourceMap := separateResourceID(resourceID)
 
 	vReportID := resourceMap["report_id"]
-
-	var vvID string
+	vName := resourceMap["name"]
 	// REVIEW: Add getAllItems and search function to get missing params
 
-	vvID = vReportID
-	getResp, _, err := client.Reports.GetAScheduledReport(vvID)
-	if err != nil || getResp == nil {
-		// Assume that element it is already gone
-		return diags
+	if vReportID != "" {
+		getResp, _, err := client.Reports.GetAScheduledReport(vReportID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
+	if vName != "" {
+		getResp, err := searchReportsGetListOfScheduledReports(m, nil, vName)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		vReportID = getResp.ReportID
 	}
 
-	response1, restyResp1, err := client.Reports.DeleteAScheduledReport(vvID)
+	response1, restyResp1, err := client.Reports.DeleteAScheduledReport(vReportID)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
@@ -848,4 +904,30 @@ func expandRequestReportsCreateOrScheduleAReportViewFormat(ctx context.Context, 
 	}
 
 	return &request
+}
+
+func searchReportsGetListOfScheduledReports(m interface{}, queryParams *dnacentersdkgo.GetListOfScheduledReportsQueryParams, vName string) (*dnacentersdkgo.ResponseItemReportsGetListOfScheduledReports, error) {
+	client := m.(*dnacentersdkgo.Client)
+	var err error
+	var foundItem *dnacentersdkgo.ResponseItemReportsGetListOfScheduledReports
+	var ite *dnacentersdkgo.ResponseReportsGetListOfScheduledReports
+	ite, _, err = client.Reports.GetListOfScheduledReports(nil)
+	if err != nil {
+		return foundItem, err
+	}
+	items := ite
+	if items == nil {
+		return foundItem, err
+	}
+	itemsCopy := *items
+	for _, item := range itemsCopy {
+		// Call get by _ method and set value to foundItem and return
+		if item.Name == vName {
+			var getItem *dnacentersdkgo.ResponseItemReportsGetListOfScheduledReports
+			getItem = &item
+			foundItem = getItem
+			return foundItem, err
+		}
+	}
+	return foundItem, err
 }

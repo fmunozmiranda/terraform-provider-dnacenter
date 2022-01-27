@@ -319,6 +319,23 @@ func flattenNetworkSettingsGetReserveIPSubpoolItems(items *[]dnacentersdkgo.Resp
 	}
 	return respItems
 }
+func flattenNetworkSettingsGetReserveIPSubpoolItem(item *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponse) []map[string]interface{} {
+	if item == nil {
+		return nil
+	}
+
+	respItem := make(map[string]interface{})
+	respItem["id"] = item.ID
+	respItem["group_name"] = item.GroupName
+	respItem["ip_pools"] = flattenNetworkSettingsGetReserveIPSubpoolItemsIPPools(item.IPPools)
+	respItem["site_id"] = item.SiteID
+	respItem["site_hierarchy"] = item.SiteHierarchy
+	respItem["type"] = item.Type
+	respItem["group_owner"] = item.GroupOwner
+	return []map[string]interface{}{
+		respItem,
+	}
+}
 
 func flattenNetworkSettingsGetReserveIPSubpoolItemsIPPools(items *[]dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPools) []map[string]interface{} {
 	if items == nil {
@@ -351,7 +368,7 @@ func flattenNetworkSettingsGetReserveIPSubpoolItemsIPPools(items *[]dnacentersdk
 	}
 	return respItems
 }
-func flattenNetworkSettingsGetReserveIPSubpoolItemIPPools(item *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPools) map[string]interface{} {
+func flattenNetworkSettingsGetReserveIPSubpoolItemIPPools(item *dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPools) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -378,7 +395,9 @@ func flattenNetworkSettingsGetReserveIPSubpoolItemIPPools(item *dnacentersdkgo.R
 	respItem["id"] = item.ID
 	respItem["ip_pool_cidr"] = item.IPPoolCidr
 
-	return respItem
+	return []map[string]interface{}{
+		respItem,
+	}
 }
 
 func flattenNetworkSettingsGetReserveIPSubpoolItemsIPPoolsDhcpServerIPs(items *[]dnacentersdkgo.ResponseNetworkSettingsGetReserveIPSubpoolResponseIPPoolsDhcpServerIPs) []interface{} {

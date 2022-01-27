@@ -3,6 +3,7 @@ package dnacenter
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -185,13 +186,33 @@ func resourceSdaPortAssignmentForUserDeviceCreate(ctx context.Context, d *schema
 		d.SetId(joinResourceID(resourceMap))
 		return resourceSdaPortAssignmentForUserDeviceRead(ctx, d, m)
 	}
-	resp1, restyResp1, err := client.Sda.AddPortAssignmentForUserDeviceInSdaFabric(request1)
-	if err != nil || resp1 == nil {
+	response1, restyResp1, err := client.Sda.AddPortAssignmentForUserDeviceInSdaFabric(request1)
+	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			diags = append(diags, diagErrorWithResponse(
 				"Failure when executing AddPortAssignmentForUserDeviceInSdaFabric", err, restyResp1.String()))
 			return diags
 		}
+		diags = append(diags, diagError(
+			"Failure when executing AddPortAssignmentForUserDeviceInSdaFabric", err))
+		return diags
+	}
+
+	executionId := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	time.Sleep(5 * time.Second)
+	response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+	if err != nil || response2 == nil {
+		if restyResp1 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetExecutionByID", err,
+			"Failure at GetExecutionByID, unexpected response", ""))
+		return diags
+	}
+	if response2.Status == "FAILURE" {
+		log.Printf("[DEBUG] Error %s", response2.BapiError)
 		diags = append(diags, diagError(
 			"Failure when executing AddPortAssignmentForUserDeviceInSdaFabric", err))
 		return diags
