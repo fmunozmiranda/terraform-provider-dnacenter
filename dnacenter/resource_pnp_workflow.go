@@ -395,7 +395,9 @@ func resourcePnpWorkflowCreate(ctx context.Context, d *schema.ResourceData, m in
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestPnpWorkflowAddAWorkflow(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
@@ -461,9 +463,11 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 		response1, err := searchDeviceOnboardingPnpGetWorkflows(m, queryParams1)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetWorkflows", err,
-				"Failure at GetWorkflows, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetWorkflows", err,
+			// 	"Failure at GetWorkflows, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -480,7 +484,6 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 				"Failure at GetWorkflowByID, unexpected response", ""))
 			return diags
 		}
-		//TODO FOR DNAC
 
 		vItem1 := flattenDeviceOnboardingPnpGetWorkflowByIDItem(response2)
 		if err := d.Set("item", vItem1); err != nil {
@@ -489,6 +492,7 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 				err))
 			return diags
 		}
+		return diags
 
 	}
 	if okID && vID != "" {
@@ -501,9 +505,11 @@ func resourcePnpWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetWorkflowByID", err,
-				"Failure at GetWorkflowByID, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetWorkflowByID", err,
+			// 	"Failure at GetWorkflowByID, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -583,7 +589,9 @@ func resourcePnpWorkflowUpdate(ctx context.Context, d *schema.ResourceData, m in
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestPnpWorkflowUpdateWorkflow(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.DeviceOnboardingPnp.UpdateWorkflow(vvID, request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

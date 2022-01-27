@@ -3253,7 +3253,9 @@ func resourcePathTraceCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestPathTraceInitiateANewPathtrace(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vFlowAnalysisID, okFlowAnalysisID := resourceItem["flow_analysis_id"]
 	vvFlowAnalysisID := interfaceToString(vFlowAnalysisID)
@@ -3304,9 +3306,11 @@ func resourcePathTraceRead(ctx context.Context, d *schema.ResourceData, m interf
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing RetrievesPreviousPathtrace", err,
-				"Failure at RetrievesPreviousPathtrace, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing RetrievesPreviousPathtrace", err,
+			// 	"Failure at RetrievesPreviousPathtrace, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

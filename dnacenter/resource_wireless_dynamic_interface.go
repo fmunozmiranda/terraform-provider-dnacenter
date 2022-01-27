@@ -90,7 +90,9 @@ func resourceWirelessDynamicInterfaceCreate(ctx context.Context, d *schema.Resou
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestWirelessDynamicInterfaceCreateUpdateDynamicInterface(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vInterfaceName := resourceItem["interface_name"]
 	vvInterfaceName := interfaceToString(vInterfaceName)
@@ -147,15 +149,15 @@ func resourceWirelessDynamicInterfaceRead(ctx context.Context, d *schema.Resourc
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDynamicInterface", err,
-				"Failure at GetDynamicInterface, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDynamicInterface", err,
+			// 	"Failure at GetDynamicInterface, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
-
-		//TODO FOR DNAC
 
 		vItem1 := flattenWirelessGetDynamicInterfaceItems(response1)
 		if err := d.Set("item", vItem1); err != nil {

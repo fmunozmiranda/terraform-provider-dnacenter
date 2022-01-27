@@ -110,7 +110,9 @@ func resourceSdaFabricCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaFabricAddFabric(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vFabricName := resourceItem["fabric_name"]
 	vvFabricName := interfaceToString(vFabricName)
 
@@ -199,9 +201,11 @@ func resourceSdaFabricRead(ctx context.Context, d *schema.ResourceData, m interf
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetSdaFabricInfo", err,
-				"Failure at GetSdaFabricInfo, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetSdaFabricInfo", err,
+			// 	"Failure at GetSdaFabricInfo, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

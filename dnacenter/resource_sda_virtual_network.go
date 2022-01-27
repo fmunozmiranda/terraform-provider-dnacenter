@@ -69,7 +69,9 @@ func resourceSdaVirtualNetworkCreate(ctx context.Context, d *schema.ResourceData
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaVirtualNetworkAddVnInSdaFabric(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vVirtualNetworkName := resourceItem["virtual_network_name"]
 	vSiteNameHierarchy := resourceItem["site_name_hierarchy"]
 	vvVirtualNetworkName := interfaceToString(vVirtualNetworkName)
@@ -166,9 +168,11 @@ func resourceSdaVirtualNetworkRead(ctx context.Context, d *schema.ResourceData, 
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetVnFromSdaFabric", err,
-				"Failure at GetVnFromSdaFabric, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetVnFromSdaFabric", err,
+			// 	"Failure at GetVnFromSdaFabric, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

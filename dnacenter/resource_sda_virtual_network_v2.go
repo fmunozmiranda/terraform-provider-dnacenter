@@ -147,7 +147,9 @@ func resourceSdaVirtualNetworkV2Create(ctx context.Context, d *schema.ResourceDa
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaVirtualNetworkV2AddVirtualNetworkWithScalableGroups(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vVirtualNetworkName := resourceItem["virtual_network_name"]
 	vvVirtualNetworkName := interfaceToString(vVirtualNetworkName)
 	queryParams1 := dnacentersdkgo.GetVirtualNetworkWithScalableGroupsQueryParams{}
@@ -234,9 +236,11 @@ func resourceSdaVirtualNetworkV2Read(ctx context.Context, d *schema.ResourceData
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetVirtualNetworkWithScalableGroups", err,
-				"Failure at GetVirtualNetworkWithScalableGroups, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetVirtualNetworkWithScalableGroups", err,
+			// 	"Failure at GetVirtualNetworkWithScalableGroups, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -280,7 +284,9 @@ func resourceSdaVirtualNetworkV2Update(ctx context.Context, d *schema.ResourceDa
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestSdaVirtualNetworkV2UpdateVirtualNetworkWithScalableGroups(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.Sda.UpdateVirtualNetworkWithScalableGroups(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

@@ -124,7 +124,9 @@ func resourceSdaFabricAuthenticationProfileCreate(ctx context.Context, d *schema
 	resourceItem := *getResourceItem(d.Get("parameters"))
 
 	request1 := expandRequestSdaFabricAuthenticationProfileDeployAuthenticationTemplateInSdaFabric(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vSiteNameHierarchy := resourceItem["site_name_hierarchy"]
 	vvSiteNameHierarchy := interfaceToString(vSiteNameHierarchy)
 	vAuthenticateTemplateName := resourceItem["authenticate_template_name"]
@@ -220,9 +222,11 @@ func resourceSdaFabricAuthenticationProfileRead(ctx context.Context, d *schema.R
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDefaultAuthenticationProfileFromSdaFabric", err,
-				"Failure at GetDefaultAuthenticationProfileFromSdaFabric, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDefaultAuthenticationProfileFromSdaFabric", err,
+			// 	"Failure at GetDefaultAuthenticationProfileFromSdaFabric, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -272,7 +276,9 @@ func resourceSdaFabricAuthenticationProfileUpdate(ctx context.Context, d *schema
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestSdaFabricAuthenticationProfileUpdateDefaultAuthenticationProfileInSdaFabric(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.Sda.UpdateDefaultAuthenticationProfileInSdaFabric(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

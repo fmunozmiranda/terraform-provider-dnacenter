@@ -171,7 +171,9 @@ func resourceSdaPortAssignmentForUserDeviceCreate(ctx context.Context, d *schema
 	vvDeviceManagementIPAddress := interfaceToString(vDeviceManagementIPAddress)
 	vvInterfaceName := interfaceToString(vInterfaceName)
 	request1 := expandRequestSdaPortAssignmentForUserDeviceAddPortAssignmentForUserDeviceInSdaFabric(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	queryParams1 := dnacentersdkgo.GetPortAssignmentForUserDeviceInSdaFabricQueryParams{}
 
@@ -266,9 +268,11 @@ func resourceSdaPortAssignmentForUserDeviceRead(ctx context.Context, d *schema.R
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetPortAssignmentForUserDeviceInSdaFabric", err,
-				"Failure at GetPortAssignmentForUserDeviceInSdaFabric, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetPortAssignmentForUserDeviceInSdaFabric", err,
+			// 	"Failure at GetPortAssignmentForUserDeviceInSdaFabric, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

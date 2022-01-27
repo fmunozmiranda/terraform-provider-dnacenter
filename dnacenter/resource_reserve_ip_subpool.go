@@ -417,7 +417,9 @@ func resourceReserveIPSubpoolCreate(ctx context.Context, d *schema.ResourceData,
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestReserveIPSubpoolReserveIPSubpool(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vSiteID := resourceItem["site_id"]
 	vvSiteID := interfaceToString(vSiteID)
@@ -511,15 +513,15 @@ func resourceReserveIPSubpoolRead(ctx context.Context, d *schema.ResourceData, m
 		response1, err := searchNetworkSettingsGetReserveIPSubpool(m, queryParams1, vName)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetReserveIPSubpool", err,
-				"Failure at GetReserveIPSubpool, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetReserveIPSubpool", err,
+			// 	"Failure at GetReserveIPSubpool, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
-
-		//TODO FOR DNAC
 
 		vItem1 := flattenNetworkSettingsGetReserveIPSubpoolItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
@@ -559,7 +561,9 @@ func resourceReserveIPSubpoolUpdate(ctx context.Context, d *schema.ResourceData,
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vSiteID)
 		request1 := expandRequestReserveIPSubpoolUpdateReserveIPSubpool(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		queryParams2 := dnacentersdkgo.UpdateReserveIPSubpoolQueryParams{}
 		queryParams2.ID = item.ID
 		response1, restyResp1, err := client.NetworkSettings.UpdateReserveIPSubpool(vSiteID, request1, &queryParams2)

@@ -615,9 +615,11 @@ func resourcePnpGlobalSettingsRead(ctx context.Context, d *schema.ResourceData, 
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetPnpGlobalSettings", err,
-				"Failure at GetPnpGlobalSettings, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetPnpGlobalSettings", err,
+			// 	"Failure at GetPnpGlobalSettings, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -646,7 +648,9 @@ func resourcePnpGlobalSettingsUpdate(ctx context.Context, d *schema.ResourceData
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s")
 		request1 := expandRequestPnpGlobalSettingsUpdatePnpGlobalSettings(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.DeviceOnboardingPnp.UpdatePnpGlobalSettings(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

@@ -204,7 +204,9 @@ func resourceSdaMulticastCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaMulticastAddMulticastInSdaFabric(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vSiteNameHierarchy := resourceItem["site_name_hierarchy"]
 	vvSiteNameHierarchy := interfaceToString(vSiteNameHierarchy)
 
@@ -293,9 +295,11 @@ func resourceSdaMulticastRead(ctx context.Context, d *schema.ResourceData, m int
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetMulticastDetailsFromSdaFabric", err,
-				"Failure at GetMulticastDetailsFromSdaFabric, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetMulticastDetailsFromSdaFabric", err,
+			// 	"Failure at GetMulticastDetailsFromSdaFabric, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

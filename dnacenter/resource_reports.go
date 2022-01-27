@@ -486,7 +486,9 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestReportsCreateOrScheduleAReport(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vReportID, okReportID := resourceItem["report_id"]
 	vvReportID := interfaceToString(vReportID)
@@ -549,9 +551,11 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetAScheduledReport", err,
-				"Failure at GetAScheduledReport, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetAScheduledReport", err,
+			// 	"Failure at GetAScheduledReport, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -571,9 +575,11 @@ func resourceReportsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	if vName != "" {
 		response1, err := searchReportsGetListOfScheduledReports(m, nil, vName)
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetAScheduledReport", err,
-				"Failure at GetAScheduledReport, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetAScheduledReport", err,
+			// 	"Failure at GetAScheduledReport, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

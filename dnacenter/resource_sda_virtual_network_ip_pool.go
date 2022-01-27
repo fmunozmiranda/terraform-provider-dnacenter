@@ -191,7 +191,9 @@ func resourceSdaVirtualNetworkIPPoolCreate(ctx context.Context, d *schema.Resour
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaVirtualNetworkIPPoolAddIPPoolInSdaVirtualNetwork(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vIPPoolName := resourceItem["ip_pool_name"]
 	vVirtualNetworkName := resourceItem["virtual_network_name"]
 	vvIPPoolName := interfaceToString(vIPPoolName)
@@ -287,9 +289,11 @@ func resourceSdaVirtualNetworkIPPoolRead(ctx context.Context, d *schema.Resource
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetIPPoolFromSdaVirtualNetwork", err,
-				"Failure at GetIPPoolFromSdaVirtualNetwork, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetIPPoolFromSdaVirtualNetwork", err,
+			// 	"Failure at GetIPPoolFromSdaVirtualNetwork, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

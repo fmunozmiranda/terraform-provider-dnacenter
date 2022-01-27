@@ -578,7 +578,9 @@ func resourceNfvProfileCreate(ctx context.Context, d *schema.ResourceData, m int
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestNfvProfileCreateNfvProfile(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vID, okID := resourceItem["id"]
 	vName := resourceItem["profile_name"]
@@ -641,15 +643,15 @@ func resourceNfvProfileRead(ctx context.Context, d *schema.ResourceData, m inter
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetNfvProfile", err,
-				"Failure at GetNfvProfile, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetNfvProfile", err,
+			// 	"Failure at GetNfvProfile, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
-
-		//TODO FOR DNAC
 
 		vItem1 := flattenSiteDesignGetNfvProfileItems(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -691,7 +693,9 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestNfvProfileUpdateNfvProfile(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.SiteDesign.UpdateNfvProfile(vvID, request1, nil)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

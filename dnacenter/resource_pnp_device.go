@@ -2733,17 +2733,17 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestPnpDeviceAddDevice(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vID, okID := resourceItem["id"]
 	vName := ""
-	okName := ""
 	if _, ok := d.GetOk("parameters.0"); ok {
 		if _, ok := d.GetOk("parameters.0.device_info"); ok {
 			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
 				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
 					vName = interfaceToString(v)
-					okName = interfaceToString(ok)
 				}
 			}
 		}
@@ -2760,12 +2760,11 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 			d.SetId(joinResourceID(resourceMap))
 			return resourcePnpDeviceRead(ctx, d, m)
 		}
-	}
-	if vName != "" && okName != "" {
+	} else if vName != "" {
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
 		queryParams1.Name = append(queryParams1.Name, vvName)
-		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vvName)
-		if err != nil || respon1 != nil {
+		response1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vvName)
+		if err == nil && response1 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
 			resourceMap["name"] = vvName
@@ -2798,39 +2797,33 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vName := ""
-	okName := ""
 	if _, ok := d.GetOk("parameters.0"); ok {
 		if _, ok := d.GetOk("parameters.0.device_info"); ok {
 			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
 				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
 					vName = interfaceToString(v)
-					okName = interfaceToString(ok)
 				}
 			}
 		}
 	}
 	vID, okID := resourceMap["id"]
 
-	if vName != "" && okName != "" {
+	if vName != "" {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceList2")
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
 		queryParams1.Name = append(queryParams1.Name, vName)
-		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
-		if err != nil {
-			log.Printf("[DEBUG] Error: %s%", err)
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDeviceList2 1", err,
-				"Failure at GetDeviceList2, unexpected response", ""))
+		response1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
+		if err != nil || response1 == nil {
+			// log.Printf("[DEBUG] Error: %s%", err)
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDeviceList2 1", err,
+			// 	"Failure at GetDeviceList2, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
-		if respon1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDeviceList2 2", err,
-				"Failure at GetDeviceList2, unexpected response", ""))
-			return diags
-		}
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*respon1))
-		vItems1 := flattenDeviceOnboardingPnpGetDeviceList2Item(respon1)
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+		vItems1 := flattenDeviceOnboardingPnpGetDeviceList2Item(response1)
 		if err := d.Set("item", vItems1); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetDeviceList2 response",
@@ -2840,8 +2833,7 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.SetId(getUnixTimeString())
 		return diags
 
-	}
-	if vID != "" && okID {
+	} else if vID != "" && okID {
 		log.Printf("[DEBUG] Selected method 2: GetDeviceByID")
 		vvID := vID
 
@@ -2851,9 +2843,11 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDeviceByID", err,
-				"Failure at GetDeviceByID, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDeviceByID", err,
+			// 	"Failure at GetDeviceByID, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -2927,7 +2921,9 @@ func resourcePnpDeviceUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestPnpDeviceUpdateDevice(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.DeviceOnboardingPnp.UpdateDevice(vvID, request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

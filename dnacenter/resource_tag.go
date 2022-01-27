@@ -209,7 +209,9 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestTagCreateTag(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vID, okID := resourceItem["id"]
 	vvID := interfaceToString(vID)
@@ -311,15 +313,16 @@ func resourceTagRead(ctx context.Context, d *schema.ResourceData, m interface{})
 		response1, err := searchTagGetTag(m, queryParams1)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTag", err,
-				"Failure at GetTag, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetTag", err,
+			// 	"Failure at GetTag, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO FOR DNAC
 		response2, restyResp2, err := client.Tag.GetTagByID(response1.ID)
 
 		if err != nil || response2 == nil {
@@ -414,7 +417,9 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Id used for update operation %s", vvID)
 		request1 := expandRequestTagUpdateTag(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.Tag.UpdateTag(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

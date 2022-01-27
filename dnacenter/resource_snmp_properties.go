@@ -110,7 +110,9 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSNMPPropertiesCreateUpdateSNMPProperties(ctx, "parameters", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vInstanceTenantId := resourceItem["instance_tenant_id"]
 	vSystemPropertyName := resourceItem["system_property_name"]
 	vvInstanceTenantId := interfaceToString(vInstanceTenantId)
@@ -184,15 +186,15 @@ func resourceSNMPPropertiesRead(ctx context.Context, d *schema.ResourceData, m i
 
 		response1, err := searchDiscoveryGetSNMPProperties(m, vInstanceTenantId, vSystemPropertyName)
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetSNMPProperties", err,
-				"Failure at GetSNMPProperties, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetSNMPProperties", err,
+			// 	"Failure at GetSNMPProperties, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
-
-		//TODO FOR DNAC
 
 		vItem1 := flattenDiscoveryGetSNMPPropertiesItem(response1)
 		if err := d.Set("item", vItem1); err != nil {

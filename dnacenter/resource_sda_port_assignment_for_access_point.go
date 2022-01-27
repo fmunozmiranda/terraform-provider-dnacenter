@@ -155,7 +155,9 @@ func resourceSdaPortAssignmentForAccessPointCreate(ctx context.Context, d *schem
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaPortAssignmentForAccessPointAddPortAssignmentForAccessPointInSdaFabric(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vDeviceManagementIPAddress := resourceItem["device_management_ip_address"]
 	vInterfaceName := resourceItem["interface_name"]
 	vvDeviceManagementIPAddress := interfaceToString(vDeviceManagementIPAddress)
@@ -254,9 +256,11 @@ func resourceSdaPortAssignmentForAccessPointRead(ctx context.Context, d *schema.
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetPortAssignmentForAccessPointInSdaFabric", err,
-				"Failure at GetPortAssignmentForAccessPointInSdaFabric, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetPortAssignmentForAccessPointInSdaFabric", err,
+			// 	"Failure at GetPortAssignmentForAccessPointInSdaFabric, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

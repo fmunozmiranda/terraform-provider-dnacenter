@@ -121,7 +121,9 @@ func resourceSdaProvisionDeviceCreate(ctx context.Context, d *schema.ResourceDat
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSdaProvisionDeviceProvisionWiredDevice(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vDeviceManagementIPAddress := resourceItem["device_management_ip_address"]
 	vvDeviceManagementIPAddress := interfaceToString(vDeviceManagementIPAddress)
 	queryParams1 := dnacentersdkgo.GetProvisionedWiredDeviceQueryParams{}
@@ -210,9 +212,11 @@ func resourceSdaProvisionDeviceRead(ctx context.Context, d *schema.ResourceData,
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetProvisionedWiredDevice", err,
-				"Failure at GetProvisionedWiredDevice, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetProvisionedWiredDevice", err,
+			// 	"Failure at GetProvisionedWiredDevice, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -256,7 +260,9 @@ func resourceSdaProvisionDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestSdaProvisionDeviceReProvisionWiredDevice(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.Sda.ReProvisionWiredDevice(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

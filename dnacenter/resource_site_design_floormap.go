@@ -68,7 +68,9 @@ func resourceSiteDesignFloormapCreate(ctx context.Context, d *schema.ResourceDat
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestSiteDesignFloormapCreateFloormap(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vFloorID, okFloorID := resourceItem["floor_id"]
 	vvFloorID := interfaceToString(vFloorID)
@@ -117,9 +119,11 @@ func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData,
 		response1, err := client.SiteDesign.ListSpecifiedFloormaps(vvFloorID)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing ListSpecifiedFloormaps", err,
-				"Failure at ListSpecifiedFloormaps, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing ListSpecifiedFloormaps", err,
+			// 	"Failure at ListSpecifiedFloormaps, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -158,7 +162,9 @@ func resourceSiteDesignFloormapUpdate(ctx context.Context, d *schema.ResourceDat
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvFloorID)
 		request1 := expandRequestSiteDesignFloormapUpdateFloormap(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		restyResp1, err := client.SiteDesign.UpdateFloormap(vvFloorID, request1)
 		if err != nil {
 			if restyResp1 != nil {
