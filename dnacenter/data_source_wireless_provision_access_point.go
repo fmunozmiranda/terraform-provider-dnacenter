@@ -234,12 +234,12 @@ func flattenWirelessApProvisionItems(items *dnacentersdkgo.ResponseWirelessApPro
 		return nil
 	}
 	var respItems []map[string]interface{}
-	for _, item := range *items {
-		respItem := make(map[string]interface{})
-		respItem["execution_id"] = item.ExecutionID
-		respItem["execution_url"] = item.ExecutionURL
-		respItem["message"] = item.Message
-		respItems = append(respItems, respItem)
-	}
+	// for _, item := range *items {
+	respItem := make(map[string]interface{})
+	respItem["execution_id"] = items.ExecutionID
+	respItem["execution_url"] = items.ExecutionURL
+	respItem["message"] = items.Message
+	respItems = append(respItems, respItem)
+	// }
 	return respItems
 }
