@@ -2734,20 +2734,42 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 
 	vID, okID := resourceItem["id"]
-	vName, okName := resourceItem["name"]
+	vName := ""
+	okName := ""
+	if _, ok := d.GetOk("parameters.0"); ok {
+		if _, ok := d.GetOk("parameters.0.device_info"); ok {
+			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
+				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
+					vName = interfaceToString(v)
+					okName = interfaceToString(ok)
+				}
+			}
+		}
+	}
+	var vvName string
+	vvName = vName
 	vvID := interfaceToString(vID)
 	if okID && vvID != "" {
 		getResponse2, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
 		if err == nil && getResponse2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourcePnpDeviceRead(ctx, d, m)
 		}
 	}
-
-	if vName != "" && okName {
-
+	if vName != "" && okName != "" {
+		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
+		queryParams1.Name = append(queryParams1.Name, vvName)
+		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vvName)
+		if err != nil || respon1 != nil {
+			resourceMap := make(map[string]string)
+			resourceMap["id"] = vvID
+			resourceMap["name"] = vvName
+			d.SetId(joinResourceID(resourceMap))
+			return resourcePnpDeviceRead(ctx, d, m)
+		}
 	}
 	resp1, restyResp1, err := client.DeviceOnboardingPnp.AddDevice(request1)
 	if err != nil || resp1 == nil {
@@ -2773,119 +2795,51 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vLimit, okLimit := resourceMap["limit"]
-	vOffset, okOffset := resourceMap["offset"]
-	vSort, okSort := resourceMap["sort"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
-	vSerialNumber, okSerialNumber := resourceMap["serial_number"]
-	vState, okState := resourceMap["state"]
-	vOnbState, okOnbState := resourceMap["onb_state"]
-	vCmState, okCmState := resourceMap["cm_state"]
-	vName, okName := resourceMap["name"]
-	vPid, okPid := resourceMap["pid"]
-	vSource, okSource := resourceMap["source"]
-	vProjectID, okProjectID := resourceMap["project_id"]
-	vWorkflowID, okWorkflowID := resourceMap["workflow_id"]
-	vProjectName, okProjectName := resourceMap["project_name"]
-	vWorkflowName, okWorkflowName := resourceMap["workflow_name"]
-	vSmartAccountID, okSmartAccountID := resourceMap["smart_account_id"]
-	vVirtualAccountID, okVirtualAccountID := resourceMap["virtual_account_id"]
-	vLastContact, okLastContact := resourceMap["last_contact"]
-	vMacAddress, okMacAddress := resourceMap["mac_address"]
-	vHostname, okHostname := resourceMap["hostname"]
-	vSiteName, okSiteName := resourceMap["site_name"]
+	vName := ""
+	okName := ""
+	if _, ok := d.GetOk("parameters.0"); ok {
+		if _, ok := d.GetOk("parameters.0.device_info"); ok {
+			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
+				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
+					vName = interfaceToString(v)
+					okName = interfaceToString(ok)
+				}
+			}
+		}
+	}
 	vID, okID := resourceMap["id"]
 
-	method1 := []bool{okLimit, okOffset, okSort, okSortOrder, okSerialNumber, okState, okOnbState, okCmState, okName, okPid, okSource, okProjectID, okWorkflowID, okProjectName, okWorkflowName, okSmartAccountID, okVirtualAccountID, okLastContact, okMacAddress, okHostname, okSiteName}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
-	method2 := []bool{okID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
-
-	selectedMethod := pickMethod([][]bool{method1, method2})
-	if selectedMethod == 1 {
+	if vName != "" && okName != "" {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceList2")
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
-
-		if okLimit {
-			queryParams1.Limit = *stringToIntPtr(vLimit)
-		}
-		if okOffset {
-			queryParams1.Offset = *stringToIntPtr(vOffset)
-		}
-		if okSort {
-			queryParams1.Sort = interfaceToSliceString(vSort)
-		}
-		if okSortOrder {
-			queryParams1.SortOrder = vSortOrder
-		}
-		if okSerialNumber {
-			queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
-		}
-		if okState {
-			queryParams1.State = interfaceToSliceString(vState)
-		}
-		if okOnbState {
-			queryParams1.OnbState = interfaceToSliceString(vOnbState)
-		}
-		if okCmState {
-			queryParams1.CmState = interfaceToSliceString(vCmState)
-		}
-		if okName {
-			queryParams1.Name = interfaceToSliceString(vName)
-		}
-		if okPid {
-			queryParams1.Pid = interfaceToSliceString(vPid)
-		}
-		if okSource {
-			queryParams1.Source = interfaceToSliceString(vSource)
-		}
-		if okProjectID {
-			queryParams1.ProjectID = interfaceToSliceString(vProjectID)
-		}
-		if okWorkflowID {
-			queryParams1.WorkflowID = interfaceToSliceString(vWorkflowID)
-		}
-		if okProjectName {
-			queryParams1.ProjectName = interfaceToSliceString(vProjectName)
-		}
-		if okWorkflowName {
-			queryParams1.WorkflowName = interfaceToSliceString(vWorkflowName)
-		}
-		if okSmartAccountID {
-			queryParams1.SmartAccountID = interfaceToSliceString(vSmartAccountID)
-		}
-		if okVirtualAccountID {
-			queryParams1.VirtualAccountID = interfaceToSliceString(vVirtualAccountID)
-		}
-		if okLastContact {
-			queryParams1.LastContact = *stringToBooleanPtr(vLastContact)
-		}
-		if okMacAddress {
-			queryParams1.MacAddress = vMacAddress
-		}
-		if okHostname {
-			queryParams1.Hostname = vHostname
-		}
-		if okSiteName {
-			queryParams1.SiteName = vSiteName
-		}
-
-		response1, restyResp1, err := client.DeviceOnboardingPnp.GetDeviceList2(&queryParams1)
-
-		if err != nil || response1 == nil {
-			if restyResp1 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-			}
+		queryParams1.Name = append(queryParams1.Name, vName)
+		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
+		if err != nil {
+			log.Printf("[DEBUG] Error: %s%", err)
 			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDeviceList2", err,
+				"Failure when executing GetDeviceList2 1", err,
 				"Failure at GetDeviceList2, unexpected response", ""))
 			return diags
 		}
-
-		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
+		if respon1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDeviceList2 2", err,
+				"Failure at GetDeviceList2, unexpected response", ""))
+			return diags
+		}
+		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*respon1))
+		vItems1 := flattenDeviceOnboardingPnpGetDeviceList2Item(respon1)
+		if err := d.Set("item", vItems1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDeviceList2 response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+		return diags
 
 	}
-	if selectedMethod == 2 {
+	if vID != "" && okID {
 		log.Printf("[DEBUG] Selected method 2: GetDeviceByID")
 		vvID := vID
 
@@ -2903,15 +2857,7 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		vItemName2 := flattenDeviceOnboardingPnpGetDeviceByIDItemName(response2)
-		if err := d.Set("item", vItemName2); err != nil {
-			diags = append(diags, diagError(
-				"Failure when setting GetDeviceByID response",
-				err))
-			return diags
-		}
-		return diags
-		vItemID2 := flattenDeviceOnboardingPnpGetDeviceByIDItemID(response2)
+		vItemID2 := flattenDeviceOnboardingPnpGetDeviceByIDItem(response2)
 		if err := d.Set("item", vItemID2); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetDeviceByID response",
@@ -2933,26 +2879,49 @@ func resourcePnpDeviceUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := separateResourceID(resourceID)
 
 	vID := resourceMap["id"]
-
-	var vvID string
-
-	response2, restyResp2, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
-
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+	vName := ""
+	if _, ok := d.GetOk("parameters.0"); ok {
+		if _, ok := d.GetOk("parameters.0.device_info"); ok {
+			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
+				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
+					vName = interfaceToString(v)
+				}
+			}
 		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetDeviceByID", err,
-			"Failure at GetDeviceByID, unexpected response", ""))
-		return diags
 	}
+	var vvID string
 
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 
-	vvID = vID
+	if vID != "" {
+		log.Printf("[DEBUG] Selected method 2: GetDeviceByID")
+		vvID = vID
 
+		response2, restyResp2, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
+
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDeviceByID", err,
+				"Failure at GetDeviceByID, unexpected response", ""))
+			return diags
+		}
+	} else if vName != "" {
+		log.Printf("[DEBUG] Selected method 1: GetDeviceList2")
+		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
+		queryParams1.Name = append(queryParams1.Name, vName)
+		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
+		if err != nil || respon1 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetDeviceList2", err,
+				"Failure at GetDeviceList2, unexpected response", ""))
+			return diags
+		}
+		vvID = respon1.ID
+	}
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestPnpDeviceUpdateDevice(ctx, "parameters.0", d)
@@ -2987,12 +2956,23 @@ func resourcePnpDeviceDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	vID := resourceMap["id"]
 	vvID := vID
-	getResp, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
-	if err != nil || getResp == nil {
-		// Assume that element it is already gone
-		return diags
+	vName := resourceMap["name"]
+	if vName != "" {
+		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
+		queryParams1.Name = append(queryParams1.Name, vName)
+		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
+		if err != nil || respon1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
 	}
-
+	if vID != "" {
+		response2, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
+		if err != nil || response2 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	}
 	response1, restyResp1, err := client.DeviceOnboardingPnp.DeleteDeviceByIDFromPnp(vvID)
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
@@ -6100,33 +6080,25 @@ func expandRequestPnpDeviceUpdateDeviceWorkflowParametersConfigListConfigParamet
 	return &request
 }
 
-/*func searchDeviceOnboardingPnpGetDeviceList2(m interface{}, queryParams dnacentersdkgo.GetDeviceList2QueryParams, vID string) (*dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse, error) {
+func searchDeviceOnboardingPnpGetDeviceList2(m interface{}, queryParams dnacentersdkgo.GetDeviceList2QueryParams, vID string) (*dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
-	var foundItem *dnacentersdkgo.ResponseNetworkSettingsGetGlobalPoolResponse
-	offset := 1
-	queryParams.Offset = offset
-
-	//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
-	nResponse, _, err := client.DeviceOnboardingPnp.GetDeviceList2(&queryParams)
-	maxPageSize := len(*nResponse)
-	//maxPageSize := 10
-	for len(*nResponse.Response) > 0 {
-		time.Sleep(15 * time.Second)
-		for _, item := range *nResponse.Response {
-			if vID == item.IPPoolName {
-				foundItem = &item
-				return foundItem, err
-			}
-			//allItems = append(allItems, &item)
-		}
-
-		queryParams.Limit = strconv.Itoa(maxPageSize)
-		offset += maxPageSize
-		queryParams.Offset = strconv.Itoa(offset)
-		nResponse, _, err = client.NetworkSettings.GetGlobalPool(&queryParams)
+	var foundItem *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2
+	nResponse, _, err := client.DeviceOnboardingPnp.GetDeviceList2(nil)
+	if nResponse == nil || err != nil {
+		return foundItem, err
 	}
+	maxPageSize := len(*nResponse)
+	for _, item := range *nResponse {
+		if vID == item.ID {
+			foundItem = &item
+			return foundItem, err
+		}
+	}
+	queryParams.Limit = maxPageSize
+	queryParams.Offset = maxPageSize
+	nResponse, _, err = client.DeviceOnboardingPnp.GetDeviceList2(&queryParams)
 	return foundItem, err
-}*/
+}
 
 //ISSUE Pnp Device- ISSUE waiting for : [{}]  we have: {}

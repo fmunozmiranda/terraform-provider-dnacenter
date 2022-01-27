@@ -35,6 +35,285 @@ func resourceNetworkDeviceList() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"item": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"ap_ethernet_mac_address": &schema.Schema{
+							Description: `Ap Ethernet Mac Address`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"ap_manager_interface_ip": &schema.Schema{
+							Description: `Ap Manager Interface Ip`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"associated_wlc_ip": &schema.Schema{
+							Description: `Associated Wlc Ip`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"boot_date_time": &schema.Schema{
+							Description: `Boot Date Time`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"collection_interval": &schema.Schema{
+							Description: `Collection Interval`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"collection_status": &schema.Schema{
+							Description: `Collection Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"description": &schema.Schema{
+							Description: `Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"device_support_level": &schema.Schema{
+							Description: `Device Support Level`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"error_code": &schema.Schema{
+							Description: `Error Code`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"error_description": &schema.Schema{
+							Description: `Error Description`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"family": &schema.Schema{
+							Description: `Family`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"hostname": &schema.Schema{
+							Description: `Hostname`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"id": &schema.Schema{
+							Description: `Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"instance_tenant_id": &schema.Schema{
+							Description: `Instance Tenant Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"instance_uuid": &schema.Schema{
+							Description: `Instance Uuid`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"interface_count": &schema.Schema{
+							Description: `Interface Count`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"inventory_status_detail": &schema.Schema{
+							Description: `Inventory Status Detail`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"last_update_time": &schema.Schema{
+							Description: `Last Update Time`,
+							Type:        schema.TypeInt,
+							Computed:    true,
+						},
+
+						"last_updated": &schema.Schema{
+							Description: `Last Updated`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"line_card_count": &schema.Schema{
+							Description: `Line Card Count`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"line_card_id": &schema.Schema{
+							Description: `Line Card Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"location": &schema.Schema{
+							Description: `Location`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"location_name": &schema.Schema{
+							Description: `Location Name`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"mac_address": &schema.Schema{
+							Description: `Mac Address`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"managed_atleast_once": &schema.Schema{
+							Description: `Managed Atleast Once`,
+							// Type:        schema.TypeBool,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"management_ip_address": &schema.Schema{
+							Description: `Management Ip Address`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"management_state": &schema.Schema{
+							Description: `Management State`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"memory_size": &schema.Schema{
+							Description: `Memory Size`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"platform_id": &schema.Schema{
+							Description: `Platform Id`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"reachability_failure_reason": &schema.Schema{
+							Description: `Reachability Failure Reason`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"reachability_status": &schema.Schema{
+							Description: `Reachability Status`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"role": &schema.Schema{
+							Description: `Role`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"role_source": &schema.Schema{
+							Description: `Role Source`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"serial_number": &schema.Schema{
+							Description: `Serial Number`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"series": &schema.Schema{
+							Description: `Series`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"snmp_contact": &schema.Schema{
+							Description: `Snmp Contact`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"snmp_location": &schema.Schema{
+							Description: `Snmp Location`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"software_type": &schema.Schema{
+							Description: `Software Type`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"software_version": &schema.Schema{
+							Description: `Software Version`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"tag_count": &schema.Schema{
+							Description: `Tag Count`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"tunnel_udp_port": &schema.Schema{
+							Description: `Tunnel Udp Port`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"type": &schema.Schema{
+							Description: `Type`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"up_time": &schema.Schema{
+							Description: `Up Time`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+
+						"uptime_seconds": &schema.Schema{
+							Description: `Uptime Seconds`,
+							Type:        schema.TypeInt,
+							Computed:    true,
+						},
+
+						"waas_device_mode": &schema.Schema{
+							Description: `Waas Device Mode`,
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -192,7 +471,7 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 	vvSerialNumber := interfaceToString(vSerialNumber)
 
 	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-	queryParams1.SerialNumber = interfaceToSliceString(vvSerialNumber)
+	queryParams1.SerialNumber = append(queryParams1.SerialNumber, vvSerialNumber)
 
 	response1, _, err := client.Devices.GetDeviceList(&queryParams1)
 
@@ -211,6 +490,24 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 		}
 		diags = append(diags, diagError(
 			"Failure when executing AddDevice2", err))
+		return diags
+	}
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TaskId: %s", taskId)
+	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+	if err != nil || response2 == nil {
+		if restyResp2 != nil {
+			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+		}
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetTaskByID", err,
+			"Failure at GetTaskByID, unexpected response", ""))
+		return diags
+	}
+	if *response2.Response.IsError {
+		log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
+		diags = append(diags, diagError(
+			"Failure when executing UdpateApplication", err))
 		return diags
 	}
 	resourceMap := make(map[string]string)
@@ -233,7 +530,7 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceList")
 		queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-		queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
+		queryParams1.SerialNumber = append(queryParams1.SerialNumber, vSerialNumber)
 
 		response1, restyResp1, err := client.Devices.GetDeviceList(&queryParams1)
 
@@ -273,7 +570,7 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 	vSerialNumber := resourceMap["serial_number"]
 
 	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-	queryParams1.SerialNumber = interfaceToSliceString(vSerialNumber)
+	queryParams1.SerialNumber = append(queryParams1.SerialNumber, vSerialNumber)
 	item, err := searchDevicesGetDeviceList(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -300,6 +597,24 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing SyncDevices2", err,
 				"Failure at SyncDevices2, unexpected response", ""))
+			return diags
+		}
+		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TaskId: %s", taskId)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing UdpateDeviceList", err))
 			return diags
 		}
 	}

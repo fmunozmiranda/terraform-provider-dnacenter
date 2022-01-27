@@ -13,11 +13,9 @@ resource "dnacenter_global_pool" "example" {
   provider = dnacenter
   parameters {
 
-    id = "string"
+    #id = "string"
     settings {
-
       ippool {
-
         #ip_address_space = "string"
         dhcp_server_ips  = ["100.100.100.100"]
         dns_server_ips   = ["101.101.101.101"]
@@ -25,7 +23,7 @@ resource "dnacenter_global_pool" "example" {
         #id               = "string"
         ip_pool_cidr     = "14.0.0.0/8"
         ip_pool_name     = "13Network"
-        #type             = "string"
+        type             = "generic"
       }
     }
   }

@@ -3661,6 +3661,16 @@ func dataSourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m inte
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
+		vItems1 := flattenDeviceOnboardingPnpGetDeviceList2Items(response1)
+		if err := d.Set("items", vItems1); err != nil {
+			diags = append(diags, diagError(
+				"Failure when setting GetDeviceList2 response",
+				err))
+			return diags
+		}
+		d.SetId(getUnixTimeString())
+		return diags
+
 	}
 	if selectedMethod == 2 {
 		log.Printf("[DEBUG] Selected method 2: GetDeviceByID")
@@ -3680,17 +3690,8 @@ func dataSourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m inte
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response2))
 
-		vItemName2 := flattenDeviceOnboardingPnpGetDeviceByIDItemName(response2)
-		if err := d.Set("item_name", vItemName2); err != nil {
-			diags = append(diags, diagError(
-				"Failure when setting GetDeviceByID response",
-				err))
-			return diags
-		}
-		d.SetId(getUnixTimeString())
-		return diags
-		vItemID2 := flattenDeviceOnboardingPnpGetDeviceByIDItemID(response2)
-		if err := d.Set("item_id", vItemID2); err != nil {
+		vItem2 := flattenDeviceOnboardingPnpGetDeviceByIDItem(response2)
+		if err := d.Set("item", vItem2); err != nil {
 			diags = append(diags, diagError(
 				"Failure when setting GetDeviceByID response",
 				err))
@@ -3703,20 +3704,41 @@ func dataSourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m inte
 	return diags
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemName(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByID) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2Items(items *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceList2) []map[string]interface{} {
+	if items == nil {
+		return nil
+	}
+	var respItems []map[string]interface{}
+	for _, item := range *items {
+		respItem := make(map[string]interface{})
+		respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfo(item.DeviceInfo)
+		respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflow(item.SystemResetWorkflow)
+		respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflow(item.SystemWorkflow)
+		respItem["workflow"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflow(item.Workflow)
+		respItem["run_summary_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryList(item.RunSummaryList)
+		respItem["workflow_parameters"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParameters(item.WorkflowParameters)
+		respItem["day_zero_config"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDayZeroConfig(item.DayZeroConfig)
+		respItem["day_zero_config_preview"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDayZeroConfigPreview(item.DayZeroConfigPreview)
+		respItem["version"] = item.Version
+		respItem["tenant_id"] = item.TenantID
+		respItems = append(respItems, respItem)
+	}
+	return respItems
+}
+
+func flattenDeviceOnboardingPnpGetDeviceList2Item(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
-	respItem["type_id"] = item.TypeID
-	respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfo(item.DeviceInfo)
-	respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflow(item.SystemResetWorkflow)
-	respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflow(item.SystemWorkflow)
-	respItem["workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflow(item.Workflow)
-	respItem["run_summary_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryList(item.RunSummaryList)
-	respItem["workflow_parameters"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParameters(item.WorkflowParameters)
-	respItem["day_zero_config"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfig(item.DayZeroConfig)
-	respItem["day_zero_config_preview"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfigPreview(item.DayZeroConfigPreview)
+	respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfo(item.DeviceInfo)
+	respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflow(item.SystemResetWorkflow)
+	respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflow(item.SystemWorkflow)
+	respItem["workflow"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflow(item.Workflow)
+	respItem["run_summary_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryList(item.RunSummaryList)
+	respItem["workflow_parameters"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParameters(item.WorkflowParameters)
+	respItem["day_zero_config"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDayZeroConfig(item.DayZeroConfig)
+	respItem["day_zero_config_preview"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDayZeroConfigPreview(item.DayZeroConfigPreview)
 	respItem["version"] = item.Version
 	respItem["tenant_id"] = item.TenantID
 	return []map[string]interface{}{
@@ -3724,7 +3746,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemName(item *dnacentersdkgo.Respon
 	}
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfo) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfo(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfo) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3734,7 +3756,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfo(item *dnacentersd
 	respItem["stack"] = boolPtrToString(item.Stack)
 	respItem["mode"] = item.Mode
 	respItem["state"] = item.State
-	respItem["location"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoLocation(item.Location)
+	respItem["location"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoLocation(item.Location)
 	respItem["description"] = item.Description
 	respItem["onb_state"] = item.OnbState
 	respItem["authenticated_mic_number"] = item.AuthenticatedMicNumber
@@ -3755,25 +3777,25 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfo(item *dnacentersd
 	respItem["device_type"] = item.DeviceType
 	respItem["agent_type"] = item.AgentType
 	respItem["image_version"] = item.ImageVersion
-	respItem["file_system_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoFileSystemList(item.FileSystemList)
-	respItem["pnp_profile_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileList(item.PnpProfileList)
+	respItem["file_system_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoFileSystemList(item.FileSystemList)
+	respItem["pnp_profile_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileList(item.PnpProfileList)
 	respItem["image_file"] = item.ImageFile
-	respItem["http_headers"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoHTTPHeaders(item.HTTPHeaders)
-	respItem["neighbor_links"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoNeighborLinks(item.NeighborLinks)
+	respItem["http_headers"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoHTTPHeaders(item.HTTPHeaders)
+	respItem["neighbor_links"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoNeighborLinks(item.NeighborLinks)
 	respItem["last_sync_time"] = item.LastSyncTime
-	respItem["ip_interfaces"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfaces(item.IPInterfaces)
+	respItem["ip_interfaces"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoIPInterfaces(item.IPInterfaces)
 	respItem["hostname"] = item.Hostname
 	respItem["auth_status"] = item.AuthStatus
-	respItem["stack_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoStackInfo(item.StackInfo)
+	respItem["stack_info"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoStackInfo(item.StackInfo)
 	respItem["reload_requested"] = boolPtrToString(item.ReloadRequested)
 	respItem["added_on"] = item.AddedOn
 	respItem["site_id"] = item.SiteID
-	respItem["aaa_credentials"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoAAACredentials(item.AAACredentials)
+	respItem["aaa_credentials"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoAAACredentials(item.AAACredentials)
 	respItem["user_mic_numbers"] = item.UserMicNumbers
 	respItem["user_sudi_serial_nos"] = item.UserSudiSerialNos
 	respItem["addn_mac_addrs"] = item.AddnMacAddrs
-	respItem["pre_workflow_cli_ouputs"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPreWorkflowCliOuputs(item.PreWorkflowCliOuputs)
-	respItem["tags"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoTags(item.Tags)
+	respItem["pre_workflow_cli_ouputs"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPreWorkflowCliOuputs(item.PreWorkflowCliOuputs)
+	respItem["tags"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoTags(item.Tags)
 	respItem["sudi_required"] = boolPtrToString(item.SudiRequired)
 	respItem["smart_account_id"] = item.SmartAccountID
 	respItem["virtual_account_id"] = item.VirtualAccountID
@@ -3787,7 +3809,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfo(item *dnacentersd
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoLocation(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoLocation) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoLocation(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoLocation) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3804,7 +3826,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoLocation(item *dna
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoFileSystemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoFileSystemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoFileSystemList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoFileSystemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -3822,7 +3844,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoFileSystemList(ite
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -3832,22 +3854,22 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileList(ite
 		respItem["profile_name"] = item.ProfileName
 		respItem["discovery_created"] = boolPtrToString(item.DiscoveryCreated)
 		respItem["created_by"] = item.CreatedBy
-		respItem["primary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrimaryEndpoint(item.PrimaryEndpoint)
-		respItem["secondary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSecondaryEndpoint(item.SecondaryEndpoint)
+		respItem["primary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListPrimaryEndpoint(item.PrimaryEndpoint)
+		respItem["secondary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListSecondaryEndpoint(item.SecondaryEndpoint)
 		respItems = append(respItems, respItem)
 	}
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrimaryEndpoint(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpoint) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListPrimaryEndpoint(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileListPrimaryEndpoint) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["port"] = item.Port
 	respItem["protocol"] = item.Protocol
-	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item.IPv4Address)
-	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item.IPv6Address)
+	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item.IPv4Address)
+	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item.IPv6Address)
 	respItem["fqdn"] = item.Fqdn
 	respItem["certificate"] = item.Certificate
 
@@ -3857,7 +3879,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrim
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpointIPv4Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileListPrimaryEndpointIPv4Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3867,7 +3889,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrim
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpointIPv6Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileListPrimaryEndpointIPv6Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3877,15 +3899,15 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListPrim
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSecondaryEndpoint(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpoint) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListSecondaryEndpoint(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileListSecondaryEndpoint) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["port"] = item.Port
 	respItem["protocol"] = item.Protocol
-	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item.IPv4Address)
-	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item.IPv6Address)
+	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item.IPv4Address)
+	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item.IPv6Address)
 	respItem["fqdn"] = item.Fqdn
 	respItem["certificate"] = item.Certificate
 
@@ -3895,7 +3917,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSeco
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpointIPv4Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileListSecondaryEndpointIPv4Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3905,7 +3927,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSeco
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpointIPv6Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPnpProfileListSecondaryEndpointIPv6Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3915,7 +3937,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPnpProfileListSeco
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoHTTPHeaders(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoHTTPHeaders) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoHTTPHeaders(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoHTTPHeaders) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -3929,7 +3951,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoHTTPHeaders(items 
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoNeighborLinks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoNeighborLinks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoNeighborLinks(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoNeighborLinks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -3950,7 +3972,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoNeighborLinks(item
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfaces(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfaces) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoIPInterfaces(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoIPInterfaces) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -3959,15 +3981,15 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfaces(items
 		respItem := make(map[string]interface{})
 		respItem["status"] = item.Status
 		respItem["mac_address"] = item.MacAddress
-		respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv4Address(item.IPv4Address)
-		respItem["ipv6_address_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv6AddressList(item.IPv6AddressList)
+		respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoIPInterfacesIPv4Address(item.IPv4Address)
+		respItem["ipv6_address_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoIPInterfacesIPv6AddressList(item.IPv6AddressList)
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
 	}
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfacesIPv4Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoIPInterfacesIPv4Address(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoIPInterfacesIPv4Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -3977,7 +3999,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv4Ad
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv6AddressList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfacesIPv6AddressList) []interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoIPInterfacesIPv6AddressList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoIPInterfacesIPv6AddressList) []interface{} {
 	if items == nil {
 		return nil
 	}
@@ -3989,14 +4011,14 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoIPInterfacesIPv6Ad
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoStackInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoStackInfo) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoStackInfo(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoStackInfo) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["supports_stack_workflows"] = boolPtrToString(item.SupportsStackWorkflows)
 	respItem["is_full_ring"] = boolPtrToString(item.IsFullRing)
-	respItem["stack_member_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoStackInfoStackMemberList(item.StackMemberList)
+	respItem["stack_member_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoStackInfoStackMemberList(item.StackMemberList)
 	respItem["stack_ring_protocol"] = item.StackRingProtocol
 	respItem["valid_license_levels"] = item.ValidLicenseLevels
 	respItem["total_member_count"] = item.TotalMemberCount
@@ -4007,7 +4029,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoStackInfo(item *dn
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoStackInfoStackMemberList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoStackInfoStackMemberList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoStackInfoStackMemberList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoStackInfoStackMemberList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4031,7 +4053,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoStackInfoStackMemb
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoAAACredentials(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoAAACredentials) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoAAACredentials(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoAAACredentials) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4045,7 +4067,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoAAACredentials(ite
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPreWorkflowCliOuputs(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPreWorkflowCliOuputs) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoPreWorkflowCliOuputs(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoPreWorkflowCliOuputs) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4059,7 +4081,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoPreWorkflowCliOupu
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoTags(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoTags) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDeviceInfoTags(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DeviceInfoTags) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4069,7 +4091,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDeviceInfoTags(item *dnacent
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflow) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflow(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2SystemResetWorkflow) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4082,7 +4104,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflow(item *dn
 	respItem["image_id"] = item.ImageID
 	respItem["curr_task_idx"] = item.CurrTaskIDx
 	respItem["added_on"] = item.AddedOn
-	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasks(item.Tasks)
+	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflowTasks(item.Tasks)
 	respItem["add_to_inventory"] = boolPtrToString(item.AddToInventory)
 	respItem["instance_type"] = item.InstanceType
 	respItem["end_time"] = item.EndTime
@@ -4100,7 +4122,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflow(item *dn
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflowTasks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflowTasks(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2SystemResetWorkflowTasks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4113,7 +4135,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasks(ite
 		respItem["task_seq_no"] = item.TaskSeqNo
 		respItem["end_time"] = item.EndTime
 		respItem["start_time"] = item.StartTime
-		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasksWorkItemList(item.WorkItemList)
+		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflowTasksWorkItemList(item.WorkItemList)
 		respItem["time_taken"] = item.TimeTaken
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
@@ -4121,7 +4143,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasks(ite
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflowTasksWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemResetWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2SystemResetWorkflowTasksWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4139,7 +4161,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemResetWorkflowTasksWork
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflow) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflow(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2SystemWorkflow) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4152,7 +4174,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflow(item *dnacent
 	respItem["image_id"] = item.ImageID
 	respItem["curr_task_idx"] = item.CurrTaskIDx
 	respItem["added_on"] = item.AddedOn
-	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasks(item.Tasks)
+	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflowTasks(item.Tasks)
 	respItem["add_to_inventory"] = boolPtrToString(item.AddToInventory)
 	respItem["instance_type"] = item.InstanceType
 	respItem["end_time"] = item.EndTime
@@ -4170,7 +4192,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflow(item *dnacent
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflowTasks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflowTasks(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2SystemWorkflowTasks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4183,7 +4205,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasks(items *[
 		respItem["task_seq_no"] = item.TaskSeqNo
 		respItem["end_time"] = item.EndTime
 		respItem["start_time"] = item.StartTime
-		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasksWorkItemList(item.WorkItemList)
+		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflowTasksWorkItemList(item.WorkItemList)
 		respItem["time_taken"] = item.TimeTaken
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
@@ -4191,7 +4213,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasks(items *[
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflowTasksWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsSystemWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2SystemWorkflowTasksWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4209,7 +4231,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameSystemWorkflowTasksWorkItemL
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflow) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflow(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2Workflow) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4222,7 +4244,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflow(item *dnacentersdkg
 	respItem["image_id"] = item.ImageID
 	respItem["curr_task_idx"] = item.CurrTaskIDx
 	respItem["added_on"] = item.AddedOn
-	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasks(item.Tasks)
+	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowTasks(item.Tasks)
 	respItem["add_to_inventory"] = boolPtrToString(item.AddToInventory)
 	respItem["instance_type"] = item.InstanceType
 	respItem["end_time"] = item.EndTime
@@ -4240,7 +4262,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflow(item *dnacentersdkg
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowTasks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowTasks(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2WorkflowTasks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4253,7 +4275,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasks(items *[]dnace
 		respItem["task_seq_no"] = item.TaskSeqNo
 		respItem["end_time"] = item.EndTime
 		respItem["start_time"] = item.StartTime
-		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasksWorkItemList(item.WorkItemList)
+		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowTasksWorkItemList(item.WorkItemList)
 		respItem["time_taken"] = item.TimeTaken
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
@@ -4261,7 +4283,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasks(items *[]dnace
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowTasksWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2WorkflowTasksWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4279,7 +4301,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowTasksWorkItemList(it
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2RunSummaryList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4287,7 +4309,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryList(items *[]dnac
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
 		respItem["details"] = item.Details
-		respItem["history_task_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInfo(item.HistoryTaskInfo)
+		respItem["history_task_info"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryListHistoryTaskInfo(item.HistoryTaskInfo)
 		respItem["error_flag"] = boolPtrToString(item.ErrorFlag)
 		respItem["timestamp"] = item.Timestamp
 		respItems = append(respItems, respItem)
@@ -4295,15 +4317,15 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryList(items *[]dnac
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfo) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryListHistoryTaskInfo(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2RunSummaryListHistoryTaskInfo) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["type"] = item.Type
-	respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInfoWorkItemList(item.WorkItemList)
+	respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryListHistoryTaskInfoWorkItemList(item.WorkItemList)
 	respItem["time_taken"] = item.TimeTaken
-	respItem["addn_details"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInfoAddnDetails(item.AddnDetails)
+	respItem["addn_details"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryListHistoryTaskInfoAddnDetails(item.AddnDetails)
 	respItem["name"] = item.Name
 
 	return []map[string]interface{}{
@@ -4312,7 +4334,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInf
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInfoWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfoWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryListHistoryTaskInfoWorkItemList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2RunSummaryListHistoryTaskInfoWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4330,7 +4352,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInf
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInfoAddnDetails(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfoAddnDetails) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsRunSummaryListHistoryTaskInfoAddnDetails(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2RunSummaryListHistoryTaskInfoAddnDetails) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4344,7 +4366,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameRunSummaryListHistoryTaskInf
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParameters(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParameters) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParameters(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2WorkflowParameters) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4352,7 +4374,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParameters(item *dna
 	respItem["top_of_stack_serial_number"] = item.TopOfStackSerialNumber
 	respItem["license_level"] = item.LicenseLevel
 	respItem["license_type"] = item.LicenseType
-	respItem["config_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParametersConfigList(item.ConfigList)
+	respItem["config_list"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParametersConfigList(item.ConfigList)
 
 	return []map[string]interface{}{
 		respItem,
@@ -4360,21 +4382,21 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParameters(item *dna
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParametersConfigList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParametersConfigList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParametersConfigList(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2WorkflowParametersConfigList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
 	var respItems []map[string]interface{}
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
-		respItem["config_parameters"] = flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParametersConfigListConfigParameters(item.ConfigParameters)
+		respItem["config_parameters"] = flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParametersConfigListConfigParameters(item.ConfigParameters)
 		respItem["config_id"] = item.ConfigID
 		respItems = append(respItems, respItem)
 	}
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParametersConfigListConfigParameters(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParametersConfigListConfigParameters) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsWorkflowParametersConfigListConfigParameters(items *[]dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2WorkflowParametersConfigListConfigParameters) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4388,7 +4410,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameWorkflowParametersConfigList
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfig(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDayZeroConfig) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDayZeroConfig(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DayZeroConfig) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4401,7 +4423,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfig(item *dnacente
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfigPreview(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDayZeroConfigPreview) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceList2ItemsDayZeroConfigPreview(item *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2DayZeroConfigPreview) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4411,20 +4433,20 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemNameDayZeroConfigPreview(item *d
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemID(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByID) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItem(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByID) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["type_id"] = item.TypeID
-	respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfo(item.DeviceInfo)
-	respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflow(item.SystemResetWorkflow)
-	respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflow(item.SystemWorkflow)
-	respItem["workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflow(item.Workflow)
-	respItem["run_summary_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryList(item.RunSummaryList)
-	respItem["workflow_parameters"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParameters(item.WorkflowParameters)
-	respItem["day_zero_config"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDayZeroConfig(item.DayZeroConfig)
-	respItem["day_zero_config_preview"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDayZeroConfigPreview(item.DayZeroConfigPreview)
+	respItem["device_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfo(item.DeviceInfo)
+	respItem["system_reset_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemSystemResetWorkflow(item.SystemResetWorkflow)
+	respItem["system_workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemSystemWorkflow(item.SystemWorkflow)
+	respItem["workflow"] = flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflow(item.Workflow)
+	respItem["run_summary_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryList(item.RunSummaryList)
+	respItem["workflow_parameters"] = flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowParameters(item.WorkflowParameters)
+	respItem["day_zero_config"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDayZeroConfig(item.DayZeroConfig)
+	respItem["day_zero_config_preview"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDayZeroConfigPreview(item.DayZeroConfigPreview)
 	respItem["version"] = item.Version
 	respItem["tenant_id"] = item.TenantID
 	return []map[string]interface{}{
@@ -4432,7 +4454,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemID(item *dnacentersdkgo.Response
 	}
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfo) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfo) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4442,7 +4464,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfo(item *dnacentersdkg
 	respItem["stack"] = boolPtrToString(item.Stack)
 	respItem["mode"] = item.Mode
 	respItem["state"] = item.State
-	respItem["location"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoLocation(item.Location)
+	respItem["location"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoLocation(item.Location)
 	respItem["description"] = item.Description
 	respItem["onb_state"] = item.OnbState
 	respItem["authenticated_mic_number"] = item.AuthenticatedMicNumber
@@ -4463,25 +4485,25 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfo(item *dnacentersdkg
 	respItem["device_type"] = item.DeviceType
 	respItem["agent_type"] = item.AgentType
 	respItem["image_version"] = item.ImageVersion
-	respItem["file_system_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoFileSystemList(item.FileSystemList)
-	respItem["pnp_profile_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileList(item.PnpProfileList)
+	respItem["file_system_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoFileSystemList(item.FileSystemList)
+	respItem["pnp_profile_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileList(item.PnpProfileList)
 	respItem["image_file"] = item.ImageFile
-	respItem["http_headers"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoHTTPHeaders(item.HTTPHeaders)
-	respItem["neighbor_links"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoNeighborLinks(item.NeighborLinks)
+	respItem["http_headers"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoHTTPHeaders(item.HTTPHeaders)
+	respItem["neighbor_links"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoNeighborLinks(item.NeighborLinks)
 	respItem["last_sync_time"] = item.LastSyncTime
-	respItem["ip_interfaces"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfaces(item.IPInterfaces)
+	respItem["ip_interfaces"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoIPInterfaces(item.IPInterfaces)
 	respItem["hostname"] = item.Hostname
 	respItem["auth_status"] = item.AuthStatus
-	respItem["stack_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoStackInfo(item.StackInfo)
+	respItem["stack_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoStackInfo(item.StackInfo)
 	respItem["reload_requested"] = boolPtrToString(item.ReloadRequested)
 	respItem["added_on"] = item.AddedOn
 	respItem["site_id"] = item.SiteID
-	respItem["aaa_credentials"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoAAACredentials(item.AAACredentials)
+	respItem["aaa_credentials"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoAAACredentials(item.AAACredentials)
 	respItem["user_mic_numbers"] = item.UserMicNumbers
 	respItem["user_sudi_serial_nos"] = item.UserSudiSerialNos
 	respItem["addn_mac_addrs"] = item.AddnMacAddrs
-	respItem["pre_workflow_cli_ouputs"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPreWorkflowCliOuputs(item.PreWorkflowCliOuputs)
-	respItem["tags"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoTags(item.Tags)
+	respItem["pre_workflow_cli_ouputs"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPreWorkflowCliOuputs(item.PreWorkflowCliOuputs)
+	respItem["tags"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoTags(item.Tags)
 	respItem["sudi_required"] = boolPtrToString(item.SudiRequired)
 	respItem["smart_account_id"] = item.SmartAccountID
 	respItem["virtual_account_id"] = item.VirtualAccountID
@@ -4495,7 +4517,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfo(item *dnacentersdkg
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoLocation(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoLocation) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoLocation(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoLocation) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4512,7 +4534,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoLocation(item *dnace
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoFileSystemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoFileSystemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoFileSystemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoFileSystemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4530,7 +4552,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoFileSystemList(items
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4540,22 +4562,22 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileList(items
 		respItem["profile_name"] = item.ProfileName
 		respItem["discovery_created"] = boolPtrToString(item.DiscoveryCreated)
 		respItem["created_by"] = item.CreatedBy
-		respItem["primary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimaryEndpoint(item.PrimaryEndpoint)
-		respItem["secondary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecondaryEndpoint(item.SecondaryEndpoint)
+		respItem["primary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListPrimaryEndpoint(item.PrimaryEndpoint)
+		respItem["secondary_endpoint"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListSecondaryEndpoint(item.SecondaryEndpoint)
 		respItems = append(respItems, respItem)
 	}
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimaryEndpoint(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpoint) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListPrimaryEndpoint(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpoint) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["port"] = item.Port
 	respItem["protocol"] = item.Protocol
-	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item.IPv4Address)
-	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item.IPv6Address)
+	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item.IPv4Address)
+	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item.IPv6Address)
 	respItem["fqdn"] = item.Fqdn
 	respItem["certificate"] = item.Certificate
 
@@ -4565,7 +4587,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimar
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpointIPv4Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListPrimaryEndpointIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpointIPv4Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4575,7 +4597,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimar
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpointIPv6Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListPrimaryEndpointIPv6Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListPrimaryEndpointIPv6Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4585,15 +4607,15 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListPrimar
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecondaryEndpoint(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpoint) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListSecondaryEndpoint(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpoint) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["port"] = item.Port
 	respItem["protocol"] = item.Protocol
-	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item.IPv4Address)
-	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item.IPv6Address)
+	respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item.IPv4Address)
+	respItem["ipv6_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item.IPv6Address)
 	respItem["fqdn"] = item.Fqdn
 	respItem["certificate"] = item.Certificate
 
@@ -4603,7 +4625,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecond
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpointIPv4Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListSecondaryEndpointIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpointIPv4Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4613,7 +4635,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecond
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpointIPv6Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPnpProfileListSecondaryEndpointIPv6Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPnpProfileListSecondaryEndpointIPv6Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4623,7 +4645,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPnpProfileListSecond
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoHTTPHeaders(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoHTTPHeaders) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoHTTPHeaders(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoHTTPHeaders) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4637,7 +4659,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoHTTPHeaders(items *[
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoNeighborLinks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoNeighborLinks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoNeighborLinks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoNeighborLinks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4658,7 +4680,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoNeighborLinks(items 
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfaces(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfaces) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoIPInterfaces(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfaces) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4667,15 +4689,15 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfaces(items *
 		respItem := make(map[string]interface{})
 		respItem["status"] = item.Status
 		respItem["mac_address"] = item.MacAddress
-		respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv4Address(item.IPv4Address)
-		respItem["ipv6_address_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv6AddressList(item.IPv6AddressList)
+		respItem["ipv4_address"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoIPInterfacesIPv4Address(item.IPv4Address)
+		respItem["ipv6_address_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoIPInterfacesIPv6AddressList(item.IPv6AddressList)
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
 	}
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfacesIPv4Address) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoIPInterfacesIPv4Address(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfacesIPv4Address) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4685,7 +4707,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv4Addr
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv6AddressList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfacesIPv6AddressList) []interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoIPInterfacesIPv6AddressList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoIPInterfacesIPv6AddressList) []interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4697,14 +4719,14 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoIPInterfacesIPv6Addr
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoStackInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoStackInfo) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoStackInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoStackInfo) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["supports_stack_workflows"] = boolPtrToString(item.SupportsStackWorkflows)
 	respItem["is_full_ring"] = boolPtrToString(item.IsFullRing)
-	respItem["stack_member_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoStackInfoStackMemberList(item.StackMemberList)
+	respItem["stack_member_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoStackInfoStackMemberList(item.StackMemberList)
 	respItem["stack_ring_protocol"] = item.StackRingProtocol
 	respItem["valid_license_levels"] = item.ValidLicenseLevels
 	respItem["total_member_count"] = item.TotalMemberCount
@@ -4715,7 +4737,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoStackInfo(item *dnac
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoStackInfoStackMemberList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoStackInfoStackMemberList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoStackInfoStackMemberList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoStackInfoStackMemberList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4739,7 +4761,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoStackInfoStackMember
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoAAACredentials(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoAAACredentials) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoAAACredentials(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoAAACredentials) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4753,7 +4775,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoAAACredentials(item 
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPreWorkflowCliOuputs(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPreWorkflowCliOuputs) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoPreWorkflowCliOuputs(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoPreWorkflowCliOuputs) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4767,7 +4789,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoPreWorkflowCliOuputs
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoTags(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoTags) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDeviceInfoTags(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDeviceInfoTags) interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4777,7 +4799,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDeviceInfoTags(item *dnacenter
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflow) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemSystemResetWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflow) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4790,7 +4812,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflow(item *dnac
 	respItem["image_id"] = item.ImageID
 	respItem["curr_task_idx"] = item.CurrTaskIDx
 	respItem["added_on"] = item.AddedOn
-	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasks(item.Tasks)
+	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemSystemResetWorkflowTasks(item.Tasks)
 	respItem["add_to_inventory"] = boolPtrToString(item.AddToInventory)
 	respItem["instance_type"] = item.InstanceType
 	respItem["end_time"] = item.EndTime
@@ -4808,7 +4830,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflow(item *dnac
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflowTasks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemSystemResetWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflowTasks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4821,7 +4843,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasks(items
 		respItem["task_seq_no"] = item.TaskSeqNo
 		respItem["end_time"] = item.EndTime
 		respItem["start_time"] = item.StartTime
-		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasksWorkItemList(item.WorkItemList)
+		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemSystemResetWorkflowTasksWorkItemList(item.WorkItemList)
 		respItem["time_taken"] = item.TimeTaken
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
@@ -4829,7 +4851,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasks(items
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflowTasksWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemSystemResetWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemResetWorkflowTasksWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4847,7 +4869,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemResetWorkflowTasksWorkIt
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflow) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemSystemWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflow) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4860,7 +4882,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflow(item *dnacenter
 	respItem["image_id"] = item.ImageID
 	respItem["curr_task_idx"] = item.CurrTaskIDx
 	respItem["added_on"] = item.AddedOn
-	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasks(item.Tasks)
+	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemSystemWorkflowTasks(item.Tasks)
 	respItem["add_to_inventory"] = boolPtrToString(item.AddToInventory)
 	respItem["instance_type"] = item.InstanceType
 	respItem["end_time"] = item.EndTime
@@ -4878,7 +4900,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflow(item *dnacenter
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflowTasks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemSystemWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflowTasks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4891,7 +4913,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasks(items *[]d
 		respItem["task_seq_no"] = item.TaskSeqNo
 		respItem["end_time"] = item.EndTime
 		respItem["start_time"] = item.StartTime
-		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasksWorkItemList(item.WorkItemList)
+		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemSystemWorkflowTasksWorkItemList(item.WorkItemList)
 		respItem["time_taken"] = item.TimeTaken
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
@@ -4899,7 +4921,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasks(items *[]d
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflowTasksWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemSystemWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDSystemWorkflowTasksWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4917,7 +4939,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDSystemWorkflowTasksWorkItemLis
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflow) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflow(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflow) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -4930,7 +4952,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflow(item *dnacentersdkgo.
 	respItem["image_id"] = item.ImageID
 	respItem["curr_task_idx"] = item.CurrTaskIDx
 	respItem["added_on"] = item.AddedOn
-	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasks(item.Tasks)
+	respItem["tasks"] = flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowTasks(item.Tasks)
 	respItem["add_to_inventory"] = boolPtrToString(item.AddToInventory)
 	respItem["instance_type"] = item.InstanceType
 	respItem["end_time"] = item.EndTime
@@ -4948,7 +4970,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflow(item *dnacentersdkgo.
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowTasks) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowTasks(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowTasks) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4961,7 +4983,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasks(items *[]dnacent
 		respItem["task_seq_no"] = item.TaskSeqNo
 		respItem["end_time"] = item.EndTime
 		respItem["start_time"] = item.StartTime
-		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasksWorkItemList(item.WorkItemList)
+		respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowTasksWorkItemList(item.WorkItemList)
 		respItem["time_taken"] = item.TimeTaken
 		respItem["name"] = item.Name
 		respItems = append(respItems, respItem)
@@ -4969,7 +4991,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasks(items *[]dnacent
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowTasksWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowTasksWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowTasksWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4987,7 +5009,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowTasksWorkItemList(item
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -4995,7 +5017,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryList(items *[]dnacen
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
 		respItem["details"] = item.Details
-		respItem["history_task_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfo(item.HistoryTaskInfo)
+		respItem["history_task_info"] = flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryListHistoryTaskInfo(item.HistoryTaskInfo)
 		respItem["error_flag"] = boolPtrToString(item.ErrorFlag)
 		respItem["timestamp"] = item.Timestamp
 		respItems = append(respItems, respItem)
@@ -5003,15 +5025,15 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryList(items *[]dnacen
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfo) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryListHistoryTaskInfo(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfo) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
 	respItem := make(map[string]interface{})
 	respItem["type"] = item.Type
-	respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfoWorkItemList(item.WorkItemList)
+	respItem["work_item_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryListHistoryTaskInfoWorkItemList(item.WorkItemList)
 	respItem["time_taken"] = item.TimeTaken
-	respItem["addn_details"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfoAddnDetails(item.AddnDetails)
+	respItem["addn_details"] = flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryListHistoryTaskInfoAddnDetails(item.AddnDetails)
 	respItem["name"] = item.Name
 
 	return []map[string]interface{}{
@@ -5020,7 +5042,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfo(
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfoWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfoWorkItemList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryListHistoryTaskInfoWorkItemList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfoWorkItemList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -5038,7 +5060,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfoW
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfoAddnDetails(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfoAddnDetails) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemRunSummaryListHistoryTaskInfoAddnDetails(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDRunSummaryListHistoryTaskInfoAddnDetails) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -5052,7 +5074,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDRunSummaryListHistoryTaskInfoA
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParameters(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParameters) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowParameters(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParameters) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -5060,7 +5082,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParameters(item *dnace
 	respItem["top_of_stack_serial_number"] = item.TopOfStackSerialNumber
 	respItem["license_level"] = item.LicenseLevel
 	respItem["license_type"] = item.LicenseType
-	respItem["config_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParametersConfigList(item.ConfigList)
+	respItem["config_list"] = flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowParametersConfigList(item.ConfigList)
 
 	return []map[string]interface{}{
 		respItem,
@@ -5068,21 +5090,21 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParameters(item *dnace
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParametersConfigList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParametersConfigList) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowParametersConfigList(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParametersConfigList) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
 	var respItems []map[string]interface{}
 	for _, item := range *items {
 		respItem := make(map[string]interface{})
-		respItem["config_parameters"] = flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParametersConfigListConfigParameters(item.ConfigParameters)
+		respItem["config_parameters"] = flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowParametersConfigListConfigParameters(item.ConfigParameters)
 		respItem["config_id"] = item.ConfigID
 		respItems = append(respItems, respItem)
 	}
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParametersConfigListConfigParameters(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParametersConfigListConfigParameters) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemWorkflowParametersConfigListConfigParameters(items *[]dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDWorkflowParametersConfigListConfigParameters) []map[string]interface{} {
 	if items == nil {
 		return nil
 	}
@@ -5096,7 +5118,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDWorkflowParametersConfigListCo
 	return respItems
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDayZeroConfig(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDayZeroConfig) []map[string]interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDayZeroConfig(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDayZeroConfig) []map[string]interface{} {
 	if item == nil {
 		return nil
 	}
@@ -5109,7 +5131,7 @@ func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDayZeroConfig(item *dnacenters
 
 }
 
-func flattenDeviceOnboardingPnpGetDeviceByIDItemIDDayZeroConfigPreview(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDayZeroConfigPreview) interface{} {
+func flattenDeviceOnboardingPnpGetDeviceByIDItemDayZeroConfigPreview(item *dnacentersdkgo.ResponseDeviceOnboardingPnpGetDeviceByIDDayZeroConfigPreview) interface{} {
 	if item == nil {
 		return nil
 	}
