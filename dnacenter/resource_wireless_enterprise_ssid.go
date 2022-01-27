@@ -285,7 +285,7 @@ func resourceWirelessEnterpriseSSID() *schema.Resource {
 							Description: `Enter SSID Name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"passphrase": &schema.Schema{
 							Description: `Pass Phrase (Only applicable for SSID with PERSONAL security level)
@@ -364,20 +364,9 @@ func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.Resourc
 	}
 	executionId := response1.ExecutionID
 	log.Printf("[DEBUG] ExecutionID => %s", executionId)
-	time.Sleep(5 * time.Second)
-	response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
-	if err != nil || response2 == nil {
-		if restyResp1 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetExecutionByID", err,
-			"Failure at GetExecutionByID, unexpected response", ""))
-		return diags
-	}
-	for response2.Status == "IN_PROGRESS" {
-		time.Sleep(10 * time.Second)
-		response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
@@ -387,12 +376,25 @@ func resourceWirelessEnterpriseSSIDCreate(ctx context.Context, d *schema.Resourc
 				"Failure at GetExecutionByID, unexpected response", ""))
 			return diags
 		}
-	}
-	if response2.Status == "FAILURE" {
-		log.Printf("[DEBUG] Error %s", response2.BapiError)
-		diags = append(diags, diagError(
-			"Failure when executing CreateEnterpriseSSID", err))
-		return diags
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing CreateEnterpriseSSID", err))
+			return diags
+		}
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["name"] = vvSSIDName
@@ -472,8 +474,12 @@ func resourceWirelessEnterpriseSSIDUpdate(ctx context.Context, d *schema.Resourc
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestWirelessEnterpriseSSIDUpdateEnterpriseSSID(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-		request1.Name = vSSIDName
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+		if request1 != nil {
+			request1.Name = vSSIDName
+		}
 		response1, restyResp1, err := client.Wireless.UpdateEnterpriseSSID(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -564,20 +570,9 @@ func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.Resourc
 
 	executionId := response1.ExecutionID
 	log.Printf("[DEBUG] ExecutionID => %s", executionId)
-	time.Sleep(5 * time.Second)
-	response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
-	if err != nil || response2 == nil {
-		if restyResp1 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetExecutionByID", err,
-			"Failure at GetExecutionByID, unexpected response", ""))
-		return diags
-	}
-	for response2.Status == "IN_PROGRESS" {
-		time.Sleep(10 * time.Second)
-		response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
@@ -587,12 +582,25 @@ func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.Resourc
 				"Failure at GetExecutionByID, unexpected response", ""))
 			return diags
 		}
-	}
-	if response2.Status == "FAILURE" {
-		log.Printf("[DEBUG] Error %s", response2.BapiError)
-		diags = append(diags, diagError(
-			"Failure when executing DeleteEnterpriseSSID", err))
-		return diags
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteEnterpriseSSID", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but

@@ -285,7 +285,7 @@ func resourceWirelessRfProfile() *schema.Resource {
 							Description: `custom RF profile name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"radio_type_a_properties": &schema.Schema{
 							Type:     schema.TypeList,
@@ -450,20 +450,9 @@ func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData
 	}
 	executionId := response1.ExecutionID
 	log.Printf("[DEBUG] ExecutionID => %s", executionId)
-	time.Sleep(5 * time.Second)
-	response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
-	if err != nil || response2 == nil {
-		if restyResp1 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetExecutionByID", err,
-			"Failure at GetExecutionByID, unexpected response", ""))
-		return diags
-	}
-	for response2.Status == "IN_PROGRESS" {
-		time.Sleep(10 * time.Second)
-		response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
@@ -473,12 +462,25 @@ func resourceWirelessRfProfileCreate(ctx context.Context, d *schema.ResourceData
 				"Failure at GetExecutionByID, unexpected response", ""))
 			return diags
 		}
-	}
-	if response2.Status == "FAILURE" {
-		log.Printf("[DEBUG] Error %s", response2.BapiError)
-		diags = append(diags, diagError(
-			"Failure when executing CreateOrUpdateRfProfile", err))
-		return diags
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing CreateOrUpdateRfProfile", err))
+			return diags
+		}
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["name"] = vvRfProfileName
@@ -576,20 +578,9 @@ func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData
 	}
 	executionId := response1.ExecutionID
 	log.Printf("[DEBUG] ExecutionID => %s", executionId)
-	time.Sleep(5 * time.Second)
-	response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
-	if err != nil || response2 == nil {
-		if restyResp1 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetExecutionByID", err,
-			"Failure at GetExecutionByID, unexpected response", ""))
-		return diags
-	}
-	for response2.Status == "IN_PROGRESS" {
-		time.Sleep(10 * time.Second)
-		response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
@@ -599,12 +590,25 @@ func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData
 				"Failure at GetExecutionByID, unexpected response", ""))
 			return diags
 		}
-	}
-	if response2.Status == "FAILURE" {
-		log.Printf("[DEBUG] Error %s", response2.BapiError)
-		diags = append(diags, diagError(
-			"Failure when executing DeleteRfProfiles", err))
-		return diags
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteRfProfiles", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but
@@ -729,7 +733,7 @@ func searchWirelessRetrieveRfProfiles(m interface{}, queryParams dnacentersdkgo.
 		return foundItem, err
 	}
 	if ite.Response == nil {
-		return foundItem, err
+		return nil, err
 	}
 
 	items := ite

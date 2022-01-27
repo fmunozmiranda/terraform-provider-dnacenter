@@ -570,6 +570,11 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 		if request1 != nil {
 			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
+		if request1 != nil && len(*request1) > 0 {
+			req := *request1
+			req[0].ID = item.ID
+			request1 = &req
+		}
 		response1, restyResp1, err := client.ApplicationPolicy.UpdateQosDeviceInterfaceInfo(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -629,7 +634,6 @@ func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceDat
 	queryParams1.NetworkDeviceID = vNetworkDeviceID
 	item, err := searchApplicationPolicyGetQosDeviceInterfaceInfo(m, queryParams1, vName)
 	if err != nil || item == nil {
-
 		return diags
 	}
 
@@ -648,6 +652,32 @@ func resourceQosDeviceInterfaceDelete(ctx context.Context, d *schema.ResourceDat
 			"Failure when executing DeleteQosDeviceInterfaceInfo", err,
 			"Failure at DeleteQosDeviceInterfaceInfo, unexpected response", ""))
 		return diags
+	}
+	if response1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing UpdateQosDeviceInterfaceInfo", err))
+		return diags
+	}
+	taskId := response1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	if taskId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteQosDeviceInterfaceInfo", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but

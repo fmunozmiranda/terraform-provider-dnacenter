@@ -1501,8 +1501,9 @@ func resourcePnpDevice() *schema.Resource {
 						},
 						"device_info": &schema.Schema{
 							Type:     schema.TypeList,
-							Optional: true,
+							Required: true,
 							MaxItems: 1,
+							MinItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 
@@ -1739,7 +1740,7 @@ func resourcePnpDevice() *schema.Resource {
 									},
 									"name": &schema.Schema{
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
 									},
 									"neighbor_links": &schema.Schema{
 										Type:     schema.TypeList,
@@ -2785,6 +2786,7 @@ func resourcePnpDeviceCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourcePnpDeviceRead(ctx, d, m)
 }
@@ -2796,19 +2798,10 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vName := ""
-	if _, ok := d.GetOk("parameters.0"); ok {
-		if _, ok := d.GetOk("parameters.0.device_info"); ok {
-			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
-				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
-					vName = interfaceToString(v)
-				}
-			}
-		}
-	}
 	vID, okID := resourceMap["id"]
+	vName, okName := resourceMap["name"]
 
-	if vName != "" {
+	if vName != "" && okName {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceList2")
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
 		queryParams1.Name = append(queryParams1.Name, vName)
@@ -2830,7 +2823,6 @@ func resourcePnpDeviceRead(ctx context.Context, d *schema.ResourceData, m interf
 				err))
 			return diags
 		}
-		d.SetId(getUnixTimeString())
 		return diags
 
 	} else if vID != "" && okID {
@@ -2875,16 +2867,8 @@ func resourcePnpDeviceUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	resourceMap := separateResourceID(resourceID)
 
 	vID := resourceMap["id"]
-	vName := ""
-	if _, ok := d.GetOk("parameters.0"); ok {
-		if _, ok := d.GetOk("parameters.0.device_info"); ok {
-			if _, ok := d.GetOk("parameters.0.device_info.0"); ok {
-				if v, ok := d.GetOk("parameters.0.device_info.0.name"); ok {
-					vName = interfaceToString(v)
-				}
-			}
-		}
-	}
+	vName, _ := resourceMap["name"]
+
 	var vvID string
 
 	// NOTE: Consider adding getAllItems and search function to get missing params
@@ -2958,11 +2942,12 @@ func resourcePnpDeviceDelete(ctx context.Context, d *schema.ResourceData, m inte
 	if vName != "" {
 		queryParams1 := dnacentersdkgo.GetDeviceList2QueryParams{}
 		queryParams1.Name = append(queryParams1.Name, vName)
-		respon1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
-		if err != nil || respon1 == nil {
+		response1, err := searchDeviceOnboardingPnpGetDeviceList2(m, queryParams1, vName)
+		if err != nil || response1 == nil {
 			// Assume that element it is already gone
 			return diags
 		}
+		vvID = response1.ID
 	}
 	if vID != "" {
 		response2, _, err := client.DeviceOnboardingPnp.GetDeviceByID(vvID)
@@ -6078,7 +6063,7 @@ func expandRequestPnpDeviceUpdateDeviceWorkflowParametersConfigListConfigParamet
 	return &request
 }
 
-func searchDeviceOnboardingPnpGetDeviceList2(m interface{}, queryParams dnacentersdkgo.GetDeviceList2QueryParams, vID string) (*dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2, error) {
+func searchDeviceOnboardingPnpGetDeviceList2(m interface{}, queryParams dnacentersdkgo.GetDeviceList2QueryParams, vName string) (*dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2, error) {
 	client := m.(*dnacentersdkgo.Client)
 	var err error
 	var foundItem *dnacentersdkgo.ResponseItemDeviceOnboardingPnpGetDeviceList2
@@ -6088,7 +6073,7 @@ func searchDeviceOnboardingPnpGetDeviceList2(m interface{}, queryParams dnacente
 	}
 	maxPageSize := len(*nResponse)
 	for _, item := range *nResponse {
-		if vID == item.ID {
+		if item.DeviceInfo != nil && vName == item.DeviceInfo.Name {
 			foundItem = &item
 			return foundItem, err
 		}

@@ -674,6 +674,7 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 	resourceMap := separateResourceID(resourceID)
 	vID := resourceMap["id"]
 	vName := resourceMap["profile_name"]
+	var vvID string
 
 	queryParams1 := dnacentersdkgo.GetNfvProfileQueryParams{}
 	queryParams1.Name = vName
@@ -684,19 +685,17 @@ func resourceNfvProfileUpdate(ctx context.Context, d *schema.ResourceData, m int
 			"Failure at GetNFVProfile, unexpected response", ""))
 		return diags
 	}
+	vvID = item.ID
 
-	selectedMethod := 1
-	var vvID string
-	if selectedMethod == 1 {
-		vvID = vID
-	}
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestNfvProfileUpdateNfvProfile(ctx, "parameters.0", d)
 		if request1 != nil {
 			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
-		response1, restyResp1, err := client.SiteDesign.UpdateNfvProfile(vvID, request1, nil)
+		queryParams2 := dnacentersdkgo.UpdateNfvProfileQueryParams{}
+		queryParams2.Name = vName
+		response1, restyResp1, err := client.SiteDesign.UpdateNfvProfile(vvID, request1, &queryParams2)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] resty response for update operation => %v", restyResp1.String())
@@ -735,7 +734,9 @@ func resourceNfvProfileDelete(ctx context.Context, d *schema.ResourceData, m int
 			"Failure at GetNFVProfile, unexpected response", ""))
 		return diags
 	}
-
+	if vID == "" {
+		vID = item.ID
+	}
 	queryParams2 := dnacentersdkgo.DeleteNfvProfileQueryParams{}
 	queryParams1.Name = vName
 	response1, restyResp1, err := client.SiteDesign.DeleteNfvProfile(vID, &queryParams2)
@@ -1476,7 +1477,7 @@ func searchSiteDesignGetNfvProfile(m interface{}, queryParams dnacentersdkgo.Get
 	}
 
 	if ite.Response == nil {
-		return foundItem, err
+		return nil, err
 	}
 
 	items := ite

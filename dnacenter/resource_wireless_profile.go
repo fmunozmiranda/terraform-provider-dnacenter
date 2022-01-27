@@ -137,15 +137,17 @@ should be provided.
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
 				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
 						"profile_details": &schema.Schema{
 							Type:     schema.TypeList,
-							Optional: true,
+							Required: true,
 							MaxItems: 1,
+							MinItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 
@@ -153,7 +155,7 @@ should be provided.
 										Description: `Profile Name
 `,
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
 									},
 									"sites": &schema.Schema{
 										Description: `array of site name hierarchies(eg: ["Global/aaa/zzz", "Global/aaa/zzz"]) 
@@ -287,8 +289,8 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 	executionID := resp1.ExecutionID
 	log.Printf("[DEBUG] ExecutionID => %s", executionID)
-	time.Sleep(5 * time.Second)
 	if executionID != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -507,8 +509,8 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 	}
 	executionID := response1.ExecutionID
 	log.Printf("[DEBUG] ExecutionID => %s", executionID)
-	time.Sleep(5 * time.Second)
 	if executionID != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {

@@ -3,6 +3,7 @@ package dnacenter
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -68,7 +69,7 @@ func resourceWirelessDynamicInterface() *schema.Resource {
 							Description: `dynamic-interface name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"vlan_id": &schema.Schema{
 							Description: `Vlan Id
@@ -118,6 +119,41 @@ func resourceWirelessDynamicInterfaceCreate(ctx context.Context, d *schema.Resou
 		diags = append(diags, diagError(
 			"Failure when executing CreateUpdateDynamicInterface", err))
 		return diags
+	}
+	executionId := resp1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetBusinessAPIExecutionDetails", err,
+				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			bapiError := response2.BapiError
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing CreateUpdateDynamicInterface", err,
+				"Failure at CreateUpdateDynamicInterface execution", bapiError))
+			return diags
+		}
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["interface_name"] = vvInterfaceName
@@ -172,6 +208,81 @@ func resourceWirelessDynamicInterfaceRead(ctx context.Context, d *schema.Resourc
 }
 
 func resourceWirelessDynamicInterfaceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*dnacentersdkgo.Client)
+
+	var diags diag.Diagnostics
+
+	resourceID := d.Id()
+	resourceMap := separateResourceID(resourceID)
+
+	request1 := expandRequestWirelessDynamicInterfaceCreateUpdateDynamicInterface(ctx, "parameters.0", d)
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
+
+	vInterfaceName := resourceMap["interface_name"]
+	vvInterfaceName := interfaceToString(vInterfaceName)
+
+	queryParams1 := dnacentersdkgo.GetDynamicInterfaceQueryParams{}
+
+	queryParams1.InterfaceName = vvInterfaceName
+
+	getResponse2, err := searchWirelessGetDynamicInterface(m, queryParams1)
+	if err != nil || getResponse2 == nil {
+		diags = append(diags, diagErrorWithAlt(
+			"Failure when executing GetDynamicInterface", err,
+			"Failure at GetDynamicInterface, unexpected response", ""))
+		return diags
+	}
+
+	if d.HasChange("parameters") {
+		resp1, restyResp1, err := client.Wireless.CreateUpdateDynamicInterface(request1, nil)
+		if err != nil || resp1 == nil {
+			if restyResp1 != nil {
+				diags = append(diags, diagErrorWithResponse(
+					"Failure when executing CreateUpdateDynamicInterface", err, restyResp1.String()))
+				return diags
+			}
+			diags = append(diags, diagError(
+				"Failure when executing CreateUpdateDynamicInterface", err))
+			return diags
+		}
+		executionId := resp1.ExecutionID
+		log.Printf("[DEBUG] ExecutionID => %s", executionId)
+		if executionId != "" {
+			time.Sleep(5 * time.Second)
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetBusinessAPIExecutionDetails", err,
+					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+				return diags
+			}
+			for response2.Status == "IN_PROGRESS" {
+				time.Sleep(10 * time.Second)
+				response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+				if err != nil || response2 == nil {
+					if restyResp1 != nil {
+						log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+					}
+					diags = append(diags, diagErrorWithAlt(
+						"Failure when executing GetExecutionByID", err,
+						"Failure at GetExecutionByID, unexpected response", ""))
+					return diags
+				}
+			}
+			if response2.Status == "FAILURE" {
+				bapiError := response2.BapiError
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing CreateUpdateDynamicInterface", err,
+					"Failure at CreateUpdateDynamicInterface execution", bapiError))
+				return diags
+			}
+		}
+	}
 	return resourceWirelessDynamicInterfaceRead(ctx, d, m)
 }
 

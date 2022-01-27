@@ -438,6 +438,7 @@ func resourcePnpWorkflowCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["id"] = vvID
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourcePnpWorkflowRead(ctx, d, m)
 }
@@ -539,8 +540,7 @@ func resourcePnpWorkflowUpdate(ctx context.Context, d *schema.ResourceData, m in
 	vID := resourceMap["id"]
 	vName := resourceMap["name"]
 
-	vvID := vID
-
+	vvID := ""
 	if vName != "" {
 		log.Printf("[DEBUG] Selected method 1: GetWorkflows")
 		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
@@ -555,12 +555,10 @@ func resourcePnpWorkflowUpdate(ctx context.Context, d *schema.ResourceData, m in
 				"Failure at GetWorkflows, unexpected response", ""))
 			return diags
 		}
-	}
-
-	if vID != "" {
+		vvID = response1.TypeID
+	} else if vID != "" {
 		log.Printf("[DEBUG] Selected method 2: GetWorkflowByID")
-		vvID := vID
-
+		vvID = vID
 		response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
 
 		if err != nil || response2 == nil {
@@ -574,23 +572,14 @@ func resourcePnpWorkflowUpdate(ctx context.Context, d *schema.ResourceData, m in
 		}
 	}
 
-	response2, restyResp2, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
-
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetWorkflowByID", err,
-			"Failure at GetWorkflowByID, unexpected response", ""))
-		return diags
-	}
-
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] ID used for update operation %s", vvID)
 		request1 := expandRequestPnpWorkflowUpdateWorkflow(ctx, "parameters.0", d)
 		if request1 != nil {
 			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+		if request1 != nil && request1.TypeID == "" {
+			request1.TypeID = vvID
 		}
 		response1, restyResp1, err := client.DeviceOnboardingPnp.UpdateWorkflow(vvID, request1)
 		if err != nil || response1 == nil {
@@ -619,15 +608,28 @@ func resourcePnpWorkflowDelete(ctx context.Context, d *schema.ResourceData, m in
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-
-	vID := resourceMap["id"]
 	var vvID string
 
-	vvID = vID
-	getResp, _, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
-	if err != nil || getResp == nil {
-		// Assume that element it is already gone
-		return diags
+	vID := resourceMap["id"]
+	vName := resourceMap["name"]
+
+	if vID != "" {
+		vvID = vID
+		getResp, _, err := client.DeviceOnboardingPnp.GetWorkflowByID(vvID)
+		if err != nil || getResp == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+	} else if vName != "" {
+		queryParams1 := dnacentersdkgo.GetWorkflowsQueryParams{}
+		queryParams1.Name = append(queryParams1.Name, vName)
+
+		response1, err := searchDeviceOnboardingPnpGetWorkflows(m, queryParams1)
+		if err != nil || response1 == nil {
+			// Assume that element it is already gone
+			return diags
+		}
+		vvID = response1.TypeID
 	}
 
 	response1, restyResp1, err := client.DeviceOnboardingPnp.DeleteWorkflowByID(vvID)

@@ -320,7 +320,7 @@ required to configure a report.
 							Description: `report name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"report_id": &schema.Schema{
 							Description: `reportId path parameter. reportId of report
@@ -499,6 +499,7 @@ func resourceReportsCreate(ctx context.Context, d *schema.ResourceData, m interf
 		if err == nil && getResponse2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["report_id"] = vvReportID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourceReportsRead(ctx, d, m)
 		}

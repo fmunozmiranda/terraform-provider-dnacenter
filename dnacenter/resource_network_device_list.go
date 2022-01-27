@@ -633,6 +633,9 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 		if request1 != nil {
 			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
 		}
+		if request1 != nil && item != nil && request1.ID == "" {
+			request1.ID = item.ID
+		}
 		response1, restyResp1, err := client.Devices.SyncDevices2(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

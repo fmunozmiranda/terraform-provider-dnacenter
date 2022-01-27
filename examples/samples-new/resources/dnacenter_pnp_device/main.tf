@@ -22,7 +22,7 @@ resource "dnacenter_pnp_device" "example" {
         reload_requested= "true"
         serial_number= "FLM2213W05R"
         stack= "false"
-        #state= "Unclaimed"
+        # state= "Unclaimed"
         state= "Planned"
         sudi_required= "false"
         name= "FLM2213W05R"

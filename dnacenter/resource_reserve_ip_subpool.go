@@ -831,7 +831,7 @@ func searchNetworkSettingsGetReserveIPSubpool(m interface{}, queryParams dnacent
 	}
 
 	if ite.Response == nil {
-		return foundItem, err
+		return nil, err
 	}
 
 	items := ite

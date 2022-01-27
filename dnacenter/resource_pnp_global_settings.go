@@ -350,7 +350,7 @@ func resourcePnpGlobalSettings() *schema.Resource {
 
 						"id": &schema.Schema{
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"aaa_credentials": &schema.Schema{
 							Type:     schema.TypeList,
@@ -592,7 +592,6 @@ func resourcePnpGlobalSettingsCreate(ctx context.Context, d *schema.ResourceData
 	// TODO: Add the path params to `item` schema
 	//       & return it individually
 	resourceMap["id"] = interfaceToString(resourceItem["id"])
-	resourceMap["name"] = interfaceToString(resourceItem["name"])
 	d.SetId(joinResourceID(resourceMap))
 	return diags
 }
@@ -646,7 +645,6 @@ func resourcePnpGlobalSettingsUpdate(ctx context.Context, d *schema.ResourceData
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s")
 		request1 := expandRequestPnpGlobalSettingsUpdatePnpGlobalSettings(ctx, "parameters.0", d)
 		if request1 != nil {
 			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
