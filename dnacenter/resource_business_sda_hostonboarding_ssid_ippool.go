@@ -73,7 +73,9 @@ func resourceBusinessSdaHostonboardingSSIDIPpool() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -87,13 +89,14 @@ func resourceBusinessSdaHostonboardingSSIDIPpool() *schema.Resource {
 							Description: `Site Name Hierarchy
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"ssid_names": &schema.Schema{
 							Description: `List of SSIDs
 `,
 							Type:     schema.TypeList,
-							Optional: true,
+							Required: true,
+							MinItems: 1,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -102,7 +105,7 @@ func resourceBusinessSdaHostonboardingSSIDIPpool() *schema.Resource {
 							Description: `VLAN Name
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 					},
 				},
@@ -153,6 +156,29 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 			"Failure when executing AddSSIDToIPPoolMapping", err))
 		return diags
 	}
+	if len(*resp1) > 0 {
+		executionID := (*resp1)[0].ExecutionID
+		if executionID != "" {
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetBusinessAPIExecutionDetails", err,
+					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+				return diags
+			}
+			if response2.Status != "SUCCESS" {
+				bapiError := response2.BapiError
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing AddSSIDToIPPoolMapping", err,
+					"Failure at AddSSIDToIPPoolMapping execution", bapiError))
+				return diags
+			}
+		}
+	}
+
 	resourceMap := make(map[string]string)
 	d.SetId(joinResourceID(resourceMap))
 	resourceMap["vlan_name"] = vvVlan_name
@@ -185,9 +211,11 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolRead(ctx context.Context, d *sch
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetSSIDToIPPoolMapping", err,
-				"Failure at GetSSIDToIPPoolMapping, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetSSIDToIPPoolMapping", err,
+			// 	"Failure at GetSSIDToIPPoolMapping, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -231,9 +259,11 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
+		log.Printf("[DEBUG] Name used for update operation %v", queryParams1)
 		request1 := expandRequestBusinessSdaHostonboardingSSIDIPpoolUpdateSSIDToIPPoolMapping(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.FabricWireless.UpdateSSIDToIPPoolMapping(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -247,6 +277,28 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 				"Failure when executing UpdateSSIDToIPPoolMapping", err,
 				"Failure at UpdateSSIDToIPPoolMapping, unexpected response", ""))
 			return diags
+		}
+		if len(*response1) > 0 {
+			executionID := (*response1)[0].ExecutionID
+			if executionID != "" {
+				response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+				if err != nil || response2 == nil {
+					if restyResp2 != nil {
+						log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+					}
+					diags = append(diags, diagErrorWithAlt(
+						"Failure when executing GetBusinessAPIExecutionDetails", err,
+						"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+					return diags
+				}
+				if response2.Status != "SUCCESS" {
+					bapiError := response2.BapiError
+					diags = append(diags, diagErrorWithAlt(
+						"Failure when executing AddSSIDToIPPoolMapping", err,
+						"Failure at AddSSIDToIPPoolMapping execution", bapiError))
+					return diags
+				}
+			}
 		}
 	}
 

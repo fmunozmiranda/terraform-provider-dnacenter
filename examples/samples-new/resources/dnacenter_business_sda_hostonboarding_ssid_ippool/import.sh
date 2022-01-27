@@ -1,1 +1,0 @@
-terraform import dnac_business_sda_hostonboarding_ssid_ippool.example "id:=string"

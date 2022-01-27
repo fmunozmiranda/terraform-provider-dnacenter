@@ -198,7 +198,9 @@ func resourceNetworkDevice() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -246,9 +248,11 @@ func resourceNetworkDeviceRead(ctx context.Context, d *schema.ResourceData, m in
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDeviceByID", err,
-				"Failure at GetDeviceByID, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDeviceByID", err,
+			// 	"Failure at GetDeviceByID, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

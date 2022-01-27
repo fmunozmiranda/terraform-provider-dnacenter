@@ -404,9 +404,11 @@ func resourceEventSubscriptionSyslogRead(ctx context.Context, d *schema.Resource
 		queryParams1 := dnacentersdkgo.GetSyslogEventSubscriptionsQueryParams{}
 		item, err := searchEventManagementGetSyslogEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
 		if err != nil || item == nil || len(*item) <= 0 {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetSyslogEventSubscriptions", err,
-				"Failure at GetSyslogEventSubscriptions, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetSyslogEventSubscriptions", err,
+			// 	"Failure at GetSyslogEventSubscriptions, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

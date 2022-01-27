@@ -117,7 +117,9 @@ func resourceDeviceReplacement() *schema.Resource {
 			"parameters": &schema.Schema{
 				Description: `Array of RequestDeviceReplacementMarkDeviceForReplacement`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -210,14 +212,16 @@ func resourceDeviceReplacementCreate(ctx context.Context, d *schema.ResourceData
 	if err != nil || item != nil {
 		resourceMap := make(map[string]string)
 		resourceMap["faulty_device_serial_number"] = vvFaultyDeviceSerialNumber
-		resourceMap["replacement_devicserial_number"] = vvReplacementDeviceSerialNumber
+		resourceMap["replacement_device_serial_number"] = vvReplacementDeviceSerialNumber
 		resourceMap["faulty_device_id"] = vvFaultyDeviceID
 		d.SetId(joinResourceID(resourceMap))
 		return resourceDeviceReplacementRead(ctx, d, m)
 	}
 
-	request1 := expandRequestDeviceReplacementMarkDeviceForReplacement(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	request1 := expandRequestDeviceReplacementMarkDeviceForReplacement(ctx, "parameters", d)
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	resp1, restyResp1, err := client.DeviceReplacement.MarkDeviceForReplacement(request1)
 	if err != nil || resp1 == nil {
@@ -230,8 +234,8 @@ func resourceDeviceReplacementCreate(ctx context.Context, d *schema.ResourceData
 			"Failure when executing MarkDeviceForReplacement", err))
 		return diags
 	}
-	resourceMap["faulty_device_serial_number"] = interfaceToString(vvFaultyDeviceSerialNumber)
-	resourceMap["replacement_devicserial_number"] = interfaceToString(vvReplacementDeviceSerialNumber)
+	resourceMap["faulty_device_serial_number"] = vvFaultyDeviceSerialNumber
+	resourceMap["replacement_device_serial_number"] = vvReplacementDeviceSerialNumber
 	resourceMap["faulty_device_id"] = vvFaultyDeviceID
 	d.SetId(joinResourceID(resourceMap))
 	return resourceDeviceReplacementRead(ctx, d, m)
@@ -243,17 +247,18 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vReplacementDevicePlatform, okReplacementDevicePlatform := resourceMap["replacement_device_platform"]
+
+	vFaultyDeviceID, _ := resourceMap["faulty_device_id"]
 	vFaultyDeviceSerialNumber, okFaultyDeviceSerialNumber := resourceMap["faulty_device_serial_number"]
-	vFaultyDeviceID := resourceMap["faulty_device_id"]
+	vReplacementDeviceSerialNumber, okReplacementDeviceSerialNumber := resourceMap["replacement_device_serial_number"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: ReturnListOfReplacementDevicesWithReplacementDetails")
 		queryParams1 := dnacentersdkgo.ReturnListOfReplacementDevicesWithReplacementDetailsQueryParams{}
 
-		if okReplacementDevicePlatform {
-			queryParams1.ReplacementDevicePlatform = vReplacementDevicePlatform
+		if okReplacementDeviceSerialNumber {
+			queryParams1.ReplacementDeviceSerialNumber = vReplacementDeviceSerialNumber
 		}
 		if okFaultyDeviceSerialNumber {
 			queryParams1.FaultyDeviceSerialNumber = vFaultyDeviceSerialNumber
@@ -262,15 +267,16 @@ func resourceDeviceReplacementRead(ctx context.Context, d *schema.ResourceData, 
 		response1, err := searchDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetails(m, queryParams1, vFaultyDeviceID)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing ReturnListOfReplacementDevicesWithReplacementDetails", err,
-				"Failure at ReturnListOfReplacementDevicesWithReplacementDetails, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing ReturnListOfReplacementDevicesWithReplacementDetails", err,
+			// 	"Failure at ReturnListOfReplacementDevicesWithReplacementDetails, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
 		vItems1 := flattenDeviceReplacementReturnReplacementDevicesWithReplacementDetailsItems(response1)
 		if err := d.Set("item", vItems1); err != nil {
 			diags = append(diags, diagError(
@@ -297,8 +303,12 @@ func resourceDeviceReplacementUpdate(ctx context.Context, d *schema.ResourceData
 	log.Printf("[DEBUG] Selected method 1: ReturnListOfReplacementDevicesWithReplacementDetails")
 	queryParams1 := dnacentersdkgo.ReturnListOfReplacementDevicesWithReplacementDetailsQueryParams{}
 
-	queryParams1.FaultyDeviceSerialNumber = vFaultyDeviceSerialNumber
-	queryParams1.ReplacementDeviceSerialNumber = vReplacementDeviceSerialNumber
+	if vFaultyDeviceSerialNumber != "" {
+		queryParams1.FaultyDeviceSerialNumber = vFaultyDeviceSerialNumber
+	}
+	if vReplacementDeviceSerialNumber != "" {
+		queryParams1.ReplacementDeviceSerialNumber = vReplacementDeviceSerialNumber
+	}
 
 	item, err := searchDeviceReplacementReturnListOfReplacementDevicesWithReplacementDetails(m, queryParams1, vFaultyDeviceID)
 
@@ -313,7 +323,9 @@ func resourceDeviceReplacementUpdate(ctx context.Context, d *schema.ResourceData
 	// if selectedMethod == 1 { }
 	if d.HasChange("parameters") {
 		request1 := expandRequestDeviceReplacementUnmarkDeviceForReplacement(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.DeviceReplacement.UnmarkDeviceForReplacement(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {

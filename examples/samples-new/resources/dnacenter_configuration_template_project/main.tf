@@ -1,23 +1,23 @@
 terraform {
-required_providers {
-dnacenter = {
-version = "0.0.3"
-source  = "hashicorp.com/edu/dnacenter"
-# "hashicorp.com/edu/dnacenter" is the local built source change to "cisco-en-programmability/dnacenter" to use downloaded version from registry
-}
-}
+  required_providers {
+    dnacenter = {
+      version = "0.0.3"
+      source  = "hashicorp.com/edu/dnacenter"
+      # "hashicorp.com/edu/dnacenter" is the local built source change to "cisco-en-programmability/dnacenter" to use downloaded version from registry
+    }
+  }
 }
 
 resource "dnacenter_configuration_template_project" "example" {
-    provider = dnacenter
-    parameters {
-      
-      create_time = 1
-      description = "Cloud DayN Templates3"
-      #id = "string"
-      last_update_time = 1
-      name = "Cloud DayN Templates"
-      /*
+  provider = dnacenter
+  parameters {
+
+    create_time = 1
+    description = "Cloud DayN Templates 3"
+    #id = "string"
+    last_update_time = 1
+    name             = "Cloud DayN Templates News"
+    /*
       project_id = "string"
       tags {  
         id = "string"
@@ -216,20 +216,20 @@ resource "dnacenter_configuration_template_project" "example" {
         }
         version = "string"
       }*/
-      templates {
-        name= "Cloud Test Template  6"
-        composite= false
-        language= "VELOCITY"
-        id= "331a801a-56f5-43c0-93d0-9d713f27cfd3"
-        custom_params_order= false
-        last_update_time= 1636580362198
-        latest_version_time= 0
-        project_associated= true
-        document_database= false
-      }
+    templates {
+      name                = "Cloud Test Template  6"
+      composite           = false
+      language            = "VELOCITY"
+      id                  = "331a801a-56f5-43c0-93d0-9d713f27cfd3"
+      custom_params_order = false
+      last_update_time    = 1636580362198
+      latest_version_time = 0
+      project_associated  = true
+      document_database   = false
     }
+  }
 }
 
 output "dnacenter_configuration_template_project_example" {
-    value = dnacenter_configuration_template_project.example
+  value = dnacenter_configuration_template_project.example
 }

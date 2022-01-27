@@ -277,7 +277,9 @@ func resourceApplications() *schema.Resource {
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplication`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -526,21 +528,28 @@ func resourceApplicationsCreate(ctx context.Context, d *schema.ResourceData, m i
 			"Failure when executing CreateApplication", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
+	if resp1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing CreateApplication", err))
 		return diags
 	}
-	if *response2.Response.IsError {
-		diags = append(diags, diagError(
-			"Failure when executing CreateApplicationSet", err))
-		return diags
+	taskId := resp1.Response.TaskID
+	if taskId != "" {
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing CreateApplicationSet", err))
+			return diags
+		}
 	}
 
 	resourceMap := make(map[string]string)
@@ -568,9 +577,11 @@ func resourceApplicationsRead(ctx context.Context, d *schema.ResourceData, m int
 		response1, err := searchApplicationPolicyGetApplications(m, queryParams1, vID)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetApplications", err,
-				"Failure at GetApplications, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetApplications", err,
+			// 	"Failure at GetApplications, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -616,9 +627,17 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 	}
 
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", queryParams)
+		log.Printf("[DEBUG] Name used for update operation %v", queryParams)
 		request1 := expandRequestApplicationsEditApplication(ctx, "parameters", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+		// Add ID to update
+		if request1 != nil && len(*request1) > 0 && item != nil {
+			req := *request1
+			req[0].ID = item.ID
+			request1 = &req
+		}
 		response1, restyResp1, err := client.ApplicationPolicy.EditApplication(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -633,21 +652,28 @@ func resourceApplicationsUpdate(ctx context.Context, d *schema.ResourceData, m i
 				"Failure at EditApplication, unexpected response", ""))
 			return diags
 		}
-		taskId := response1.Response.TaskID
-		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-		if err != nil || response2 == nil {
-			if restyResp2 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTaskByID", err,
-				"Failure at GetTaskByID, unexpected response", ""))
+		if response1.Response == nil {
+			diags = append(diags, diagError(
+				"Failure when executing EditApplication", err))
 			return diags
 		}
-		if *response2.Response.IsError {
-			diags = append(diags, diagError(
-				"Failure when executing UdpateApplication", err))
-			return diags
+		taskId := response1.Response.TaskID
+		if taskId != "" {
+			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetTaskByID", err,
+					"Failure at GetTaskByID, unexpected response", ""))
+				return diags
+			}
+			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				diags = append(diags, diagError(
+					"Failure when executing UdpateApplication", err))
+				return diags
+			}
 		}
 	}
 
@@ -700,22 +726,28 @@ func resourceApplicationsDelete(ctx context.Context, d *schema.ResourceData, m i
 			"Failure at DeleteApplication, unexpected response", ""))
 		return diags
 	}
-
-	taskId := response1.Response.TaskID
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
-		return diags
-	}
-	if *response2.Response.IsError {
+	if response1.Response == nil {
 		diags = append(diags, diagError(
 			"Failure when executing DeleteApplication", err))
 		return diags
+	}
+	taskId := response1.Response.TaskID
+	if taskId != "" {
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing DeleteApplication", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but
@@ -1214,7 +1246,6 @@ func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacenter
 		}
 	} else if vID != "" {
 		queryParams.Offset = 1
-		//var allItems []*dnacenterskgo.ResponseItemApplicationPolicyGetApplications
 		nResponse, _, err := client.ApplicationPolicy.GetApplications(nil)
 		maxPageSize := len(*nResponse.Response)
 		//maxPageSize := 10
@@ -1225,7 +1256,6 @@ func searchApplicationPolicyGetApplications(m interface{}, queryParams dnacenter
 					foundItem = &item
 					return foundItem, err
 				}
-				//allItems = append(allItems, &item)
 			}
 			queryParams.Limit = float64(maxPageSize)
 			queryParams.Offset += float64(maxPageSize)

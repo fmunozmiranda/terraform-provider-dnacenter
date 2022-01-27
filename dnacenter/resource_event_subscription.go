@@ -309,9 +309,11 @@ func resourceEventSubscriptionRead(ctx context.Context, d *schema.ResourceData, 
 		queryParams1 := dnacentersdkgo.GetEventSubscriptionsQueryParams{}
 		item, err := searchEventManagementGetEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
 		if err != nil || item == nil || len(*item) <= 0 {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetEventSubscriptions", err,
-				"Failure at GetEventSubscriptions, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetEventSubscriptions", err,
+			// 	"Failure at GetEventSubscriptions, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

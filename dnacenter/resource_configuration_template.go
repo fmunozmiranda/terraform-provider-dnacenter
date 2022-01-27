@@ -1071,7 +1071,9 @@ func resourceConfigurationTemplate() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -1635,7 +1637,7 @@ func resourceConfigurationTemplate() *schema.Resource {
 							Description: `Name of template
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"parent_template_id": &schema.Schema{
 							Description: `Parent templateID
@@ -2152,9 +2154,11 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 		response1, err := searchConfigurationTemplatesGetsTheTemplatesAvailable(m, queryParams1, vTemplateName)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetsTheTemplatesAvailable", err,
-				"Failure at GetsTheTemplatesAvailable, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetsTheTemplatesAvailable", err,
+			// 	"Failure at GetsTheTemplatesAvailable, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -2179,9 +2183,8 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 				err))
 			return diags
 		}
-
-	}
-	if vTemplateID != "" {
+		return diags
+	} else if vTemplateID != "" {
 		log.Printf("[DEBUG] Selected method 2: GetsDetailsOfAGivenTemplate")
 		vvTemplateID := vTemplateID
 		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
@@ -2192,9 +2195,11 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetsDetailsOfAGivenTemplate", err,
-				"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetsDetailsOfAGivenTemplate", err,
+			// 	"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -2208,7 +2213,6 @@ func resourceConfigurationTemplateRead(ctx context.Context, d *schema.ResourceDa
 			return diags
 		}
 		return diags
-
 	}
 	return diags
 }
@@ -2223,7 +2227,6 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 	vTemplateID := resourceMap["id"]
 	vTemplateName := resourceMap["name"]
 	var vvTemplateID string
-	var vvName string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
 	if vTemplateID != "" {
@@ -2237,9 +2240,7 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 				"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
 			return diags
 		}
-	}
-
-	if vTemplateName != "" {
+	} else if vTemplateName != "" {
 		queryParams1 := dnacentersdkgo.GetsTheTemplatesAvailableQueryParams{}
 
 		response1, err := searchConfigurationTemplatesGetsTheTemplatesAvailable(m, queryParams1, vTemplateName)
@@ -2250,12 +2251,18 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 				"Failure at GetsTheTemplatesAvailable, unexpected response", ""))
 			return diags
 		}
+		vvTemplateID = response1.TemplateID
 	}
 
 	if d.HasChange("parameters") {
-		log.Printf("[DEBUG] Name used for update operation %s", vvName)
+		log.Printf("[DEBUG] Name used for update operation %s", vTemplateName)
 		request1 := expandRequestConfigurationTemplateUpdateTemplate(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+		if request1 != nil && request1.ID == "" {
+			request1.ID = vvTemplateID
+		}
 		response1, restyResp1, err := client.ConfigurationTemplates.UpdateTemplate(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -2270,21 +2277,28 @@ func resourceConfigurationTemplateUpdate(ctx context.Context, d *schema.Resource
 				"Failure at UpdateTemplate, unexpected response", ""))
 			return diags
 		}
-		taskId := response1.Response.TaskID
-		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-		if err != nil || response2 == nil {
-			if restyResp2 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTaskByID", err,
-				"Failure at GetTaskByID, unexpected response", ""))
+		if response1.Response == nil {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateTemplate", err))
 			return diags
 		}
-		if *response2.Response.IsError {
-			diags = append(diags, diagError(
-				"Failure when executing CreateApplicationSet", err))
-			return diags
+		taskId := response1.Response.TaskID
+		if taskId != "" {
+			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetTaskByID", err,
+					"Failure at GetTaskByID, unexpected response", ""))
+				return diags
+			}
+			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				diags = append(diags, diagError(
+					"Failure when executing CreateApplicationSet", err))
+				return diags
+			}
 		}
 	}
 
@@ -2299,26 +2313,29 @@ func resourceConfigurationTemplateDelete(ctx context.Context, d *schema.Resource
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vTemplateID := resourceMap["template_id"]
-	vLatestVersion, okLatestVersion := resourceMap["latest_version"]
+	vTemplateID := resourceMap["id"]
+	vTemplateName := resourceMap["name"]
 
-	selectedMethod := 1
 	var vvTemplateID string
 	// REVIEW: Add getAllItems and search function to get missing params
-	if selectedMethod == 1 {
+	if vTemplateID != "" {
 		vvTemplateID = vTemplateID
 		queryParams2 := dnacentersdkgo.GetsDetailsOfAGivenTemplateQueryParams{}
 
-		if okLatestVersion {
-			queryParams2.LatestVersion = *stringToBooleanPtr(vLatestVersion)
-		}
 		getResp, _, err := client.ConfigurationTemplates.GetsDetailsOfAGivenTemplate(vvTemplateID, &queryParams2)
 		if err != nil || getResp == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetsDetailsOfAGivenTemplate", err,
-				"Failure at GetsDetailsOfAGivenTemplate, unexpected response", ""))
 			return diags
 		}
+	}
+	if vTemplateName != "" {
+		queryParams1 := dnacentersdkgo.GetsTheTemplatesAvailableQueryParams{}
+
+		response1, err := searchConfigurationTemplatesGetsTheTemplatesAvailable(m, queryParams1, vTemplateName)
+
+		if err != nil || response1 == nil {
+			return diags
+		}
+		vvTemplateID = response1.TemplateID
 	}
 	response1, restyResp1, err := client.ConfigurationTemplates.DeletesTheTemplate(vvTemplateID)
 	if err != nil || response1 == nil {

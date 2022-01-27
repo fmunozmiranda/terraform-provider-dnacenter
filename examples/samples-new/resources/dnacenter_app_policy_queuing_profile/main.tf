@@ -61,7 +61,7 @@ resource "dnacenter_app_policy_queuing_profile" "example" {
     # }
     description = "Cisco Validated Design Queuing Profile 3"
     # id          = "42e3255f-304c-4f3f-8f01-fc7e813721c9"
-    name        = "CVD_QUEUING_PROFILE"
+    name = "CVD_QUEUING_PROFILE"
   }
 }
 

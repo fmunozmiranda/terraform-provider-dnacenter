@@ -395,9 +395,11 @@ func resourceEventSubscriptionEmailRead(ctx context.Context, d *schema.ResourceD
 		queryParams1 := dnacentersdkgo.GetEmailEventSubscriptionsQueryParams{}
 		item, err := searchEventManagementGetEmailEventSubscriptions(m, queryParams1, vName, vSubscriptionID)
 		if err != nil || item == nil || len(*item) <= 0 {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetEmailEventSubscriptions", err,
-				"Failure at GetEmailEventSubscriptions, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetEmailEventSubscriptions", err,
+			// 	"Failure at GetEmailEventSubscriptions, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

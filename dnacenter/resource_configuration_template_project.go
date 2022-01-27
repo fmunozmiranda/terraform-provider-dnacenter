@@ -1135,7 +1135,9 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -1167,7 +1169,7 @@ func resourceConfigurationTemplateProject() *schema.Resource {
 							Description: `Name of project
 `,
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
 						"project_id": &schema.Schema{
 							Description: `projectId path parameter. projectId(UUID) of project to be deleted
@@ -2272,7 +2274,9 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestConfigurationTemplateProjectCreateProject(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	vProjectID, okProjectID := resourceItem["project_id"]
 	vName := resourceItem["name"]
@@ -2283,6 +2287,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 		if err == nil && getResponse2 != nil {
 			resourceMap := make(map[string]string)
 			resourceMap["project_id"] = vvProjectID
+			resourceMap["name"] = vvName
 			d.SetId(joinResourceID(resourceMap))
 			return resourceConfigurationTemplateProjectRead(ctx, d, m)
 		}
@@ -2309,21 +2314,28 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			"Failure when executing CreateProject", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
+	if resp1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing CreateProject", err))
 		return diags
 	}
-	if *response2.Response.IsError {
-		diags = append(diags, diagError(
-			"Failure when executing CreateConfigurationTemplateProject", err))
-		return diags
+	taskId := resp1.Response.TaskID
+	if taskId != "" {
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing CreateConfigurationTemplateProject", err))
+			return diags
+		}
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["project_id"] = vvProjectID
@@ -2343,9 +2355,9 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 	vProjectID, okProjectID := resourceMap["project_id"]
 
 	method1 := []bool{okName}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	log.Printf("[DEBUG] Selecting method. Method 1 %v", method1)
 	method2 := []bool{okProjectID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+	log.Printf("[DEBUG] Selecting method. Method 2 %v", method2)
 
 	selectedMethod := pickMethod([][]bool{method1, method2})
 	if selectedMethod == 1 {
@@ -2361,9 +2373,11 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetsAListOfProjects", err,
-				"Failure at GetsAListOfProjects, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetsAListOfProjects", err,
+			// 	"Failure at GetsAListOfProjects, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -2384,7 +2398,7 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 				"Failure at GetsTheDetailsOfAGivenProject, unexpected response", ""))
 			return diags
 		}
-		//TODO Code Items for DNAC
+
 		vItem1 := flattenConfigurationTemplatesGetsTheDetailsOfAGivenProjectItem(response2)
 		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
@@ -2404,9 +2418,11 @@ func resourceConfigurationTemplateProjectRead(ctx context.Context, d *schema.Res
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetsTheDetailsOfAGivenProject", err,
-				"Failure at GetsTheDetailsOfAGivenProject, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetsTheDetailsOfAGivenProject", err,
+			// 	"Failure at GetsTheDetailsOfAGivenProject, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -2433,27 +2449,40 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vProjectID := resourceMap["project_id"]
+	vName := resourceMap["name"]
 
-	var vvProjectID string
 	// NOTE: Consider adding getAllItems and search function to get missing params
 	// if selectedMethod == 1 { }
-	selectedMethod := 2
-	if selectedMethod == 2 {
-		vvProjectID = vProjectID
-		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvProjectID)
+	if vProjectID != "" {
+		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vProjectID)
 		if err != nil || getResp == nil {
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing GetsTheDetailsOfAGivenProject", err,
 				"Failure at GetsTheDetailsOfAGivenProject, unexpected response", ""))
 			return diags
 		}
-		//Set value vvName = getResp.
+	} else if vName != "" {
+		queryParams1 := dnacentersdkgo.GetsAListOfProjectsQueryParams{}
+		queryParams1.Name = vName
+		item2, err := searchConfigurationTemplatesGetsAListOfProjects(m, queryParams1)
+		if err != nil || item2 == nil {
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetsTheDetailsOfAGivenProject", err,
+				"Failure at GetsTheDetailsOfAGivenProject, unexpected response", ""))
+			return diags
+		}
+		vProjectID = item2.ID
 	}
 
 	if d.HasChange("parameters") {
 		//log.Printf("[DEBUG] Name used for update operation %s", vvName)
 		request1 := expandRequestConfigurationTemplateProjectUpdateProject(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
+		if request1 != nil && request1.ID == "" {
+			request1.ID = vProjectID
+		}
 		response1, restyResp1, err := client.ConfigurationTemplates.UpdateProject(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -2468,21 +2497,28 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 				"Failure at UpdateProject, unexpected response", ""))
 			return diags
 		}
-		taskId := response1.Response.TaskID
-		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-		if err != nil || response2 == nil {
-			if restyResp2 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTaskByID", err,
-				"Failure at GetTaskByID, unexpected response", ""))
+		if response1.Response == nil {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateProject", err))
 			return diags
 		}
-		if *response2.Response.IsError {
-			diags = append(diags, diagError(
-				"Failure when executing UdpateConfigurationTemplateProject", err))
-			return diags
+		taskId := response1.Response.TaskID
+		if taskId != "" {
+			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetTaskByID", err,
+					"Failure at GetTaskByID, unexpected response", ""))
+				return diags
+			}
+			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				diags = append(diags, diagError(
+					"Failure when executing UdpateConfigurationTemplateProject", err))
+				return diags
+			}
 		}
 	}
 
@@ -2498,21 +2534,19 @@ func resourceConfigurationTemplateProjectDelete(ctx context.Context, d *schema.R
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vName, okName := resourceMap["name"]
-	vSortOrder, okSortOrder := resourceMap["sort_order"]
 	vProjectID, okProjectID := resourceMap["project_id"]
 
-	method1 := []bool{okName, okSortOrder}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	method1 := []bool{okName}
+	log.Printf("[DEBUG] Selecting method. Method 1 %v", method1)
 	method2 := []bool{okProjectID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+	log.Printf("[DEBUG] Selecting method. Method 2 %v", method2)
 
 	selectedMethod := pickMethod([][]bool{method1, method2})
 	// REVIEW: Add getAllItems and search function to get missing params
 	var vvID string
-	if selectedMethod == 2 {
+	if selectedMethod == 1 {
 		queryParams1 := dnacentersdkgo.GetsAListOfProjectsQueryParams{}
 		queryParams1.Name = vName
-		queryParams1.SortOrder = vSortOrder
 		item1, err := searchConfigurationTemplatesGetsAListOfProjects(m, queryParams1)
 		if err != nil || item1 == nil {
 			// Assume that element it is already gone
@@ -2524,7 +2558,7 @@ func resourceConfigurationTemplateProjectDelete(ctx context.Context, d *schema.R
 			vvID = vProjectID
 		}
 	}
-	if selectedMethod == 1 {
+	if selectedMethod == 2 {
 		vvID = vProjectID
 		getResp, _, err := client.ConfigurationTemplates.GetsTheDetailsOfAGivenProject(vvID)
 		if err != nil || getResp == nil {

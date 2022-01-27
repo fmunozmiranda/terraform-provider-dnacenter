@@ -1,1 +1,0 @@
-terraform import dnac_configuration_template_project.example "project_id:=string"

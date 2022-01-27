@@ -133,7 +133,6 @@ func resourceSiteDesignFloormapRead(ctx context.Context, d *schema.ResourceData,
 				err))
 			return diags
 		}
-		d.SetId(getUnixTimeString())
 		return diags
 
 	}

@@ -274,7 +274,9 @@ func resourceApplicationSets() *schema.Resource {
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateApplicationSet`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -282,6 +284,7 @@ func resourceApplicationSets() *schema.Resource {
 							Description: `Name`,
 							Type:        schema.TypeString,
 							Required:    true,
+							ForceNew:    true,
 						},
 						"id": &schema.Schema{
 							Description: `Name`,
@@ -319,7 +322,9 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 		return resourceApplicationSetsRead(ctx, d, m)
 	}
 	request1 := expandRequestApplicationSetsCreateApplicationSet(ctx, "parameters", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 
 	resp1, restyResp1, err := client.ApplicationPolicy.CreateApplicationSet(request1)
 	if err != nil || resp1 == nil {
@@ -332,21 +337,28 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 			"Failure when executing CreateApplicationSet", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
-		return diags
-	}
-	if *response2.Response.IsError {
+	if resp1.Response == nil {
 		diags = append(diags, diagError(
 			"Failure when executing CreateApplicationSet", err))
 		return diags
+	}
+	taskId := resp1.Response.TaskID
+	if taskId != "" {
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			diags = append(diags, diagError(
+				"Failure when executing CreateApplicationSet", err))
+			return diags
+		}
 	}
 
 	resourceMap := make(map[string]string)
@@ -372,15 +384,16 @@ func resourceApplicationSetsRead(ctx context.Context, d *schema.ResourceData, m 
 		response1, err := searchApplicationPolicyGetApplicationSets(m, queryParams1)
 
 		if err != nil || response1 == nil {
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetApplicationSets", err,
-				"Failure at GetApplicationSets, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetApplicationSets", err,
+			// 	"Failure at GetApplicationSets, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
 
-		//TODO Code Items for DNAC
 		vItem1 := flattenApplicationPolicyGetApplicationSetsItem(response1)
 		if err := d.Set("item", vItem1); err != nil {
 			diags = append(diags, diagError(
@@ -443,8 +456,6 @@ func resourceApplicationSetsDelete(ctx context.Context, d *schema.ResourceData, 
 	// d.SetId("") is automatically called assuming delete returns no errors, but
 	// it is added here for explicitness.
 	d.SetId("")
-
-	//TODO
 
 	return diags
 }

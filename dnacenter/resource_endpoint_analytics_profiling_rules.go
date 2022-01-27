@@ -484,9 +484,9 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 	vRuleID, okRuleID := resourceMap["rule_id"]
 	vRuleName, okRuleName := resourceMap["rule_name"]
 	method1 := []bool{okRuleName}
-	log.Printf("[DEBUG] Selecting method. Method 1 %q", method1)
+	log.Printf("[DEBUG] Selecting method. Method 1 %v", method1)
 	method2 := []bool{okRuleID}
-	log.Printf("[DEBUG] Selecting method. Method 2 %q", method2)
+	log.Printf("[DEBUG] Selecting method. Method 2 %v", method2)
 
 	selectedMethod := pickMethod([][]bool{method1, method2})
 	if selectedMethod == 1 {
@@ -496,10 +496,11 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 		response1, err := searchPolicyGetListOfProfilingRules(m, queryParams1, vRuleName)
 
 		if err != nil || response1 == nil {
-
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetListOfProfilingRules", err,
-				"Failure at GetListOfProfilingRules, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetListOfProfilingRules", err,
+			// 	"Failure at GetListOfProfilingRules, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
@@ -512,7 +513,6 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 				err))
 			return diags
 		}
-		d.SetId(getUnixTimeString())
 		return diags
 
 	}
@@ -526,9 +526,11 @@ func resourceEndpointAnalyticsProfilingRulesRead(ctx context.Context, d *schema.
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDetailsOfASingleProfilingRule", err,
-				"Failure at GetDetailsOfASingleProfilingRule, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDetailsOfASingleProfilingRule", err,
+			// 	"Failure at GetDetailsOfASingleProfilingRule, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 

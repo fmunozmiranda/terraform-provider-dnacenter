@@ -373,10 +373,11 @@ func resourceGlobalPoolRead(ctx context.Context, d *schema.ResourceData, m inter
 
 		response1, err := searchNetworkSettingsGetGlobalPool(m, queryParams1, vID, vIpPoolName)
 		if err != nil || response1 == nil || len(*response1) <= 0 {
-
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetGlobalPool", err,
-				"Failure at GetGlobalPool, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetGlobalPool", err,
+			// 	"Failure at GetGlobalPool, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
