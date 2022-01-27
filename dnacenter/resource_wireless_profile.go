@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -137,6 +138,7 @@ should be provided.
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -158,6 +160,7 @@ should be provided.
 `,
 										Type:     schema.TypeList,
 										Optional: true,
+										MaxItems: 1,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
@@ -165,6 +168,7 @@ should be provided.
 									"ssid_details": &schema.Schema{
 										Type:     schema.TypeList,
 										Optional: true,
+										MaxItems: 1,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 
@@ -228,7 +232,7 @@ should be provided.
 							Description: `wirelessProfileName path parameter. Wireless Profile Name
 `,
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 					},
 				},
@@ -242,19 +246,31 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 
 	var diags diag.Diagnostics
 
-	resourceItem := *getResourceItem(d.Get("parameters"))
+	//resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestWirelessProfileCreateWirelessProfile(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
-
-	vWirelessProfileName := resourceItem["wireless_profile_name"]
-	vvWirelessProfileName := interfaceToString(vWirelessProfileName)
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
+	vvName := ""
+	if _, ok := d.GetOk("parameters.0"); ok {
+		if _, ok := d.GetOk("parameters.0.profile_details"); ok {
+			if _, ok := d.GetOk("parameters.0.profile_details.0"); ok {
+				if v, ok := d.GetOk("parameters.0.profile_details.0.name"); ok {
+					vvName = interfaceToString(v)
+				}
+			}
+		}
+	}
 
 	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
-	queryParams1.ProfileName = vvWirelessProfileName
+	queryParams1.ProfileName = vvName
 	getResponse2, err := searchWirelessGetWirelessProfile(m, queryParams1)
+	if getResponse2 != nil {
+		log.Printf("[DEBUG] searchWirelessGetWirelessProfile result %v", responseInterfaceToString(*getResponse2))
+	}
 	if err == nil && getResponse2 != nil {
 		resourceMap := make(map[string]string)
-		resourceMap["wireless_profile_name"] = vvWirelessProfileName
+		resourceMap["name"] = vvName
 		d.SetId(joinResourceID(resourceMap))
 		return resourceWirelessProfileRead(ctx, d, m)
 	}
@@ -269,8 +285,42 @@ func resourceWirelessProfileCreate(ctx context.Context, d *schema.ResourceData, 
 			"Failure when executing CreateWirelessProfile", err))
 		return diags
 	}
+	executionID := resp1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionID)
+	time.Sleep(5 * time.Second)
+	if executionID != "" {
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetBusinessAPIExecutionDetails", err,
+				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionID)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing CreateWirelessProfile", err))
+			return diags
+		}
+	}
 	resourceMap := make(map[string]string)
-	resourceMap["wireless_profile_name"] = vvWirelessProfileName
+	resourceMap["name"] = vvName
 	d.SetId(joinResourceID(resourceMap))
 	return resourceWirelessProfileRead(ctx, d, m)
 }
@@ -282,7 +332,7 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
-	vProfileName, okProfileName := resourceMap["wireless_profile_name"]
+	vProfileName, okProfileName := resourceMap["name"]
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
@@ -299,9 +349,10 @@ func resourceWirelessProfileRead(ctx context.Context, d *schema.ResourceData, m 
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetWirelessProfile", err,
-				"Failure at GetWirelessProfile, unexpected response", ""))
+			//diags = append(diags, diagErrorWithAlt(
+			//	"Failure when executing GetWirelessProfile", err,
+			//	"Failure at GetWirelessProfile, unexpected response", ""))
+			d.SetId("")
 			return diags
 		}
 
@@ -326,12 +377,20 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-	vProfileName := resourceMap["wireless_profile_name"]
-
+	//resourceID := d.Id()
+	//resourceMap := separateResourceID(resourceID)
+	vvName := ""
+	if _, ok := d.GetOk("parameters.0"); ok {
+		if _, ok := d.GetOk("parameters.0.profile_details"); ok {
+			if _, ok := d.GetOk("parameters.0.profile_details.0"); ok {
+				if v, ok := d.GetOk("parameters.0.profile_details.0.name"); ok {
+					vvName = interfaceToString(v)
+				}
+			}
+		}
+	}
 	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
-	queryParams1.ProfileName = vProfileName
+	queryParams1.ProfileName = vvName
 	item, err := searchWirelessGetWirelessProfile(m, queryParams1)
 	if err != nil || item == nil {
 		diags = append(diags, diagErrorWithAlt(
@@ -345,7 +404,9 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", queryParams1)
 		request1 := expandRequestWirelessProfileUpdateWirelessProfile(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.Wireless.UpdateWirelessProfile(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -360,6 +421,40 @@ func resourceWirelessProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 				"Failure at UpdateWirelessProfile, unexpected response", ""))
 			return diags
 		}
+		executionID := response1.ExecutionID
+		log.Printf("[DEBUG] ExecutionID => %s", executionID)
+		time.Sleep(5 * time.Second)
+		if executionID != "" {
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetBusinessAPIExecutionDetails", err,
+					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+				return diags
+			}
+			for response2.Status == "IN_PROGRESS" {
+				time.Sleep(10 * time.Second)
+				response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionID)
+				if err != nil || response2 == nil {
+					if restyResp1 != nil {
+						log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+					}
+					diags = append(diags, diagErrorWithAlt(
+						"Failure when executing GetExecutionByID", err,
+						"Failure at GetExecutionByID, unexpected response", ""))
+					return diags
+				}
+			}
+			if response2.Status == "FAILURE" {
+				log.Printf("[DEBUG] Error %s", response2.BapiError)
+				diags = append(diags, diagError(
+					"Failure when executing UpdateWirelessProfile", err))
+				return diags
+			}
+		}
 	}
 
 	return resourceWirelessProfileRead(ctx, d, m)
@@ -371,12 +466,20 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 
 	var diags diag.Diagnostics
 
-	resourceID := d.Id()
-	resourceMap := separateResourceID(resourceID)
-	vProfileName := resourceMap["profile_name"]
-
+	//resourceID := d.Id()
+	//resourceMap := separateResourceID(resourceID)
+	vvName := ""
+	if _, ok := d.GetOk("parameters.0"); ok {
+		if _, ok := d.GetOk("parameters.0.profile_details"); ok {
+			if _, ok := d.GetOk("parameters.0.profile_details.0"); ok {
+				if v, ok := d.GetOk("parameters.0.profile_details.0.name"); ok {
+					vvName = interfaceToString(v)
+				}
+			}
+		}
+	}
 	queryParams1 := dnacentersdkgo.GetWirelessProfileQueryParams{}
-	queryParams1.ProfileName = vProfileName
+	queryParams1.ProfileName = vvName
 	item, err := searchWirelessGetWirelessProfile(m, queryParams1)
 	var vvWirelessProfileName string
 	if err != nil || item == nil {
@@ -402,7 +505,40 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 			"Failure at DeleteWirelessProfile, unexpected response", ""))
 		return diags
 	}
-
+	executionID := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionID)
+	time.Sleep(5 * time.Second)
+	if executionID != "" {
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetBusinessAPIExecutionDetails", err,
+				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionID)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteWirelessProfile", err))
+			return diags
+		}
+	}
 	// d.SetId("") is automatically called assuming delete returns no errors, but
 	// it is added here for explicitness.
 	d.SetId("")
@@ -411,7 +547,7 @@ func resourceWirelessProfileDelete(ctx context.Context, d *schema.ResourceData, 
 }
 func expandRequestWirelessProfileCreateWirelessProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessCreateWirelessProfile {
 	request := dnacentersdkgo.RequestWirelessCreateWirelessProfile{}
-	request.ProfileDetails = expandRequestWirelessProfileCreateWirelessProfileProfileDetails(ctx, key, d)
+	request.ProfileDetails = expandRequestWirelessProfileCreateWirelessProfileProfileDetails(ctx, key+".profile_details.0", d)
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
 	}
@@ -502,7 +638,7 @@ func expandRequestWirelessProfileCreateWirelessProfileProfileDetailsSSIDDetailsF
 
 func expandRequestWirelessProfileUpdateWirelessProfile(ctx context.Context, key string, d *schema.ResourceData) *dnacentersdkgo.RequestWirelessUpdateWirelessProfile {
 	request := dnacentersdkgo.RequestWirelessUpdateWirelessProfile{}
-	request.ProfileDetails = expandRequestWirelessProfileUpdateWirelessProfileProfileDetails(ctx, key, d)
+	request.ProfileDetails = expandRequestWirelessProfileUpdateWirelessProfileProfileDetails(ctx, key+".profile_details.0", d)
 	if isEmptyValue(reflect.ValueOf(request)) {
 		return nil
 	}
