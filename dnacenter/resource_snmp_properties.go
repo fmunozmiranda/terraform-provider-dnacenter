@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -69,7 +70,9 @@ func resourceSNMPProperties() *schema.Resource {
 			"parameters": &schema.Schema{
 				Description: `Array of RequestDiscoveryCreateUpdateSNMPProperties`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -134,22 +137,31 @@ func resourceSNMPPropertiesCreate(ctx context.Context, d *schema.ResourceData, m
 			"Failure when executing CreateUpdateSNMPProperties", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
-		return diags
-	}
-	if *response2.Response.IsError {
-		log.Printf("[DEBUG] Error => %v", response2.Response.FailureReason)
+	if resp1.Response == nil {
 		diags = append(diags, diagError(
 			"Failure when executing CreateUpdateSNMPProperties", err))
 		return diags
+	}
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	if taskId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error => %v", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing CreateUpdateSNMPProperties", err))
+			return diags
+		}
 	}
 
 	resourceMap := make(map[string]string)

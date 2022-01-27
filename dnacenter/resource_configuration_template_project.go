@@ -2322,8 +2322,8 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 	}
 	taskId := resp1.Response.TaskID
 	log.Printf("[DEBUG] TASKID => %s", taskId)
-	time.Sleep(5 * time.Second)
 	if taskId != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -2335,6 +2335,7 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 			return diags
 		}
 		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 			diags = append(diags, diagError(
 				"Failure when executing CreateConfigurationTemplateProject", err))
 			return diags
@@ -2507,8 +2508,8 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 		}
 		taskId := response1.Response.TaskID
 		log.Printf("[DEBUG] TASKID => %s", taskId)
-		time.Sleep(5 * time.Second)
 		if taskId != "" {
+			time.Sleep(5 * time.Second)
 			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 			if err != nil || response2 == nil {
 				if restyResp2 != nil {
@@ -2520,6 +2521,7 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 				return diags
 			}
 			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 				diags = append(diags, diagError(
 					"Failure when executing UdpateConfigurationTemplateProject", err))
 				return diags

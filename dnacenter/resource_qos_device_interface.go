@@ -330,7 +330,9 @@ WAN, to associate WAN interfaces with specific SP Profile and to be able to defi
 			"parameters": &schema.Schema{
 				Description: `Array of RequestApplicationPolicyCreateQosDeviceInterfaceInfo`,
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
+				MaxItems:    1,
+				MinItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -461,25 +463,31 @@ func resourceQosDeviceInterfaceCreate(ctx context.Context, d *schema.ResourceDat
 			"Failure when executing CreateQosDeviceInterfaceInfo", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	log.Printf("[DEBUG] TASKID => %s", taskId)
-	time.Sleep(5 * time.Second)
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
+	if resp1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing CreateQosDeviceInterfaceInfo", err))
 		return diags
 	}
-	log.Printf("[DEBUG] Error %t", *response2.Response.IsError)
-	if *response2.Response.IsError {
-		log.Printf("[DEBUG] Error %s", response2.Response.FailureReason)
-		diags = append(diags, diagError(
-			"Failure when executing CreateQuosDeviceInterface", err))
-		return diags
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	if taskId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing CreateQuosDeviceInterface", err))
+			return diags
+		}
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["network_device_id"] = vvID
@@ -572,22 +580,31 @@ func resourceQosDeviceInterfaceUpdate(ctx context.Context, d *schema.ResourceDat
 				"Failure at UpdateQosDeviceInterfaceInfo, unexpected response", ""))
 			return diags
 		}
-		taskId := response1.Response.TaskID
-		time.Sleep(5 * time.Second)
-		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-		if err != nil || response2 == nil {
-			if restyResp2 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTaskByID", err,
-				"Failure at GetTaskByID, unexpected response", ""))
+		if response1.Response == nil {
+			diags = append(diags, diagError(
+				"Failure when executing UpdateQosDeviceInterfaceInfo", err))
 			return diags
 		}
-		if *response2.Response.IsError {
-			diags = append(diags, diagError(
-				"Failure when executing UpdateQuosDeviceInterface", err))
-			return diags
+		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TASKID => %s", taskId)
+		if taskId != "" {
+			time.Sleep(5 * time.Second)
+			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetTaskByID", err,
+					"Failure at GetTaskByID, unexpected response", ""))
+				return diags
+			}
+			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
+				diags = append(diags, diagError(
+					"Failure when executing UpdateQuosDeviceInterface", err))
+				return diags
+			}
 		}
 	}
 

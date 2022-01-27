@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
+	"time"
 
 	"log"
 
@@ -316,7 +318,9 @@ func resourceNetworkDeviceList() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -358,7 +362,8 @@ func resourceNetworkDeviceList() *schema.Resource {
 						},
 						"ip_address": &schema.Schema{
 							Type:     schema.TypeList,
-							Optional: true,
+							Required: true,
+							MinItems: 1,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -466,18 +471,38 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 
 	resourceItem := *getResourceItem(d.Get("parameters"))
 	request1 := expandRequestNetworkDeviceListAddDevice2(ctx, "parameters.0", d)
-	log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	if request1 != nil {
+		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+	}
 	vSerialNumber := resourceItem["serial_number"]
 	vvSerialNumber := interfaceToString(vSerialNumber)
+	var vIPAddress []string
+	var vvIPAddress string
+	if v, ok := d.GetOk("parameters.0.ip_address"); ok {
+		objs := v.([]interface{})
+		if len(objs) == 0 {
+			return nil
+		}
+		for item_no := range objs {
+			if i, ok := d.GetOk(fmt.Sprintf("parameters.0.ip_address.%d", item_no)); ok {
+				vIPAddress = append(vIPAddress, interfaceToString(i))
+			}
+		}
+	}
+	vvIPAddress = strings.Join(vIPAddress, ",")
 
 	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-	queryParams1.SerialNumber = append(queryParams1.SerialNumber, vvSerialNumber)
+	if vSerialNumber != "" {
+		queryParams1.SerialNumber = []string{vvSerialNumber}
+	}
+	queryParams1.ManagementIPAddress = vIPAddress
 
 	response1, _, err := client.Devices.GetDeviceList(&queryParams1)
 
 	if err != nil || response1 != nil {
 		resourceMap := make(map[string]string)
 		resourceMap["serial_number"] = vvSerialNumber
+		resourceMap["ip_address"] = vvIPAddress
 		d.SetId(joinResourceID(resourceMap))
 		return resourceNetworkDeviceListRead(ctx, d, m)
 	}
@@ -492,26 +517,35 @@ func resourceNetworkDeviceListCreate(ctx context.Context, d *schema.ResourceData
 			"Failure when executing AddDevice2", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	log.Printf("[DEBUG] TaskId: %s", taskId)
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
+	if resp1.Response == nil {
+		diags = append(diags, diagError(
+			"Failure when executing AddDevice2", err))
 		return diags
 	}
-	if *response2.Response.IsError {
-		log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
-		diags = append(diags, diagError(
-			"Failure when executing UdpateApplication", err))
-		return diags
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	if taskId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing AddDevice2", err))
+			return diags
+		}
 	}
 	resourceMap := make(map[string]string)
 	resourceMap["serial_number"] = vvSerialNumber
+	resourceMap["ip_address"] = vvIPAddress
 	d.SetId(joinResourceID(resourceMap))
 	return resourceNetworkDeviceListRead(ctx, d, m)
 }
@@ -525,12 +559,17 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 	resourceMap := separateResourceID(resourceID)
 
 	vSerialNumber := resourceMap["serial_number"]
+	vvIPAddress := resourceMap["ip_address"]
+	vIPAddress := strings.Split(vvIPAddress, ",")
 
 	selectedMethod := 1
 	if selectedMethod == 1 {
 		log.Printf("[DEBUG] Selected method 1: GetDeviceList")
 		queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-		queryParams1.SerialNumber = append(queryParams1.SerialNumber, vSerialNumber)
+		if vSerialNumber != "" {
+			queryParams1.SerialNumber = []string{vSerialNumber}
+		}
+		queryParams1.ManagementIPAddress = vIPAddress
 
 		response1, restyResp1, err := client.Devices.GetDeviceList(&queryParams1)
 
@@ -538,15 +577,15 @@ func resourceNetworkDeviceListRead(ctx context.Context, d *schema.ResourceData, 
 			if restyResp1 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
 			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetDeviceList", err,
-				"Failure at GetDeviceList, unexpected response", ""))
+			// diags = append(diags, diagErrorWithAlt(
+			// 	"Failure when executing GetDeviceList", err,
+			// 	"Failure at GetDeviceList, unexpected response", ""))
+			// return diags
+			d.SetId("")
 			return diags
 		}
 
 		log.Printf("[DEBUG] Retrieved response %+v", responseInterfaceToString(*response1))
-
-		//TODO FOR DNAC
 
 		vItem1 := flattenDevicesGetDeviceListItems(response1.Response)
 		if err := d.Set("item", vItem1); err != nil {
@@ -568,14 +607,21 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 	resourceID := d.Id()
 	resourceMap := separateResourceID(resourceID)
 	vSerialNumber := resourceMap["serial_number"]
+	vvIPAddress := resourceMap["ip_address"]
+	vIPAddress := strings.Split(vvIPAddress, ",")
 
 	queryParams1 := dnacentersdkgo.GetDeviceListQueryParams{}
-	queryParams1.SerialNumber = append(queryParams1.SerialNumber, vSerialNumber)
+	if vSerialNumber != "" {
+		queryParams1.SerialNumber = []string{vSerialNumber}
+	}
+	queryParams1.ManagementIPAddress = vIPAddress
 	item, err := searchDevicesGetDeviceList(m, queryParams1)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetDeviceList", err,
-			"Failure at GetDeviceList, unexpected response", ""))
+		// diags = append(diags, diagErrorWithAlt(
+		// 	"Failure when executing GetDeviceList", err,
+		// 	"Failure at GetDeviceList, unexpected response", ""))
+		// return diags
+		d.SetId("")
 		return diags
 	}
 
@@ -584,7 +630,9 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 	if d.HasChange("parameters") {
 		log.Printf("[DEBUG] Name used for update operation %s", vSerialNumber)
 		request1 := expandRequestNetworkDeviceListSyncDevices2(ctx, "parameters.0", d)
-		log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		if request1 != nil {
+			log.Printf("[DEBUG] request sent => %v", responseInterfaceToString(*request1))
+		}
 		response1, restyResp1, err := client.Devices.SyncDevices2(request1)
 		if err != nil || response1 == nil {
 			if restyResp1 != nil {
@@ -599,23 +647,31 @@ func resourceNetworkDeviceListUpdate(ctx context.Context, d *schema.ResourceData
 				"Failure at SyncDevices2, unexpected response", ""))
 			return diags
 		}
-		taskId := response1.Response.TaskID
-		log.Printf("[DEBUG] TaskId: %s", taskId)
-		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-		if err != nil || response2 == nil {
-			if restyResp2 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTaskByID", err,
-				"Failure at GetTaskByID, unexpected response", ""))
+		if response1.Response == nil {
+			diags = append(diags, diagError(
+				"Failure when executing AddDevice2", err))
 			return diags
 		}
-		if *response2.Response.IsError {
-			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
-			diags = append(diags, diagError(
-				"Failure when executing UdpateDeviceList", err))
-			return diags
+		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TASKID => %s", taskId)
+		if taskId != "" {
+			time.Sleep(5 * time.Second)
+			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetTaskByID", err,
+					"Failure at GetTaskByID, unexpected response", ""))
+				return diags
+			}
+			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
+				diags = append(diags, diagError(
+					"Failure when executing SyncDevices2", err))
+				return diags
+			}
 		}
 	}
 
@@ -893,20 +949,25 @@ func searchDevicesGetDeviceList(m interface{}, queryParams dnacentersdkgo.GetDev
 	var ite *dnacentersdkgo.ResponseDevicesGetDeviceList
 	ite, _, err = client.Devices.GetDeviceList(&queryParams)
 	if err != nil {
-		return foundItem, err
+		return nil, err
 	}
 	if ite == nil {
-		return foundItem, err
+		return nil, err
 	}
 
 	if ite.Response == nil {
-		return foundItem, err
+		return nil, err
 	}
 	items := ite
 	itemsCopy := *items.Response
 	for _, item := range itemsCopy {
 		// Call get by _ method and set value to foundItem and return
-		if item.SerialNumber == queryParams.SerialNumber[0] {
+		if strings.Contains(strings.Join(queryParams.SerialNumber, ","), item.SerialNumber) {
+			var getItem *dnacentersdkgo.ResponseDevicesGetDeviceListResponse
+			getItem = &item
+			foundItem = getItem
+			return foundItem, err
+		} else if strings.Contains(strings.Join(queryParams.ManagementIPAddress, ","), item.ManagementIPAddress) {
 			var getItem *dnacentersdkgo.ResponseDevicesGetDeviceListResponse
 			getItem = &item
 			foundItem = getItem

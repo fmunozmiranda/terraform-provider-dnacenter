@@ -709,8 +709,8 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	taskId := resp1.Response.TaskID
 	log.Printf("[DEBUG] TASKID => %s", taskId)
-	time.Sleep(5 * time.Second)
 	if taskId != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -722,6 +722,7 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 			diags = append(diags, diagError(
 				"Failure when executing CreateDiscovery", err))
 			return diags
@@ -871,8 +872,8 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		}
 		taskId := response1.Response.TaskID
 		log.Printf("[DEBUG] TASKID => %s", taskId)
-		time.Sleep(5 * time.Second)
 		if taskId != "" {
+			time.Sleep(5 * time.Second)
 			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 			if err != nil || response2 == nil {
 				if restyResp2 != nil {
@@ -884,6 +885,7 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 				return diags
 			}
 			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 				diags = append(diags, diagError(
 					"Failure when executing UpdateDiscovery", err))
 				return diags

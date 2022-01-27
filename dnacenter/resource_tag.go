@@ -118,7 +118,9 @@ func resourceTag() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -248,24 +250,31 @@ func resourceTagCreate(ctx context.Context, d *schema.ResourceData, m interface{
 			"Failure when executing CreateTag", err))
 		return diags
 	}
-	taskId := resp1.Response.TaskID
-	log.Printf("[DEBUG] TaskID %s", taskId)
-	time.Sleep(5 * time.Second)
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
-		return diags
-	}
-	if *response2.Response.IsError {
-		log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+	if resp1.Response == nil {
 		diags = append(diags, diagError(
 			"Failure when executing CreateTag", err))
 		return diags
+	}
+	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TaskID %s", taskId)
+	if taskId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing CreateTag", err))
+			return diags
+		}
 	}
 
 	resourceMap := make(map[string]string)
@@ -420,22 +429,31 @@ func resourceTagUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 				"Failure at UpdateTag, unexpected response", ""))
 			return diags
 		}
-		taskId := response1.Response.TaskID
-		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-		if err != nil || response2 == nil {
-			if restyResp2 != nil {
-				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-			}
-			diags = append(diags, diagErrorWithAlt(
-				"Failure when executing GetTaskByID", err,
-				"Failure at GetTaskByID, unexpected response", ""))
-			return diags
-		}
-		if *response2.Response.IsError {
-			log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+		if response1.Response == nil {
 			diags = append(diags, diagError(
 				"Failure when executing UpdateTag", err))
 			return diags
+		}
+		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TASKID => %s", taskId)
+		if taskId != "" {
+			time.Sleep(5 * time.Second)
+			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+			if err != nil || response2 == nil {
+				if restyResp2 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetTaskByID", err,
+					"Failure at GetTaskByID, unexpected response", ""))
+				return diags
+			}
+			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+				diags = append(diags, diagError(
+					"Failure when executing UpdateTag", err))
+				return diags
+			}
 		}
 	}
 
@@ -487,22 +505,31 @@ func resourceTagDelete(ctx context.Context, d *schema.ResourceData, m interface{
 			"Failure at DeleteTag, unexpected response", ""))
 		return diags
 	}
-	taskId := response1.Response.TaskID
-	response2, restyResp2, err := client.Task.GetTaskByID(taskId)
-	if err != nil || response2 == nil {
-		if restyResp2 != nil {
-			log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
-		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetTaskByID", err,
-			"Failure at GetTaskByID, unexpected response", ""))
-		return diags
-	}
-	if *response2.Response.IsError {
-		log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+	if response1.Response == nil {
 		diags = append(diags, diagError(
 			"Failure when executing DeleteTag", err))
 		return diags
+	}
+	taskId := response1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	if taskId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
+		if err != nil || response2 == nil {
+			if restyResp2 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetTaskByID", err,
+				"Failure at GetTaskByID, unexpected response", ""))
+			return diags
+		}
+		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error => %s", response2.Response.FailureReason)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteTag", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but

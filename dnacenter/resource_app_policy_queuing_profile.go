@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -694,7 +695,9 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 		return diags
 	}
 	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
 	if taskId != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -706,6 +709,7 @@ func resourceAppPolicyQueuingProfileCreate(ctx context.Context, d *schema.Resour
 			return diags
 		}
 		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 			diags = append(diags, diagError(
 				"Failure when executing CreateApplicationPolicyQueuingProfile", err))
 			return diags
@@ -810,7 +814,9 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 			return diags
 		}
 		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TASKID => %s", taskId)
 		if taskId != "" {
+			time.Sleep(5 * time.Second)
 			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 			if err != nil || response2 == nil {
 				if restyResp2 != nil {
@@ -822,6 +828,7 @@ func resourceAppPolicyQueuingProfileUpdate(ctx context.Context, d *schema.Resour
 				return diags
 			}
 			if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+				log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 				diags = append(diags, diagError(
 					"Failure when executing UpdateApplicationPolicyQueuingProfile", err))
 				return diags
@@ -872,7 +879,9 @@ func resourceAppPolicyQueuingProfileDelete(ctx context.Context, d *schema.Resour
 		return diags
 	}
 	taskId := response1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
 	if taskId != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -884,6 +893,7 @@ func resourceAppPolicyQueuingProfileDelete(ctx context.Context, d *schema.Resour
 			return diags
 		}
 		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 			diags = append(diags, diagError(
 				"Failure when executing DeleteApplicationPolicyQueuingProfile", err))
 			return diags

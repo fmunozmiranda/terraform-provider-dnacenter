@@ -345,8 +345,8 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 	taskId := resp1.Response.TaskID
 	log.Printf("[DEBUG] TASKID => %s", taskId)
-	time.Sleep(5 * time.Second)
 	if taskId != "" {
+		time.Sleep(5 * time.Second)
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
@@ -358,6 +358,7 @@ func resourceApplicationSetsCreate(ctx context.Context, d *schema.ResourceData, 
 			return diags
 		}
 		if response2.Response != nil && response2.Response.IsError != nil && *response2.Response.IsError {
+			log.Printf("[DEBUG] Error reason %s", response2.Response.FailureReason)
 			diags = append(diags, diagError(
 				"Failure when executing CreateApplicationSet", err))
 			return diags
