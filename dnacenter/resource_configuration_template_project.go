@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -2320,6 +2321,8 @@ func resourceConfigurationTemplateProjectCreate(ctx context.Context, d *schema.R
 		return diags
 	}
 	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	time.Sleep(5 * time.Second)
 	if taskId != "" {
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
@@ -2503,6 +2506,8 @@ func resourceConfigurationTemplateProjectUpdate(ctx context.Context, d *schema.R
 			return diags
 		}
 		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TASKID => %s", taskId)
+		time.Sleep(5 * time.Second)
 		if taskId != "" {
 			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 			if err != nil || response2 == nil {

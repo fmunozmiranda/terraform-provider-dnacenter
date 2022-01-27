@@ -3,6 +3,7 @@ package dnacenter
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -159,6 +160,8 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 	// if len(*resp1) > 0 {
 	// executionID := (*resp1)[0].ExecutionID
 	executionID := resp1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionID)
+	time.Sleep(5 * time.Second)
 	if executionID != "" {
 		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 		if err != nil || response2 == nil {
@@ -170,7 +173,7 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 			return diags
 		}
-		if response2.Status != "SUCCESS" {
+		if response2.Status == "FAILURE" {
 			bapiError := response2.BapiError
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing AddSSIDToIPPoolMapping", err,
@@ -282,6 +285,8 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 		// if len(*response1) > 0 {
 		// 	executionID := (*response1)[0].ExecutionID
 		executionID := response1.ExecutionID
+		log.Printf("[DEBUG] ExecutionID => %s", executionID)
+		time.Sleep(5 * time.Second)
 		if executionID != "" {
 			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 			if err != nil || response2 == nil {
@@ -293,7 +298,7 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 				return diags
 			}
-			if response2.Status != "SUCCESS" {
+			if response2.Status == "FAILURE" {
 				bapiError := response2.BapiError
 				diags = append(diags, diagErrorWithAlt(
 					"Failure when executing AddSSIDToIPPoolMapping", err,

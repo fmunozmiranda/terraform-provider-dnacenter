@@ -3,6 +3,7 @@ package dnacenter
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"log"
 
@@ -707,6 +708,8 @@ func resourceDiscoveryCreate(ctx context.Context, d *schema.ResourceData, m inte
 		return diags
 	}
 	taskId := resp1.Response.TaskID
+	log.Printf("[DEBUG] TASKID => %s", taskId)
+	time.Sleep(5 * time.Second)
 	if taskId != "" {
 		response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 		if err != nil || response2 == nil {
@@ -867,6 +870,8 @@ func resourceDiscoveryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 		taskId := response1.Response.TaskID
+		log.Printf("[DEBUG] TASKID => %s", taskId)
+		time.Sleep(5 * time.Second)
 		if taskId != "" {
 			response2, restyResp2, err := client.Task.GetTaskByID(taskId)
 			if err != nil || response2 == nil {

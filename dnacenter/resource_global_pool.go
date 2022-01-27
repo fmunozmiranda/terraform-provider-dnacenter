@@ -215,7 +215,9 @@ func resourceGlobalPool() *schema.Resource {
 
 									"ippool": &schema.Schema{
 										Type:     schema.TypeList,
-										Optional: true,
+										Required: true,
+										MaxItems: 1,
+										MinItems: 1,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 
@@ -330,8 +332,11 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 			"Failure when executing CreateGlobalPool", err))
 		return diags
 	}
-	if resp1.ExecutionID != "" {
-		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(resp1.ExecutionID)
+	executionID := resp1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionID)
+	time.Sleep(5 * time.Second)
+	if executionID != "" {
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -341,7 +346,7 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 			return diags
 		}
-		if response2.Status != "SUCCESS" {
+		if response2.Status == "FAILURE" {
 			bapiError := response2.BapiError
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing CreateGlobalPool", err,
@@ -443,8 +448,11 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 				"Failure at UpdateGlobalPool, unexpected response", ""))
 			return diags
 		}
-		if response1.ExecutionID != "" {
-			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(response1.ExecutionID)
+		executionID := response1.ExecutionID
+		log.Printf("[DEBUG] ExecutionID => %s", executionID)
+		time.Sleep(5 * time.Second)
+		if executionID != "" {
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 			if err != nil || response2 == nil {
 				if restyResp2 != nil {
 					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -454,7 +462,7 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 				return diags
 			}
-			if response2.Status != "SUCCESS" {
+			if response2.Status == "FAILURE" {
 				bapiError := response2.BapiError
 				diags = append(diags, diagErrorWithAlt(
 					"Failure when executing UpdateGlobalPool", err,
@@ -508,8 +516,11 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 			"Failure at DeleteGlobalIPPool, unexpected response", ""))
 		return diags
 	}
-	if response1.ExecutionID != "" {
-		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(response1.ExecutionID)
+	executionID := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionID)
+	time.Sleep(5 * time.Second)
+	if executionID != "" {
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -519,7 +530,7 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 			return diags
 		}
-		if response2.Status != "SUCCESS" {
+		if response2.Status == "FAILURE" {
 			bapiError := response2.BapiError
 			diags = append(diags, diagErrorWithAlt(
 				"Failure when executing UpdateGlobalPool", err,
