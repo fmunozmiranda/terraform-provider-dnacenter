@@ -227,9 +227,10 @@ func resourceSdaFabricSiteDelete(ctx context.Context, d *schema.ResourceData, m 
 	queryParams1.SiteNameHierarchy = vSiteNameHierarchy
 	item, restyResp1, err := client.Sda.GetSiteFromSdaFabric(&queryParams1)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetSiteFromSDAFabric", err,
-			"Failure at GetSiteFromSDAFabric, unexpected response", ""))
+		/*diags = append(diags, diagErrorWithAlt(
+		"Failure when executing GetSiteFromSDAFabric", err,
+		"Failure at GetSiteFromSDAFabric, unexpected response", ""))*/
+		d.SetId("")
 		return diags
 	}
 	queryParams2 := dnacentersdkgo.DeleteSiteFromSdaFabricQueryParams{}
@@ -238,17 +239,48 @@ func resourceSdaFabricSiteDelete(ctx context.Context, d *schema.ResourceData, m 
 	if err != nil || response1 == nil {
 		if restyResp1 != nil {
 			log.Printf("[DEBUG] resty response for delete operation => %v", restyResp1.String())
-			diags = append(diags, diagErrorWithAltAndResponse(
-				"Failure when executing DeleteSiteFromSdaFabric", err, restyResp1.String(),
-				"Failure at DeleteSiteFromSdaFabric, unexpected response", ""))
-			return diags
 		}
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing DeleteSiteFromSdaFabric", err,
-			"Failure at DeleteSiteFromSdaFabric, unexpected response", ""))
+		/*diags = append(diags, diagErrorWithAlt(
+		"Failure when executing DeleteSiteFromSdaFabric", err,
+		"Failure at DeleteSiteFromSdaFabric, unexpected response", ""))*/
+		d.SetId("")
 		return diags
 	}
 
+	executionId := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetExecutionByID", err,
+				"Failure at GetExecutionByID, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeleteSiteFromSdaFabric", err))
+			return diags
+		}
+	}
 	// d.SetId("") is automatically called assuming delete returns no errors, but
 	// it is added here for explicitness.
 	d.SetId("")

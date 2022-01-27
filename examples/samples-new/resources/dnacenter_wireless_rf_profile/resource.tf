@@ -11,7 +11,6 @@ terraform {
 resource "dnacenter_wireless_rf_profile" "example" {
   provider = dnacenter
   parameters {
-
     channel_width       = "20"
     default_rf_profile  = "false"
     enable_brown_field  = "false"

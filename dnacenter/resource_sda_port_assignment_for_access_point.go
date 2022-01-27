@@ -299,9 +299,10 @@ func resourceSdaPortAssignmentForAccessPointDelete(ctx context.Context, d *schem
 	queryParams1.InterfaceName = vInterfaceName
 	item, restyResp1, err := client.Sda.GetPortAssignmentForAccessPointInSdaFabric(&queryParams1)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetPortAssignmentForAccessPointInSDAFabric", err,
-			"Failure at GetPortAssignmentForAccessPointInSDAFabric, unexpected response", ""))
+		/*diags = append(diags, diagErrorWithAlt(
+		"Failure when executing GetPortAssignmentForAccessPointInSDAFabric", err,
+		"Failure at GetPortAssignmentForAccessPointInSDAFabric, unexpected response", ""))*/
+		d.SetId("")
 		return diags
 	}
 
@@ -322,6 +323,41 @@ func resourceSdaPortAssignmentForAccessPointDelete(ctx context.Context, d *schem
 			"Failure when executing DeletePortAssignmentForAccessPointInSdaFabric", err,
 			"Failure at DeletePortAssignmentForAccessPointInSdaFabric, unexpected response", ""))
 		return diags
+	}
+
+	executionId := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp1, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
+		if err != nil || response2 == nil {
+			if restyResp1 != nil {
+				log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+			}
+			diags = append(diags, diagErrorWithAlt(
+				"Failure when executing GetExecutionByID", err,
+				"Failure at GetExecutionByID, unexpected response", ""))
+			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
+		}
+		if response2.Status == "FAILURE" {
+			log.Printf("[DEBUG] Error %s", response2.BapiError)
+			diags = append(diags, diagError(
+				"Failure when executing DeletePortAssignmentForAccessPointInSdaFabric", err))
+			return diags
+		}
 	}
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but
