@@ -187,7 +187,9 @@ func resourceWirelessEnterpriseSSID() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -538,9 +540,9 @@ func resourceWirelessEnterpriseSSIDDelete(ctx context.Context, d *schema.Resourc
 	var vvSSIDName string
 	item, err := searchWirelessGetEnterpriseSSID(m, queryParams1)
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing GetEnterpriseSSID", err,
-			"Failure at GetEnterpriseSSID, unexpected response", ""))
+		/*diags = append(diags, diagErrorWithAlt(
+		"Failure when executing GetEnterpriseSSID", err,
+		"Failure at GetEnterpriseSSID, unexpected response", ""))*/
 		return diags
 	}
 

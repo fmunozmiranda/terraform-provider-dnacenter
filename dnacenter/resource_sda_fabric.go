@@ -299,7 +299,6 @@ func resourceSdaFabricDelete(ctx context.Context, d *schema.ResourceData, m inte
 			return diags
 		}
 	}
-	
 
 	// d.SetId("") is automatically called assuming delete returns no errors, but
 	// it is added here for explicitness.

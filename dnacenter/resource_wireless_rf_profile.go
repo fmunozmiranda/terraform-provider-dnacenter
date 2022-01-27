@@ -229,7 +229,9 @@ func resourceWirelessRfProfile() *schema.Resource {
 			},
 			"parameters": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
+				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -551,9 +553,9 @@ func resourceWirelessRfProfileDelete(ctx context.Context, d *schema.ResourceData
 	item, err := searchWirelessRetrieveRfProfiles(m, queryParams1)
 	var vvRfProfileName string
 	if err != nil || item == nil {
-		diags = append(diags, diagErrorWithAlt(
-			"Failure when executing RetrieveRFProfiles", err,
-			"Failure at RetrieveRFProfiles, unexpected response", ""))
+		/*diags = append(diags, diagErrorWithAlt(
+		"Failure when executing RetrieveRFProfiles", err,
+		"Failure at RetrieveRFProfiles, unexpected response", ""))*/
 		return diags
 	}
 
