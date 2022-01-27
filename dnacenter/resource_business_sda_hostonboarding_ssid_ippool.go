@@ -158,12 +158,12 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 		return diags
 	}
 	// if len(*resp1) > 0 {
-	// executionID := (*resp1)[0].ExecutionID
-	executionID := resp1.ExecutionID
-	log.Printf("[DEBUG] ExecutionID => %s", executionID)
-	time.Sleep(5 * time.Second)
-	if executionID != "" {
-		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+	// executionId := (*resp1)[0].ExecutionID
+	executionId := resp1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -172,6 +172,19 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolCreate(ctx context.Context, d *s
 				"Failure when executing GetBusinessAPIExecutionDetails", err,
 				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
 		}
 		if response2.Status == "FAILURE" {
 			bapiError := response2.BapiError
@@ -283,12 +296,12 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 			return diags
 		}
 		// if len(*response1) > 0 {
-		// 	executionID := (*response1)[0].ExecutionID
-		executionID := response1.ExecutionID
-		log.Printf("[DEBUG] ExecutionID => %s", executionID)
-		time.Sleep(5 * time.Second)
-		if executionID != "" {
-			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+		// 	executionId := (*response1)[0].ExecutionID
+		executionId := response1.ExecutionID
+		log.Printf("[DEBUG] ExecutionID => %s", executionId)
+		if executionId != "" {
+			time.Sleep(5 * time.Second)
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 			if err != nil || response2 == nil {
 				if restyResp2 != nil {
 					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -297,6 +310,19 @@ func resourceBusinessSdaHostonboardingSSIDIPpoolUpdate(ctx context.Context, d *s
 					"Failure when executing GetBusinessAPIExecutionDetails", err,
 					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 				return diags
+			}
+			for response2.Status == "IN_PROGRESS" {
+				time.Sleep(10 * time.Second)
+				response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+				if err != nil || response2 == nil {
+					if restyResp1 != nil {
+						log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+					}
+					diags = append(diags, diagErrorWithAlt(
+						"Failure when executing GetExecutionByID", err,
+						"Failure at GetExecutionByID, unexpected response", ""))
+					return diags
+				}
 			}
 			if response2.Status == "FAILURE" {
 				bapiError := response2.BapiError

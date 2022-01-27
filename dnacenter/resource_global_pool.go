@@ -332,11 +332,11 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 			"Failure when executing CreateGlobalPool", err))
 		return diags
 	}
-	executionID := resp1.ExecutionID
-	log.Printf("[DEBUG] ExecutionID => %s", executionID)
-	time.Sleep(5 * time.Second)
-	if executionID != "" {
-		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+	executionId := resp1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -345,6 +345,19 @@ func resourceGlobalPoolCreate(ctx context.Context, d *schema.ResourceData, m int
 				"Failure when executing GetBusinessAPIExecutionDetails", err,
 				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
 		}
 		if response2.Status == "FAILURE" {
 			bapiError := response2.BapiError
@@ -448,11 +461,11 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 				"Failure at UpdateGlobalPool, unexpected response", ""))
 			return diags
 		}
-		executionID := response1.ExecutionID
-		log.Printf("[DEBUG] ExecutionID => %s", executionID)
-		time.Sleep(5 * time.Second)
-		if executionID != "" {
-			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+		executionId := response1.ExecutionID
+		log.Printf("[DEBUG] ExecutionID => %s", executionId)
+		if executionId != "" {
+			time.Sleep(5 * time.Second)
+			response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 			if err != nil || response2 == nil {
 				if restyResp2 != nil {
 					log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -461,6 +474,19 @@ func resourceGlobalPoolUpdate(ctx context.Context, d *schema.ResourceData, m int
 					"Failure when executing GetBusinessAPIExecutionDetails", err,
 					"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 				return diags
+			}
+			for response2.Status == "IN_PROGRESS" {
+				time.Sleep(10 * time.Second)
+				response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+				if err != nil || response2 == nil {
+					if restyResp1 != nil {
+						log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+					}
+					diags = append(diags, diagErrorWithAlt(
+						"Failure when executing GetExecutionByID", err,
+						"Failure at GetExecutionByID, unexpected response", ""))
+					return diags
+				}
 			}
 			if response2.Status == "FAILURE" {
 				bapiError := response2.BapiError
@@ -516,11 +542,11 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 			"Failure at DeleteGlobalIPPool, unexpected response", ""))
 		return diags
 	}
-	executionID := response1.ExecutionID
-	log.Printf("[DEBUG] ExecutionID => %s", executionID)
-	time.Sleep(5 * time.Second)
-	if executionID != "" {
-		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionID)
+	executionId := response1.ExecutionID
+	log.Printf("[DEBUG] ExecutionID => %s", executionId)
+	if executionId != "" {
+		time.Sleep(5 * time.Second)
+		response2, restyResp2, err := client.Task.GetBusinessAPIExecutionDetails(executionId)
 		if err != nil || response2 == nil {
 			if restyResp2 != nil {
 				log.Printf("[DEBUG] Retrieved error response %s", restyResp2.String())
@@ -529,6 +555,19 @@ func resourceGlobalPoolDelete(ctx context.Context, d *schema.ResourceData, m int
 				"Failure when executing GetBusinessAPIExecutionDetails", err,
 				"Failure at GetBusinessAPIExecutionDetails, unexpected response", ""))
 			return diags
+		}
+		for response2.Status == "IN_PROGRESS" {
+			time.Sleep(10 * time.Second)
+			response2, restyResp1, err = client.Task.GetBusinessAPIExecutionDetails(executionId)
+			if err != nil || response2 == nil {
+				if restyResp1 != nil {
+					log.Printf("[DEBUG] Retrieved error response %s", restyResp1.String())
+				}
+				diags = append(diags, diagErrorWithAlt(
+					"Failure when executing GetExecutionByID", err,
+					"Failure at GetExecutionByID, unexpected response", ""))
+				return diags
+			}
 		}
 		if response2.Status == "FAILURE" {
 			bapiError := response2.BapiError
